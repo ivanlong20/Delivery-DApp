@@ -9,8 +9,15 @@ class UserSelectionPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            SizedBox(height: 150),
+            Align(
+                alignment: Alignment.center,
+                child: Text(
+                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600),
+                    'Welcome')),
+            SizedBox(height: 150),
             FilledButton(
               style: FilledButton.styleFrom(
                   minimumSize: Size(350, 75),
