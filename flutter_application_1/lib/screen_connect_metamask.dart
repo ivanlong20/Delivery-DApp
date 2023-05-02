@@ -214,8 +214,13 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(builder: (context) {
-                                            return const HomePage(
-                                                title: 'Home');
+                                            return HomePage(
+                                              title: 'Home',
+                                              walletAddress:
+                                                  _session.accounts[0],
+                                              blockchainNetwork: getNetworkName(
+                                                  _session.chainId),
+                                            );
                                           }),
                                         );
                                       },

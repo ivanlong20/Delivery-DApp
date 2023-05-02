@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Color.fromARGB(255, 255, 255, 255),
+          systemNavigationBarColor: Color.fromARGB(255, 251, 255, 255),
           statusBarIconBrightness: Brightness.dark,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             fontFamily: 'Montserrat',
             useMaterial3: true,
-            colorSchemeSeed: Color.fromARGB(255, 255, 216, 45),
+            colorSchemeSeed: Color.fromARGB(255, 255, 197, 81),
           ),
           home: const UserSelectionPage(title: 'Flutter Demo Home Page'),
         ));
