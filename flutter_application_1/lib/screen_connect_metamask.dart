@@ -1,3 +1,4 @@
+//https://github.com/BhaskarDutta2209/FlutterAppWithMetamask
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
@@ -5,6 +6,8 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:web3dart/crypto.dart';
 import 'screen_home.dart';
+// import 'package:web3dart/web3dart.dart';
+// import 'package:flutter_web3/flutter_web3.dart';
 
 class ConnectMetamaskPage extends StatefulWidget {
   const ConnectMetamaskPage({super.key, required this.title});
@@ -141,96 +144,113 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
       body: Center(
           child: (_session != null)
               ? Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Account',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      Text(
-                        '${_session.accounts[0]}',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Text(
-                            'Chain: ',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
-                          ),
-                          Text(
-                            getNetworkName(_session.chainId),
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      (_session.chainId != 1)
-                          ? Row(
-                              children: const [
-                                Icon(Icons.warning,
-                                    color: Colors.redAccent, size: 15),
-                                Text('Network not supported. Switch to '),
-                                Text(
-                                  'Ethereum Mainnet',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Account',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 24),
+                            ),
+                            Text(
+                              '${_session.accounts[0]}',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            const SizedBox(height: 25),
+                            Row(
+                              children: [
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Chain',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 24),
+                                      ),
+                                      Text(
+                                        getNetworkName(_session.chainId),
+                                        style: TextStyle(fontSize: 18),
+                                      )
+                                    ])
+                                // ],
+                                // ),
+                                // const SizedBox(height: 20),
+                                // (_session.chainId != 1)
+                                //     ? Row(
+                                //         children: const [
+                                //           Icon(Icons.warning,
+                                //               color: Colors.redAccent, size: 15),
+                                //           Text('Network not supported. Switch to '),
+                                //           Text(
+                                //             'Ethereum Mainnet',
+                                //             style: TextStyle(fontWeight: FontWeight.bold),
+                                //           )
+                                //         ],
+                                //       )
+                                //     : (_signature == null)
+                                //         ? Container(
+                                //             alignment: Alignment.center,
+                                //             child: ElevatedButton(
+                                //                 onPressed: () => signMessageWithMetamask(
+                                //                     context,
+                                //                     generateSessionMessage(
+                                //                         _session.accounts[0])),
+                                //                 child: const Text('Sign Message')),
+                                //           )
+                                //         : Column(
+                                //             crossAxisAlignment: CrossAxisAlignment.center,
+                                //             children: [
+                                //               Row(
+                                //                 children: [
+                                //                   Text(
+                                //                     "Signature: ",
+                                //                     style: TextStyle(
+                                //                         fontWeight: FontWeight.bold,
+                                //                         fontSize: 16),
+                                //                   ),
+                                //                   Text(
+                                //                       truncateString(
+                                //                           _signature.toString(), 4, 2),
+                                //                       style: TextStyle(fontSize: 16))
+                                //                 ],
+                                //               ),
+                                ,
+                              ],
+                            ),
+                            SizedBox(height: 50),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SliderButton(
+                                  action: () async {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return HomePage(
+                                          title: 'Ship',
+                                          connector: connector,
+                                          session: _session,
+                                        );
+                                      }),
+                                    );
+                                  },
+                                  label: const Text('Slide to login'),
+                                  icon: const Icon(Icons.check),
                                 )
                               ],
                             )
-                          : (_signature == null)
-                              ? Container(
-                                  alignment: Alignment.center,
-                                  child: ElevatedButton(
-                                      onPressed: () => signMessageWithMetamask(
-                                          context,
-                                          generateSessionMessage(
-                                              _session.accounts[0])),
-                                      child: const Text('Sign Message')),
-                                )
-                              : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "Signature: ",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
-                                        Text(
-                                            truncateString(
-                                                _signature.toString(), 4, 2),
-                                            style: TextStyle(fontSize: 16))
-                                      ],
-                                    ),
-                                    const SizedBox(height: 20),
-                                    SliderButton(
-                                      action: () async {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) {
-                                            return HomePage(
-                                              title: 'Home',
-                                              walletAddress:
-                                                  _session.accounts[0],
-                                              blockchainNetwork: getNetworkName(
-                                                  _session.chainId),
-                                            );
-                                          }),
-                                        );
-                                      },
-                                      label: const Text('Slide to login'),
-                                      icon: const Icon(Icons.check),
-                                    )
-                                  ],
-                                )
-                    ],
-                  ))
+                          ],
+                        )
+                      ]))
               : FilledButton(
                   style: FilledButton.styleFrom(
                       minimumSize: Size(100, 75),
