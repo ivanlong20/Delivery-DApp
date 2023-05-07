@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:etherscan_api/etherscan_api.dart';
 import 'screen_home.dart';
+import 'screen_order.dart';
+import 'screen_message.dart';
+import 'etherscan_api.dart';
+
 
 class WalletPage extends StatefulWidget {
   final String title;
@@ -84,10 +88,12 @@ class _WalletPageState extends State<WalletPage> {
             ListTile(
               leading: Icon(Icons.history),
               title: Text('Order Tracking & History'),
+              onTap: openOrderPage,
             ),
             ListTile(
               leading: Icon(Icons.message),
               title: Text('Message'),
+              onTap: openMessagePage
             ),
             ListTile(
                 leading: Icon(Icons.wallet),
@@ -116,41 +122,6 @@ class _WalletPageState extends State<WalletPage> {
     );
   }
 
-  getNetworkName(chainId) {
-    switch (chainId) {
-      case 1:
-        return 'Ethereum Mainnet';
-      case 3:
-        return 'Ropsten Testnet';
-      case 4:
-        return 'Rinkeby Testnet';
-      case 5:
-        return 'Goreli Testnet';
-      case 42:
-        return 'Kovan Testnet';
-      case 137:
-        return 'Polygon Mainnet';
-      default:
-        return 'Unknown Chain';
-    }
-  }
-
-  getBalance(address) async {
-    final eth = EtherscanAPI(
-        apiKey: 'UQP726MHXYGZXD1AA61YD7PABKI4XXXPJY',
-        chain: EthChain.mainnet,
-        enableLogs: false);
-    final bal = await eth.balance(
-      addresses: [address],
-    );
-    var result = bal.result;
-    var balance = '0';
-    if (result != null) {
-      balance = result[0].balance;
-    }
-    return balance;
-  }
-
   openWalletPage() {
     Navigator.push(
       context,
@@ -168,6 +139,28 @@ class _WalletPageState extends State<WalletPage> {
       MaterialPageRoute(
           builder: (context) => HomePage(
               title: 'Ship',
+              session: widget.session,
+              connector: widget.connector)),
+    );
+  }
+
+  openOrderPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => OrderPage(
+              title: 'Order Tracking & History',
+              session: widget.session,
+              connector: widget.connector)),
+    );
+  }
+
+  openMessagePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => MessagePage(
+              title: 'Message',
               session: widget.session,
               connector: widget.connector)),
     );

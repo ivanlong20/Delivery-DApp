@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:slider_button/slider_button.dart';
 import 'package:web3dart/crypto.dart';
 import 'screen_home.dart';
+import 'etherscan_api.dart';
 // import 'package:web3dart/web3dart.dart';
 // import 'package:flutter_web3/flutter_web3.dart';
 
@@ -43,27 +43,6 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
       } catch (exp) {
         print(exp);
       }
-    }
-  }
-
-  getNetworkName(chainId) {
-    switch (chainId) {
-      case 1:
-        return 'Ethereum Mainnet';
-      case 3:
-        return 'Ropsten Testnet';
-      case 4:
-        return 'Rinkeby Testnet';
-      case 5:
-        return 'Goreli Testnet';
-      case 42:
-        return 'Kovan Testnet';
-      case 137:
-        return 'Polygon Mainnet';
-      // case 80001:
-      //   return 'Mumbai Testnet';
-      default:
-        return 'Unknown Chain';
     }
   }
 
@@ -226,26 +205,40 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                 ,
                               ],
                             ),
-                            SizedBox(height: 50),
+                            SizedBox(height: 450),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SliderButton(
-                                  action: () async {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return HomePage(
-                                          title: 'Ship',
-                                          connector: connector,
-                                          session: _session,
+                                FilledButton(
+                                    style: FilledButton.styleFrom(
+                                      minimumSize: Size(200, 50),
+                                      maximumSize: Size(250, 75),
+                                      backgroundColor:
+                                          Color.fromARGB(255, 0, 0, 0),
+                                    ),
+                                    onPressed: () {},
+                                    child: FloatingActionButton.extended(
+                                      backgroundColor: Colors.black,
+                                      onPressed: () async {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return HomePage(
+                                              title: 'Ship',
+                                              connector: connector,
+                                              session: _session,
+                                            );
+                                          }),
                                         );
-                                      }),
-                                    );
-                                  },
-                                  label: const Text('Slide to login'),
-                                  icon: const Icon(Icons.check),
-                                )
+                                      },
+                                      label: Text(
+                                          style: TextStyle(
+                                              color: Color.fromRGBO(
+                                                  255, 255, 255, 1),
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.w600),
+                                          'Login'),
+                                    ))
                               ],
                             )
                           ],
