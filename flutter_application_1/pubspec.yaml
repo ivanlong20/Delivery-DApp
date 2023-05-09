@@ -43,6 +43,7 @@ dependencies:
   get : ^4.3.8
   flutter_web3: ^2.2.0-pre.7
   etherscan_api: ^1.0.0-beta
+  numberpicker: ^2.1.2
 
 dev_dependencies:
   flutter_test:

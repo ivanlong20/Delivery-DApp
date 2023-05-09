@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
             colorSchemeSeed: Color.fromARGB(255, 255, 197, 81),
           ),
-          home: const UserSelectionPage(title: 'Flutter Demo Home Page'),
+          home: const UserSelectionPage(title: 'Landing Page'),
         ));
   }
 }

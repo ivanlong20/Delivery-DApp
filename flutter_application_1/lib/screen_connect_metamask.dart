@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:web3dart/crypto.dart';
 import 'screen_home.dart';
 import 'etherscan_api.dart';
+import 'screen_user_selection.dart';
 // import 'package:web3dart/web3dart.dart';
 // import 'package:flutter_web3/flutter_web3.dart';
 
@@ -123,17 +124,17 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
       body: Center(
           child: (_session != null)
               ? Container(
-                  padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Account',
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 24),
@@ -149,7 +150,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         'Chain',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w600,
@@ -157,7 +158,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                       ),
                                       Text(
                                         getNetworkName(_session.chainId),
-                                        style: TextStyle(fontSize: 18),
+                                        style: const TextStyle(fontSize: 18),
                                       )
                                     ])
                                 // ],
@@ -205,40 +206,62 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                 ,
                               ],
                             ),
-                            SizedBox(height: 450),
+                            const SizedBox(height: 100),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                FilledButton(
+                                Column(children: [
+                                  TextButton(
                                     style: FilledButton.styleFrom(
-                                      minimumSize: Size(200, 50),
-                                      maximumSize: Size(250, 75),
+                                      minimumSize: const Size(200, 50),
+                                      maximumSize: const Size(250, 75),
                                       backgroundColor:
-                                          Color.fromARGB(255, 0, 0, 0),
+                                          const Color.fromARGB(255, 0, 0, 0),
                                     ),
-                                    onPressed: () {},
-                                    child: FloatingActionButton.extended(
-                                      backgroundColor: Colors.black,
-                                      onPressed: () async {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) {
-                                            return HomePage(
-                                              title: 'Ship',
-                                              connector: connector,
-                                              session: _session,
-                                            );
-                                          }),
-                                        );
-                                      },
-                                      label: Text(
-                                          style: TextStyle(
-                                              color: Color.fromRGBO(
-                                                  255, 255, 255, 1),
-                                              fontSize: 22,
-                                              fontWeight: FontWeight.w600),
-                                          'Login'),
-                                    ))
+                                    onPressed: () async {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) {
+                                          return HomePage(
+                                            title: 'Ship',
+                                            connector: connector,
+                                            session: _session,
+                                          );
+                                        }),
+                                      );
+                                    },
+                                    child: const Text(
+                                        style: TextStyle(
+                                            color: Color.fromRGBO(
+                                                255, 255, 255, 1),
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w600),
+                                        'Login'),
+                                  ),
+                                  const SizedBox(height: 30),
+                                  OutlinedButton(
+                                    style: FilledButton.styleFrom(
+                                      minimumSize: const Size(200, 50),
+                                      maximumSize: const Size(250, 75),
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) {
+                                          return const UserSelectionPage(
+                                              title: 'Landing Page');
+                                        }),
+                                      );
+                                    },
+                                    child: const Text(
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromRGBO(70, 70, 70, 1),
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w600),
+                                        'Back'),
+                                  )
+                                ])
                               ],
                             )
                           ],
@@ -246,12 +269,12 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                       ]))
               : FilledButton(
                   style: FilledButton.styleFrom(
-                      minimumSize: Size(100, 75),
-                      maximumSize: Size(350, 75),
-                      backgroundColor: Color.fromARGB(255, 0, 0, 0)),
+                      minimumSize: const Size(100, 75),
+                      maximumSize: const Size(350, 75),
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0)),
                   onPressed: () {},
                   child: FloatingActionButton.extended(
-                    label: Text(
+                    label: const Text(
                         style: TextStyle(
                             color: Color.fromRGBO(255, 255, 255, 1),
                             fontSize: 22,
