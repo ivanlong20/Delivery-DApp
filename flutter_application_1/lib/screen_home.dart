@@ -22,10 +22,6 @@ class _HomePageState extends State<HomePage> {
   TextEditingController textController = TextEditingController();
   int? _choiceIndex1;
   int? _choiceIndex2;
-  int _sizePickerIndex1 = 0;
-  int _sizePickerIndex2 = 0;
-  int _sizePickerIndex3 = 0;
-  int _weightPickerIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -119,29 +115,29 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
             child: Column(
               children: [
-                Row(children: [
-                  Text('Addresses',
+                const Row(children: [
+                  Text('Details',
                       style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
                       textAlign: TextAlign.left)
                 ]),
-                SizedBox(height: 20),
-                Row(children: [
+                const SizedBox(height: 30),
+                const Row(children: [
                   Text('From',
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700))
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w700))
                 ]),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
                 TextField(
                   maxLines: 1,
                   controller: textController,
                   decoration: InputDecoration(
-                      icon: Icon(Icons.pin_drop_outlined),
+                      icon: const Icon(Icons.pin_drop_outlined),
                       labelText: '  Enter Sender\'s address',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 25),
                 Container(
                     alignment: Alignment.topLeft,
                     child: Wrap(
@@ -160,23 +156,23 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(50)),
                           );
                         }))),
-                SizedBox(height: 20),
-                Row(children: [
+                const SizedBox(height: 20),
+                const Row(children: [
                   Text('To',
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700))
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w700))
                 ]),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
                 TextField(
                   maxLines: 1,
                   controller: textController,
                   decoration: InputDecoration(
-                      icon: Icon(Icons.pin_drop_outlined),
+                      icon: const Icon(Icons.flag),
                       labelText: '  Enter Receiver\'s address',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 25),
                 Container(
                     alignment: Alignment.topLeft,
                     child: Wrap(
@@ -195,51 +191,20 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(50)),
                           );
                         }))),
-                SizedBox(height: 10),
-                Row(children: [
-                  Text('Item Details',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-                      textAlign: TextAlign.left)
-                ]),
-                Row(children: [
-                  Text('Size',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700))
-                ]),
-                Row(
-                  children: [
-                    NumberPicker(
-                      value: _sizePickerIndex1,
-                      minValue: 0,
-                      maxValue: 100,
-                      onChanged: (value) =>
-                          setState(() => _sizePickerIndex1 = value),
-                    ),
-                    NumberPicker(
-                      value: _sizePickerIndex2,
-                      minValue: 0,
-                      maxValue: 100,
-                      onChanged: (value) =>
-                          setState(() => _sizePickerIndex2 = value),
-                    ),
-                    NumberPicker(
-                      value: _sizePickerIndex3,
-                      minValue: 0,
-                      maxValue: 100,
-                      onChanged: (value) =>
-                          setState(() => _sizePickerIndex3 = value),
-                    )
-                  ],
-                ),
-                Row(children: [
-                  Text('Weight',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w700))
-                ]),
-                Row(
-                  children: [],
-                )
+                const SizedBox(height: 50),
+                FilledButton(
+                    style: FilledButton.styleFrom(minimumSize: Size(400, 60)),
+                    onPressed: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ItemInfoPage(
+                                    title: 'Item Details',
+                                    session: widget.session,
+                                    connector: widget.connector)),
+                          )
+                        },
+                    child: Text('Next', style: TextStyle(fontSize: 18)))
               ],
             )));
   }
@@ -286,5 +251,134 @@ class _HomePageState extends State<HomePage> {
               session: widget.session,
               connector: widget.connector)),
     );
+  }
+}
+
+class ItemInfoPage extends StatefulWidget {
+  final String title;
+  final session, connector;
+  ItemInfoPage(
+      {Key? key,
+      required this.title,
+      required this.session,
+      required this.connector})
+      : super(key: key);
+  @override
+  State<ItemInfoPage> createState() => _ItemInfoPageState();
+}
+
+class _ItemInfoPageState extends State<ItemInfoPage> {
+  int _sizePickerIndex1 = 0;
+  int _sizePickerIndex2 = 0;
+  int _sizePickerIndex3 = 0;
+  double _weightPickerIndex = 0.0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Padding(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                const Row(children: [
+                  Text('Dimension',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+                ]),
+                SizedBox(
+                  height: 10,
+                ),
+                const Row(children: [
+                  SizedBox(
+                    width: 50,
+                  ),
+                  Text(
+                    'H    ',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(
+                    width: 72,
+                  ),
+                  Text(
+                    'W  ',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(
+                    width: 80,
+                  ),
+                  Text(
+                    ' D',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  )
+                ]),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    NumberPicker(
+                      value: _sizePickerIndex1,
+                      minValue: 0,
+                      maxValue: 100,
+                      onChanged: (value) =>
+                          setState(() => _sizePickerIndex1 = value),
+                    ),
+                    Text(
+                      'X',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                    NumberPicker(
+                      value: _sizePickerIndex2,
+                      minValue: 0,
+                      maxValue: 100,
+                      onChanged: (value) =>
+                          setState(() => _sizePickerIndex2 = value),
+                    ),
+                    Text(
+                      'X',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                    NumberPicker(
+                      value: _sizePickerIndex3,
+                      minValue: 0,
+                      maxValue: 100,
+                      onChanged: (value) =>
+                          setState(() => _sizePickerIndex3 = value),
+                    ),
+                    Text('Cm',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(children: [
+                  Text('Weight',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+                ]),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    DecimalNumberPicker(
+                      value: _weightPickerIndex,
+                      minValue: 0,
+                      maxValue: 100,
+                      onChanged: (value) =>
+                          setState(() => _weightPickerIndex = value),
+                    ),
+                    Text('Kg',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                )
+              ],
+            )));
   }
 }

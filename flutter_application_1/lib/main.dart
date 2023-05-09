@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             fontFamily: 'Montserrat',
             useMaterial3: true,
-            colorSchemeSeed: Color.fromARGB(255, 255, 197, 81),
+            colorSchemeSeed: Color.fromARGB(255, 44, 166, 248),
           ),
           home: const UserSelectionPage(title: 'Landing Page'),
         ));
