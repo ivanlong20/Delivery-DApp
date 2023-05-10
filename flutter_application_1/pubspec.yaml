@@ -44,6 +44,7 @@ dependencies:
   flutter_web3: ^2.2.0-pre.7
   etherscan_api: ^1.0.0-beta
   numberpicker: ^2.1.2
+  coingecko_api: ^1.1.0
 
 dev_dependencies:
   flutter_test:

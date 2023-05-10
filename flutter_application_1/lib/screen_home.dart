@@ -5,6 +5,16 @@ import 'screen_wallet.dart';
 import 'screen_order.dart';
 import 'screen_message.dart';
 
+final eth = getEthereumPrice();
+TextEditingController textController1 = TextEditingController();
+TextEditingController textController2 = TextEditingController();
+int? _choiceIndex1;
+int? _choiceIndex2;
+int _sizePickerIndex1 = 0;
+int _sizePickerIndex2 = 0;
+int _sizePickerIndex3 = 0;
+double _weightPickerIndex = 0.0;
+
 class HomePage extends StatefulWidget {
   final String title;
   final session, connector;
@@ -19,10 +29,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController textController = TextEditingController();
-  int? _choiceIndex1;
-  int? _choiceIndex2;
-
   @override
   Widget build(BuildContext context) {
     final address = widget.session.accounts[0].toString();
@@ -115,29 +121,30 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
             child: Column(
               children: [
+                const SizedBox(height: 10),
                 const Row(children: [
                   Text('Details',
                       style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
                       textAlign: TextAlign.left)
                 ]),
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
                 const Row(children: [
                   Text('From',
                       style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w700))
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
                 ]),
                 const SizedBox(height: 20),
                 TextField(
                   maxLines: 1,
-                  controller: textController,
+                  controller: textController1,
                   decoration: InputDecoration(
                       icon: const Icon(Icons.pin_drop_outlined),
                       labelText: '  Enter Sender\'s address',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 19),
                 Container(
                     alignment: Alignment.topLeft,
                     child: Wrap(
@@ -160,19 +167,19 @@ class _HomePageState extends State<HomePage> {
                 const Row(children: [
                   Text('To',
                       style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w700))
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
                 ]),
                 const SizedBox(height: 20),
                 TextField(
                   maxLines: 1,
-                  controller: textController,
+                  controller: textController2,
                   decoration: InputDecoration(
                       icon: const Icon(Icons.flag),
                       labelText: '  Enter Receiver\'s address',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 20),
                 Container(
                     alignment: Alignment.topLeft,
                     child: Wrap(
@@ -191,9 +198,9 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(50)),
                           );
                         }))),
-                const SizedBox(height: 50),
+                const SizedBox(height: 45),
                 FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: Size(400, 60)),
+                    style: FilledButton.styleFrom(minimumSize: Size(450, 60)),
                     onPressed: () => {
                           Navigator.push(
                             context,
@@ -204,7 +211,9 @@ class _HomePageState extends State<HomePage> {
                                     connector: widget.connector)),
                           )
                         },
-                    child: Text('Next', style: TextStyle(fontSize: 18)))
+                    child: Text('Continue',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600)))
               ],
             )));
   }
@@ -268,12 +277,48 @@ class ItemInfoPage extends StatefulWidget {
 }
 
 class _ItemInfoPageState extends State<ItemInfoPage> {
-  int _sizePickerIndex1 = 0;
-  int _sizePickerIndex2 = 0;
-  int _sizePickerIndex3 = 0;
-  double _weightPickerIndex = 0.0;
   @override
   Widget build(BuildContext context) {
+    final ethPrice = eth;
+
+    calculateFee(width, height, depth, weight, ethPrice) async {
+      double fee = await ethPrice;
+      double deliveryFee = 0;
+      //40 HKD for first 1kg, 15 HKD for each additional 1kg, then convert to ETH
+      if (width * height * depth / 5000 > weight) {
+        if (width * height * depth / 5000 < 1) {
+          deliveryFee = 40 / fee;
+        } else {
+          deliveryFee = ((40 / (fee)) +
+              (((width * height * depth / 5000) - 1) / 0.5).ceil() *
+                  (7.5 / (fee)));
+        }
+      } else {
+        if (weight < 1) {
+          deliveryFee = 40 / fee;
+        } else {
+          deliveryFee =
+              ((40 / (fee)) + ((weight - 1) / 0.5).ceil() * (7.5 / (fee)));
+        }
+      }
+      return deliveryFee;
+    }
+
+    getETHPrice() async {
+      double fee = 0;
+      fee = await ethPrice;
+      return fee;
+    }
+
+    convertFeeToHKD() async {
+      double eth = await getETHPrice();
+      double HKD = 0;
+      HKD = await calculateFee(_sizePickerIndex1, _sizePickerIndex2,
+              _sizePickerIndex3, _weightPickerIndex, eth) *
+          eth;
+      return HKD;
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -322,7 +367,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     NumberPicker(
                       value: _sizePickerIndex1,
                       minValue: 0,
-                      maxValue: 100,
+                      maxValue: 300,
                       onChanged: (value) =>
                           setState(() => _sizePickerIndex1 = value),
                     ),
@@ -334,7 +379,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     NumberPicker(
                       value: _sizePickerIndex2,
                       minValue: 0,
-                      maxValue: 100,
+                      maxValue: 300,
                       onChanged: (value) =>
                           setState(() => _sizePickerIndex2 = value),
                     ),
@@ -346,7 +391,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     NumberPicker(
                       value: _sizePickerIndex3,
                       minValue: 0,
-                      maxValue: 100,
+                      maxValue: 300,
                       onChanged: (value) =>
                           setState(() => _sizePickerIndex3 = value),
                     ),
@@ -363,22 +408,148 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
                 ]),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  DecimalNumberPicker(
+                    value: _weightPickerIndex,
+                    minValue: 0,
+                    maxValue: 500,
+                    onChanged: (value) =>
+                        setState(() => _weightPickerIndex = value),
+                  ),
+                  Text('Kg',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+                ]),
+                SizedBox(
+                  height: 10,
+                ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    DecimalNumberPicker(
-                      value: _weightPickerIndex,
-                      minValue: 0,
-                      maxValue: 100,
-                      onChanged: (value) =>
-                          setState(() => _weightPickerIndex = value),
-                    ),
-                    Text('Kg',
+                    Text('Estimated Fee',
                         style: TextStyle(
                             fontSize: 24, fontWeight: FontWeight.w600))
                   ],
-                )
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FutureBuilder<dynamic>(
+                        future: calculateFee(
+                            _sizePickerIndex1,
+                            _sizePickerIndex2,
+                            _sizePickerIndex3,
+                            _weightPickerIndex,
+                            ethPrice),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasData) {
+                            var price = snapshot.data;
+                            return Text(
+                              price.toStringAsFixed(8),
+                              style: const TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          } else {
+                            return const Text(
+                              '0',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                        }),
+                    Text(' ETH',
+                        style: TextStyle(
+                            fontSize: 32, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('≈',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FutureBuilder<dynamic>(
+                        future: convertFeeToHKD(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.hasData) {
+                            var price = snapshot.data;
+                            return Text(
+                              price.toStringAsFixed(2),
+                              style: const TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w600),
+                            );
+                          } else {
+                            return const Text(
+                              '0',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 0, 0, 0),
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w600),
+                            );
+                          }
+                        }),
+                    Text(' HKD',
+                        style: TextStyle(
+                            fontSize: 28, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                const SizedBox(height: 40),
+                FilledButton(
+                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                    onPressed: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => PaymentPage(
+                                    title: 'Payment Details',
+                                    session: widget.session,
+                                    connector: widget.connector)),
+                          )
+                        },
+                    child: Text('Next', style: TextStyle(fontSize: 18)))
               ],
             )));
+  }
+}
+
+class PaymentPage extends StatefulWidget {
+  final String title;
+  final session, connector;
+  PaymentPage(
+      {Key? key,
+      required this.title,
+      required this.session,
+      required this.connector})
+      : super(key: key);
+  @override
+  State<PaymentPage> createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Padding(
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [Text('Payment Page')])),
+    );
   }
 }
