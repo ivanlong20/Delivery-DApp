@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:icon_forest/system_uicons.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'etherscan_api.dart';
 import 'screen_wallet.dart';
@@ -10,10 +11,59 @@ TextEditingController textController1 = TextEditingController();
 TextEditingController textController2 = TextEditingController();
 int? _choiceIndex1;
 int? _choiceIndex2;
+TextEditingController textController3 = TextEditingController();
+
 int _sizePickerIndex1 = 0;
 int _sizePickerIndex2 = 0;
 int _sizePickerIndex3 = 0;
 double _weightPickerIndex = 0.0;
+TextEditingController textController4 = TextEditingController();
+int? _choiceIndex3;
+TextEditingController textController5 = TextEditingController();
+
+var priceSender, priceReceiver;
+
+calculateFee(width, height, depth, weight, ethPrice) async {
+  double fee = await ethPrice;
+  double deliveryFee = 0;
+  //40 HKD for first 1kg, 15 HKD for each additional 1kg, then convert to ETH
+  if (width * height * depth / 150000 > weight) {
+    if (width * height * depth / 150000 < 1) {
+      deliveryFee = 40 / fee;
+    } else {
+      deliveryFee = ((40 / (fee)) +
+          (((width * height * depth / 150000) - 1) / 0.5).ceil() *
+              (7.5 / (fee)));
+    }
+  } else {
+    if (weight < 1) {
+      deliveryFee = 40 / fee;
+    } else {
+      deliveryFee =
+          ((40 / (fee)) + ((weight - 1) / 0.5).ceil() * (7.5 / (fee)));
+    }
+  }
+  return deliveryFee;
+}
+
+getProductAmount() {
+  return textController5.text;
+}
+
+combineAllFee(deliveryFee, ethPrice) async {
+  double eth = await ethPrice;
+  double dFee = await deliveryFee;
+  double pFee = 0;
+  if (getProductAmount() != '') {
+    pFee = double.parse(getProductAmount());
+  } else {
+    pFee = 0;
+  }
+  var fee = dFee + pFee / eth;
+  return fee;
+}
+
+//Shipping Home Page
 
 class HomePage extends StatefulWidget {
   final String title;
@@ -121,21 +171,25 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
             child: Column(
               children: [
-                const SizedBox(height: 10),
                 const Row(children: [
                   Text('Details',
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
                       textAlign: TextAlign.left)
                 ]),
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
                 const Row(children: [
                   Text('From',
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
                 ]),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      textController1.text = text;
+                    });
+                  },
                   maxLines: 1,
                   controller: textController1,
                   decoration: InputDecoration(
@@ -144,7 +198,7 @@ class _HomePageState extends State<HomePage> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
-                const SizedBox(height: 19),
+                const SizedBox(height: 15),
                 Container(
                     alignment: Alignment.topLeft,
                     child: Wrap(
@@ -169,8 +223,13 @@ class _HomePageState extends State<HomePage> {
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
                 ]),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      textController2.text = text;
+                    });
+                  },
                   maxLines: 1,
                   controller: textController2,
                   decoration: InputDecoration(
@@ -179,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 Container(
                     alignment: Alignment.topLeft,
                     child: Wrap(
@@ -198,9 +257,34 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(50)),
                           );
                         }))),
-                const SizedBox(height: 45),
+                SizedBox(
+                  height: 20,
+                ),
+                const Row(children: [
+                  Text('Package Information',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+                ]),
+                SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      textController3.text = text;
+                    });
+                  },
+                  maxLines: 1,
+                  controller: textController3,
+                  decoration: InputDecoration(
+                      icon: const SystemUicons(SystemUicons.book_closed),
+                      labelText: 'What\'s in your package?',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30))),
+                ),
+                const SizedBox(height: 30),
                 FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: Size(450, 60)),
+                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
                     onPressed: () => {
                           Navigator.push(
                             context,
@@ -211,9 +295,7 @@ class _HomePageState extends State<HomePage> {
                                     connector: widget.connector)),
                           )
                         },
-                    child: Text('Continue',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w600)))
+                    child: Text('Continue', style: TextStyle(fontSize: 18)))
               ],
             )));
   }
@@ -262,6 +344,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+//
+
+//Item Information Page
 
 class ItemInfoPage extends StatefulWidget {
   final String title;
@@ -281,37 +366,8 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
   Widget build(BuildContext context) {
     final ethPrice = eth;
 
-    calculateFee(width, height, depth, weight, ethPrice) async {
-      double fee = await ethPrice;
-      double deliveryFee = 0;
-      //40 HKD for first 1kg, 15 HKD for each additional 1kg, then convert to ETH
-      if (width * height * depth / 5000 > weight) {
-        if (width * height * depth / 5000 < 1) {
-          deliveryFee = 40 / fee;
-        } else {
-          deliveryFee = ((40 / (fee)) +
-              (((width * height * depth / 5000) - 1) / 0.5).ceil() *
-                  (7.5 / (fee)));
-        }
-      } else {
-        if (weight < 1) {
-          deliveryFee = 40 / fee;
-        } else {
-          deliveryFee =
-              ((40 / (fee)) + ((weight - 1) / 0.5).ceil() * (7.5 / (fee)));
-        }
-      }
-      return deliveryFee;
-    }
-
-    getETHPrice() async {
-      double fee = 0;
-      fee = await ethPrice;
-      return fee;
-    }
-
     convertFeeToHKD() async {
-      double eth = await getETHPrice();
+      double eth = await ethPrice;
       double HKD = 0;
       HKD = await calculateFee(_sizePickerIndex1, _sizePickerIndex2,
               _sizePickerIndex3, _weightPickerIndex, eth) *
@@ -367,7 +423,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     NumberPicker(
                       value: _sizePickerIndex1,
                       minValue: 0,
-                      maxValue: 300,
+                      maxValue: 150,
                       onChanged: (value) =>
                           setState(() => _sizePickerIndex1 = value),
                     ),
@@ -379,7 +435,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     NumberPicker(
                       value: _sizePickerIndex2,
                       minValue: 0,
-                      maxValue: 300,
+                      maxValue: 150,
                       onChanged: (value) =>
                           setState(() => _sizePickerIndex2 = value),
                     ),
@@ -391,7 +447,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     NumberPicker(
                       value: _sizePickerIndex3,
                       minValue: 0,
-                      maxValue: 300,
+                      maxValue: 150,
                       onChanged: (value) =>
                           setState(() => _sizePickerIndex3 = value),
                     ),
@@ -412,7 +468,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                   DecimalNumberPicker(
                     value: _weightPickerIndex,
                     minValue: 0,
-                    maxValue: 500,
+                    maxValue: 50,
                     onChanged: (value) =>
                         setState(() => _weightPickerIndex = value),
                   ),
@@ -506,7 +562,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                             fontSize: 28, fontWeight: FontWeight.w600))
                   ],
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
                 FilledButton(
                     style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
                     onPressed: () => {
@@ -525,6 +581,10 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
   }
 }
 
+//
+
+//Payment Page
+
 class PaymentPage extends StatefulWidget {
   final String title;
   final session, connector;
@@ -539,6 +599,9 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+  final ethPrice = eth;
+  List<String> payerList = ['Sender', 'Receiver'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -547,9 +610,216 @@ class _PaymentPageState extends State<PaymentPage> {
       ),
       body: Padding(
           padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [Text('Payment Page')])),
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            Row(
+              children: [
+                Text('Receiver\'s Wallet Address',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+              ],
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              onChanged: (text) {
+                setState(() {
+                  textController4.text = text;
+                });
+              },
+              maxLines: 1,
+              controller: textController4,
+              decoration: InputDecoration(
+                  icon: const Icon(Icons.wallet),
+                  labelText: 'i.e. 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30))),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text('Paid By',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+                alignment: Alignment.topLeft,
+                child: Wrap(
+                    spacing: 5,
+                    children: List<Widget>.generate(2, (int index) {
+                      return ChoiceChip(
+                        label: Text(payerList[index]),
+                        selected: _choiceIndex3 == index,
+                        selectedColor: Color.fromARGB(255, 221, 221, 221),
+                        onSelected: (bool selected) {
+                          setState(() {
+                            _choiceIndex3 = selected ? index : null;
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50)),
+                      );
+                    }))),
+            const SizedBox(height: 20),
+            (_choiceIndex3 == 1)
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          Text('Additional Product Amount',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w600))
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        onChanged: (text) {
+                          setState(() {
+                            textController5.text = text;
+                          });
+                        },
+                        maxLines: 1,
+                        controller: textController5,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                            icon: const Icon(Icons.attach_money),
+                            labelText: ' HKD',
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30))),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Text(
+                            'Total Amount',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          FutureBuilder<dynamic>(
+                              future: combineAllFee(
+                                  calculateFee(
+                                      _sizePickerIndex1,
+                                      _sizePickerIndex2,
+                                      _sizePickerIndex3,
+                                      _weightPickerIndex,
+                                      ethPrice),
+                                  ethPrice),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  priceReceiver = snapshot.data;
+                                  return Text(
+                                    priceReceiver.toStringAsFixed(8),
+                                    style: const TextStyle(
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w700),
+                                  );
+                                } else {
+                                  return const Text(
+                                    '0',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w700),
+                                  );
+                                }
+                              }),
+                          Text(' ETH',
+                              style: TextStyle(
+                                  fontSize: 32, fontWeight: FontWeight.w700)),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                      FilledButton(
+                          style: FilledButton.styleFrom(
+                              minimumSize: Size(400, 50)),
+                          onPressed: () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PaymentPage(
+                                          title: 'Payment Details',
+                                          session: widget.session,
+                                          connector: widget.connector)),
+                                )
+                              },
+                          child:
+                              Text('Confirm', style: TextStyle(fontSize: 18)))
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Total Amount',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          FutureBuilder<dynamic>(
+                              future: calculateFee(
+                                  _sizePickerIndex1,
+                                  _sizePickerIndex2,
+                                  _sizePickerIndex3,
+                                  _weightPickerIndex,
+                                  ethPrice),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<dynamic> snapshot) {
+                                if (snapshot.hasData) {
+                                  priceSender = snapshot.data;
+                                  return Text(
+                                    priceSender.toStringAsFixed(8),
+                                    style: const TextStyle(
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w700),
+                                  );
+                                } else {
+                                  return const Text(
+                                    '0',
+                                    style: TextStyle(
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w700),
+                                  );
+                                }
+                              }),
+                          Text(' ETH',
+                              style: TextStyle(
+                                  fontSize: 32, fontWeight: FontWeight.w700)),
+                        ],
+                      ),
+                      const SizedBox(height: 40),
+                      FilledButton(
+                          style: FilledButton.styleFrom(
+                              minimumSize: Size(400, 50)),
+                          onPressed: () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PaymentPage(
+                                          title: 'Payment Details',
+                                          session: widget.session,
+                                          connector: widget.connector)),
+                                )
+                              },
+                          child: Text('Pay', style: TextStyle(fontSize: 18)))
+                    ],
+                  )
+          ])),
     );
   }
 }
+
+//
