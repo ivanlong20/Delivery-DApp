@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
 import 'screen_wallet.dart';
 import 'screen_message.dart';
 import 'etherscan_api.dart';
+import 'screen_connect_metamask.dart';
+
+final finalBalance = getBalance(getAddress());
 
 class OrderPage extends StatefulWidget {
   final String title;
@@ -20,15 +24,18 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
-    final address = widget.session.accounts[0].toString();
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      backgroundColor: Color.fromARGB(255, 240, 240, 240),
+      appBar: AppBar(
+        title: Text(widget.title),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      ),
       drawer: Drawer(
         child: ListView(
           children: <Widget>[
             DrawerHeader(
                 child: Column(children: [
-              Row(children: [
+              const Row(children: [
                 Text(
                   'Balance',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
@@ -36,7 +43,7 @@ class _OrderPageState extends State<OrderPage> {
               ]),
               Row(children: [
                 FutureBuilder<dynamic>(
-                    future: getBalance(address),
+                    future: finalBalance,
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
@@ -44,13 +51,13 @@ class _OrderPageState extends State<OrderPage> {
                             (1 / 1000000000000000000);
                         return Text(
                           balance.toStringAsFixed(5),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontSize: 36,
                           ),
                         );
                       } else {
-                        return Text(
+                        return const Text(
                           '0',
                           style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
@@ -59,7 +66,7 @@ class _OrderPageState extends State<OrderPage> {
                         );
                       }
                     }),
-                Text(' ETH',
+                const Text(' ETH',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
@@ -71,7 +78,7 @@ class _OrderPageState extends State<OrderPage> {
                       widget.connector.connected
                           ? getNetworkName(widget.session.chainId)
                           : 'Not Connected',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0),
                         fontSize: 16,
                       ))
@@ -79,43 +86,27 @@ class _OrderPageState extends State<OrderPage> {
               )
             ])),
             ListTile(
-              leading: Icon(Icons.local_shipping_rounded),
-              title: Text('Ship'),
+              leading: const Icon(Icons.local_shipping_rounded),
+              title: const Text('Ship'),
               onTap: openHomePage,
             ),
             ListTile(
-                leading: Icon(Icons.history),
-                title: Text('Order Tracking & History'),
+                leading: const Icon(Icons.history),
+                title: const Text('Order Tracking & History'),
                 onTap: openOrderPage),
             ListTile(
-              leading: Icon(Icons.message),
-              title: Text('Message'),
+              leading: const Icon(Icons.message),
+              title: const Text('Message'),
               onTap: openMessagePage,
             ),
             ListTile(
-                leading: Icon(Icons.wallet),
-                title: Text('Wallet'),
+                leading: const Icon(Icons.wallet),
+                title: const Text('Wallet'),
                 onTap: openWalletPage),
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          // children: [
-          //   FutureBuilder(
-          //     future: getBalance(widget.session.accounts[0].toString()),
-          //     builder: (context, snapshot) {
-          //       if (snapshot.hasData) {
-          //         return Text('Balance: ${snapshot.data}');
-          //       } else {
-          //         return Text('Loading...');
-          //       }
-          //     },
-          //   ),
-          // ],
-        ),
-      ),
+      body: TransactionListView(),
     );
   }
 
@@ -161,5 +152,270 @@ class _OrderPageState extends State<OrderPage> {
               session: widget.session,
               connector: widget.connector)),
     );
+  }
+}
+
+class TransactionListView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      itemCount: 10,
+      itemBuilder: (BuildContext context, int index) {
+        return InkWell(
+            onTap: () {
+              enterTransactionDetailsPage(index, context);
+            },
+            child: Container(
+                decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 255, 255, 255)),
+                    borderRadius: BorderRadius.circular(20)),
+                height: 150,
+                child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 10, 5, 5),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Order #123456',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(width: 170),
+                            Text(
+                              '13/4/2023',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Sender\'s Address',
+                                style: TextStyle(fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [FaIcon(FontAwesomeIcons.arrowDownLong)],
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Receiver\'s Address',
+                                style: TextStyle(fontWeight: FontWeight.w600))
+                          ],
+                        ),
+                        SizedBox(
+                          height: 7,
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              'Status: Pending',
+                              style: TextStyle(fontWeight: FontWeight.w800),
+                            )
+                          ],
+                        )
+                      ],
+                    ))));
+      },
+      separatorBuilder: (BuildContext context, int index) =>
+          const SizedBox(height: 20),
+    );
+  }
+
+  enterTransactionDetailsPage(index, context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              TransactionDetailsPage(title: 'Details', index: index)),
+    );
+  }
+}
+
+class TransactionDetailsPage extends StatefulWidget {
+  final String title;
+  final index;
+  TransactionDetailsPage({Key? key, required this.title, required this.index})
+      : super(key: key);
+  @override
+  State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
+}
+
+class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
+  @override
+  Widget build(BuildContext context) {
+    var index = widget.index;
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        ),
+        body: Padding(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('Order #123456',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(children: [
+                  Text('Date: ',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                  Text('13/4/2023',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
+                ]),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Text('From',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text('Address',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Text('To',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text('Address',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Text('Amount',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text('0.2' + ' ETH',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Text('Parcel Information',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text(
+                            'Contents: ' +
+                                'Mobile Phone, Documents, Clothes, Shoes, etc.',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text(
+                            'Size: ' + 'w' + ' x ' + 'h' + ' x ' + 'l' + ' cm',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text('Weight: ' + '10.5' + ' Kg',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text('Status',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text('Pending',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                        child: Text('Parcel Location',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600)))
+                  ],
+                ),
+                Text(index.toString()),
+              ],
+            )));
   }
 }

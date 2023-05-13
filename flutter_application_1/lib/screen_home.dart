@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:icon_forest/system_uicons.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'etherscan_api.dart';
 import 'screen_wallet.dart';
 import 'screen_order.dart';
 import 'screen_message.dart';
+import 'screen_connect_metamask.dart';
+
+final finalBalance = getBalance(getAddress());
 
 final eth = getEthereumPrice();
 TextEditingController textController1 = TextEditingController();
@@ -81,7 +84,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final address = widget.session.accounts[0].toString();
     List<String> district = [
       'Hong Kong',
       'Kowloon',
@@ -105,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                 ]),
                 Row(children: [
                   FutureBuilder<dynamic>(
-                      future: getBalance(address),
+                      future: finalBalance,
                       builder: (BuildContext context,
                           AsyncSnapshot<dynamic> snapshot) {
                         if (snapshot.hasData) {
@@ -277,7 +279,7 @@ class _HomePageState extends State<HomePage> {
                   maxLines: 1,
                   controller: textController3,
                   decoration: InputDecoration(
-                      icon: const SystemUicons(SystemUicons.book_closed),
+                      icon: const FaIcon(FontAwesomeIcons.box),
                       labelText: 'What\'s in your package?',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),

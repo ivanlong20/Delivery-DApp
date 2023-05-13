@@ -44,7 +44,7 @@ dependencies:
   etherscan_api: ^1.0.0-beta
   numberpicker: ^2.1.2
   coingecko_api: ^1.1.0
-  icon_forest: ^1.1.8
+  font_awesome_flutter: ^10.4.0
 
 dev_dependencies:
   flutter_test:

@@ -23,6 +23,7 @@ getBalance(address) async {
   if (result != null) {
     balance = result[0].balance;
   }
+  print(balance);
   return balance;
 }
 

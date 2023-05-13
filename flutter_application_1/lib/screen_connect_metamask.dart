@@ -9,6 +9,12 @@ import 'etherscan_api.dart';
 import 'screen_user_selection.dart';
 // import 'package:web3dart/web3dart.dart';
 // import 'package:flutter_web3/flutter_web3.dart';
+var _signature, _session, _uri;
+
+getAddress(){
+  return _session.accounts[0].toString();
+}
+
 
 class ConnectMetamaskPage extends StatefulWidget {
   const ConnectMetamaskPage({super.key, required this.title});
@@ -18,7 +24,6 @@ class ConnectMetamaskPage extends StatefulWidget {
 }
 
 class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
-  var _signature, _session, _uri;
   var connector = WalletConnect(
       bridge: 'https://bridge.walletconnect.org',
       clientMeta: const PeerMeta(

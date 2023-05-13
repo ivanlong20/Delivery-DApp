@@ -105,14 +105,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.0"
-  cupertino_icons:
-    dependency: transitive
-    description:
-      name: cupertino_icons
-      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   dartz:
     dependency: transitive
     description:
@@ -224,6 +216,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  font_awesome_flutter:
+    dependency: "direct main"
+    description:
+      name: font_awesome_flutter
+      sha256: "959ef4add147753f990b4a7c6cccb746d5792dbdc81b1cde99e62e7edb31b206"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.4.0"
   get:
     dependency: "direct main"
     description:
@@ -248,14 +248,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
-  icon_forest:
-    dependency: "direct main"
-    description:
-      name: icon_forest
-      sha256: "132eb91f72dea9e0eef15c4914e068cd79f9683c6efe890c43044ba8452eda62"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.8"
   infinite_listview:
     dependency: transitive
     description:

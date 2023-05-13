@@ -3,6 +3,9 @@ import 'screen_home.dart';
 import 'screen_order.dart';
 import 'screen_wallet.dart';
 import 'etherscan_api.dart';
+import 'screen_connect_metamask.dart';
+
+final finalBalance = getBalance(getAddress());
 
 class MessagePage extends StatefulWidget {
   final String title;
@@ -20,7 +23,6 @@ class MessagePage extends StatefulWidget {
 class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
-    final address = widget.session.accounts[0].toString();
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       drawer: Drawer(
@@ -36,7 +38,7 @@ class _MessagePageState extends State<MessagePage> {
               ]),
               Row(children: [
                 FutureBuilder<dynamic>(
-                    future: getBalance(address),
+                    future: finalBalance,
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
@@ -84,10 +86,9 @@ class _MessagePageState extends State<MessagePage> {
               onTap: openHomePage,
             ),
             ListTile(
-              leading: Icon(Icons.history),
-              title: Text('Order Tracking & History'),
-              onTap: openOrderPage
-            ),
+                leading: Icon(Icons.history),
+                title: Text('Order Tracking & History'),
+                onTap: openOrderPage),
             ListTile(
               leading: Icon(Icons.message),
               title: Text('Message'),
