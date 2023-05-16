@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'etherscan_api.dart';
+import '../etherscan_api.dart';
 import 'screen_wallet.dart';
 import 'screen_order.dart';
 import 'screen_message.dart';
-import 'screen_connect_metamask.dart';
+import '../screen_connect_metamask.dart';
+import '../screen_user_selection.dart';
 
 final finalBalance = getBalance(getAddress());
 
@@ -70,7 +71,7 @@ combineAllFee(deliveryFee, ethPrice) async {
 
 class HomePage extends StatefulWidget {
   final String title;
-  final session, connector;
+  var session, connector;
   HomePage(
       {Key? key,
       required this.title,
@@ -151,7 +152,7 @@ class _HomePageState extends State<HomePage> {
               ])),
               ListTile(
                 leading: const Icon(Icons.local_shipping_rounded),
-                title: const Text('Ship'),
+                title: const Text('Send Package'),
                 onTap: openHomePage,
               ),
               ListTile(
@@ -166,6 +167,10 @@ class _HomePageState extends State<HomePage> {
                   leading: const Icon(Icons.wallet),
                   title: const Text('Wallet'),
                   onTap: openWalletPage),
+              ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
+                  onTap: logout)
             ],
           ),
         ),
@@ -174,9 +179,9 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 const Row(children: [
-                  Text('Details',
+                  Text('Shipping Details',
                       style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                       textAlign: TextAlign.left)
                 ]),
                 const SizedBox(height: 20),
@@ -185,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
                 ]),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 TextField(
                   onChanged: (text) {
                     setState(() {
@@ -219,13 +224,13 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(50)),
                           );
                         }))),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 const Row(children: [
                   Text('To',
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
                 ]),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 TextField(
                   onChanged: (text) {
                     setState(() {
@@ -343,6 +348,19 @@ class _HomePageState extends State<HomePage> {
               title: 'Message',
               session: widget.session,
               connector: widget.connector)),
+    );
+  }
+
+  logout() {
+    widget.connector.on(
+        'disconnect',
+        (payload) => setState(() {
+              widget.session = null;
+            }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UserSelectionPage(title: 'Landing Page')),
     );
   }
 }

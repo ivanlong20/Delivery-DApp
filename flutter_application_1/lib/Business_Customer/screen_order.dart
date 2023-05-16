@@ -3,14 +3,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
 import 'screen_wallet.dart';
 import 'screen_message.dart';
-import 'etherscan_api.dart';
-import 'screen_connect_metamask.dart';
+import '../etherscan_api.dart';
+import '../screen_connect_metamask.dart';
+import '../screen_user_selection.dart';
+
 
 final finalBalance = getBalance(getAddress());
 
 class OrderPage extends StatefulWidget {
   final String title;
-  final session, connector;
+  var session, connector;
   OrderPage(
       {Key? key,
       required this.title,
@@ -87,7 +89,7 @@ class _OrderPageState extends State<OrderPage> {
             ])),
             ListTile(
               leading: const Icon(Icons.local_shipping_rounded),
-              title: const Text('Ship'),
+              title: const Text('Send Package'),
               onTap: openHomePage,
             ),
             ListTile(
@@ -102,7 +104,10 @@ class _OrderPageState extends State<OrderPage> {
             ListTile(
                 leading: const Icon(Icons.wallet),
                 title: const Text('Wallet'),
-                onTap: openWalletPage),
+                onTap: openWalletPage),ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
+                  onTap: logout)
           ],
         ),
       ),
@@ -126,7 +131,7 @@ class _OrderPageState extends State<OrderPage> {
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-              title: 'Ship',
+              title: 'Send Package',
               session: widget.session,
               connector: widget.connector)),
     );
@@ -151,6 +156,20 @@ class _OrderPageState extends State<OrderPage> {
               title: 'Message',
               session: widget.session,
               connector: widget.connector)),
+    );
+    
+  }
+
+   logout() {
+    widget.connector.on(
+        'disconnect',
+        (payload) => setState(() {
+              widget.session = null;
+            }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UserSelectionPage(title: 'Landing Page')),
     );
   }
 }
