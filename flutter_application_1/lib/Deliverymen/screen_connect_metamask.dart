@@ -4,17 +4,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:web3dart/crypto.dart';
-import 'Business_Customer/screen_home.dart';
-import 'etherscan_api.dart';
-import 'screen_user_selection.dart';
+import 'screen_home.dart';
+import '../etherscan_api.dart';
+import '../screen_user_selection.dart';
+
 // import 'package:web3dart/web3dart.dart';
 // import 'package:flutter_web3/flutter_web3.dart';
 var _signature, _session, _uri;
 
-getAddress(){
+getAddress() {
   return _session.accounts[0].toString();
 }
-
 
 class ConnectMetamaskPage extends StatefulWidget {
   const ConnectMetamaskPage({super.key, required this.title});
@@ -228,7 +228,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                         context,
                                         MaterialPageRoute(builder: (context) {
                                           return HomePage(
-                                            title: 'Send Package',
+                                            title: 'Avaiable Orders',
                                             connector: connector,
                                             session: _session,
                                           );

@@ -5,7 +5,7 @@ import '../etherscan_api.dart';
 import 'screen_wallet.dart';
 import 'screen_order.dart';
 import 'screen_message.dart';
-import '../screen_connect_metamask.dart';
+import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
 final finalBalance = getBalance(getAddress());
@@ -30,7 +30,7 @@ var priceSender, priceReceiver;
 calculateFee(width, height, depth, weight, ethPrice) async {
   double fee = await ethPrice;
   double deliveryFee = 0;
-  //40 HKD for first 1kg, 15 HKD for each additional 1kg, then convert to ETH
+  //40 HKD for first 1kg, 7.5 HKD for each additional 0.5kg, then convert to ETH
   if (width * height * depth / 150000 > weight) {
     if (width * height * depth / 150000 < 1) {
       deliveryFee = 40 / fee;

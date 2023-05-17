@@ -6,7 +6,7 @@ import 'screen_home.dart';
 import 'screen_order.dart';
 import 'screen_message.dart';
 import '../etherscan_api.dart';
-import '../screen_connect_metamask.dart';
+import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
 final finalBalance = getBalance(getAddress());
