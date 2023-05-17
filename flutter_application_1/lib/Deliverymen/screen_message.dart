@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
+import 'screen_accepted_order.dart';
 import 'screen_wallet.dart';
-import 'screen_message.dart';
 import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
@@ -10,28 +10,41 @@ import '../screen_user_selection.dart';
 final finalBalance = getBalance(getAddress());
 final network = getNetworkName(getNetwork());
 
-class OrderPage extends StatefulWidget {
+TextEditingController wallet_address = TextEditingController();
+TextEditingController message = TextEditingController();
+
+class MessagePage extends StatefulWidget {
   final String title;
   var session, connector;
-  OrderPage(
+  MessagePage(
       {Key? key,
       required this.title,
       required this.session,
       required this.connector})
       : super(key: key);
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  State<MessagePage> createState() => _MessagePageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 240, 240, 240),
-      appBar: AppBar(
-        title: Text(widget.title),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NewMessagePage(
+                    title: 'New Message',
+                    session: widget.session,
+                    connector: widget.connector)),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
+      appBar: AppBar(title: Text(widget.title)),
       drawer: Drawer(
         child: ListView(
           children: <Widget>[
@@ -86,18 +99,17 @@ class _OrderPageState extends State<OrderPage> {
             ])),
             ListTile(
               leading: const Icon(Icons.local_shipping_rounded),
-              title: const Text('Send Package'),
+              title: const Text('View Available Orders'),
               onTap: openHomePage,
             ),
             ListTile(
-                leading: const Icon(Icons.history),
-                title: const Text('Order Tracking & History'),
+                leading: const FaIcon(FontAwesomeIcons.solidCircleCheck),
+                title: const Text('Acctepted Orders'),
                 onTap: openOrderPage),
             ListTile(
-              leading: const Icon(Icons.message),
-              title: const Text('Message'),
-              onTap: openMessagePage,
-            ),
+                leading: const Icon(Icons.message),
+                title: const Text('Message'),
+                onTap: openMessagePage),
             ListTile(
                 leading: const Icon(Icons.wallet),
                 title: const Text('Wallet'),
@@ -109,7 +121,7 @@ class _OrderPageState extends State<OrderPage> {
           ],
         ),
       ),
-      body: TransactionListView(),
+      body: MessageListView(widget.session, widget.connector),
     );
   }
 
@@ -129,7 +141,7 @@ class _OrderPageState extends State<OrderPage> {
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-              title: 'Send Package',
+              title: 'View Available Orders',
               session: widget.session,
               connector: widget.connector)),
     );
@@ -140,7 +152,7 @@ class _OrderPageState extends State<OrderPage> {
       context,
       MaterialPageRoute(
           builder: (context) => OrderPage(
-              title: 'Order Tracking & History',
+              title: 'Accepted Orders',
               session: widget.session,
               connector: widget.connector)),
     );
@@ -171,7 +183,95 @@ class _OrderPageState extends State<OrderPage> {
   }
 }
 
-class TransactionListView extends StatelessWidget {
+class NewMessagePage extends StatefulWidget {
+  final String title;
+  final session, connector;
+  NewMessagePage(
+      {Key? key,
+      required this.title,
+      required this.session,
+      required this.connector})
+      : super(key: key);
+  @override
+  State<NewMessagePage> createState() => _NewMessagePageState();
+}
+
+class _NewMessagePageState extends State<NewMessagePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.title)),
+      body: Padding(
+        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text('To',
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
+              ],
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              onChanged: (text) {
+                setState(() {
+                  wallet_address.text = text;
+                });
+              },
+              maxLines: 1,
+              controller: wallet_address,
+              decoration: InputDecoration(
+                  labelText: '  Enter Receiver\'s address',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20))),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text('Message',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+              ],
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              onChanged: (text) {
+                setState(() {
+                  message.text = text;
+                });
+              },
+              maxLines: 5,
+              controller: message,
+              decoration: InputDecoration(
+                  labelText: 'Enter your message',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20))),
+            ),
+            const SizedBox(height: 40),
+            FilledButton(
+                style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                onPressed: () => {
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) => ItemInfoPage(
+                      //           title: 'Item Details',
+                      //           session: widget.session,
+                      //           connector: widget.connector)),
+                      // )
+                    },
+                child: Text('Send', style: TextStyle(fontSize: 18)))
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MessageListView extends StatelessWidget {
+  var session, connector;
+  MessageListView(this.session, this.connector);
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
@@ -180,7 +280,7 @@ class TransactionListView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return InkWell(
             onTap: () {
-              enterTransactionDetailsPage(index, context);
+              enterMessageDetailsPage(index, context);
             },
             child: Container(
                 decoration: BoxDecoration(
@@ -196,51 +296,47 @@ class TransactionListView extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              'Order #123456',
+                              'From: ',
                               style: TextStyle(fontWeight: FontWeight.w700),
                             ),
-                            const SizedBox(width: 170),
                             Text(
-                              '13/4/2023',
-                              style: TextStyle(fontWeight: FontWeight.w500),
+                              'adfasfsdf',
+                              style: TextStyle(fontWeight: FontWeight.w600),
                             )
                           ],
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('Sender\'s Address',
-                                style: TextStyle(fontWeight: FontWeight.w600))
+                            Flexible(
+                                child: Text('Message:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w700)))
                           ],
                         ),
                         SizedBox(
                           height: 5,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [FaIcon(FontAwesomeIcons.arrowDownLong)],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Receiver\'s Address',
-                                style: TextStyle(fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 7,
                         ),
                         Row(
                           children: [
                             Text(
-                              'Status: Pending',
-                              style: TextStyle(fontWeight: FontWeight.w800),
+                              'abcdefg',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              '13/4/2023 12:00',
+                              style: TextStyle(fontWeight: FontWeight.w100),
                             )
                           ],
                         )
@@ -252,30 +348,53 @@ class TransactionListView extends StatelessWidget {
     );
   }
 
-  enterTransactionDetailsPage(index, context) {
+  enterMessageDetailsPage(index, context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              TransactionDetailsPage(title: 'Details', index: index)),
+          builder: (context) => MessageDetailsPage(
+              title: 'Message Details',
+              index: index,
+              session: session,
+              connector: connector)),
     );
   }
 }
 
-class TransactionDetailsPage extends StatefulWidget {
+class MessageDetailsPage extends StatefulWidget {
   final String title;
+  final session, connector;
   final index;
-  TransactionDetailsPage({Key? key, required this.title, required this.index})
+  MessageDetailsPage(
+      {Key? key,
+      required this.title,
+      required this.index,
+      required this.session,
+      required this.connector})
       : super(key: key);
   @override
-  State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
+  State<MessageDetailsPage> createState() => _MessageDetailsPageState();
 }
 
-class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
+class _MessageDetailsPageState extends State<MessageDetailsPage> {
   @override
   Widget build(BuildContext context) {
     var index = widget.index;
     return Scaffold(
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewMessagePage(
+                      title: 'New Message',
+                      session: widget.session,
+                      connector: widget.connector)),
+            );
+          },
+          label: const Text('Reply'),
+          icon: const Icon(Icons.reply),
+        ),
         appBar: AppBar(
           title: Text(widget.title),
           backgroundColor: Color.fromARGB(255, 255, 255, 255),
@@ -287,7 +406,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
               children: [
                 Row(
                   children: [
-                    Text('Order #123456',
+                    Text('From',
                         style: TextStyle(
                             fontSize: 24, fontWeight: FontWeight.w700)),
                   ],
@@ -296,10 +415,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                   height: 5,
                 ),
                 Row(children: [
-                  Text('Date: ',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  Text('13/4/2023',
+                  Text('Deliverymen Name',
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
                 ]),
@@ -308,33 +424,36 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                 ),
                 Row(
                   children: [
-                    Text('From',
+                    Text('Wallet Address',
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
+                            fontSize: 24, fontWeight: FontWeight.w700)),
                   ],
                 ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Address',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
+                SizedBox(
+                  height: 5,
                 ),
+                Row(children: [
+                  Text('asdasdasdasdas',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
+                ]),
                 SizedBox(
                   height: 10,
                 ),
                 Row(
                   children: [
-                    Text('To',
+                    Text('Message',
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
+                            fontSize: 24, fontWeight: FontWeight.w700))
                   ],
+                ),
+                SizedBox(
+                  height: 5,
                 ),
                 Row(
                   children: [
                     Flexible(
-                        child: Text('Address',
+                        child: Text('adaasddasdas',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w600)))
                   ],
@@ -343,91 +462,12 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                   height: 10,
                 ),
                 Row(
-                  children: [
-                    Text('Amount',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
-                  ],
-                ),
-                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Flexible(
-                        child: Text('0.2' + ' ETH',
+                        child: Text('16/4/2023 12:00',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text('Parcel Information',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text(
-                            'Contents: ' +
-                                'Mobile Phone, Documents, Clothes, Shoes, etc.',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text(
-                            'Size: ' + 'w' + ' x ' + 'h' + ' x ' + 'l' + ' cm',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Weight: ' + '10.5' + ' Kg',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Status',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Pending',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Parcel Location',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600)))
+                                fontSize: 14, fontWeight: FontWeight.w400)))
                   ],
                 ),
                 Text(index.toString()),

@@ -8,6 +8,8 @@ import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
 final finalBalance = getBalance(getAddress());
+final network = getNetworkName(getNetwork());
+
 TextEditingController wallet_address = TextEditingController();
 TextEditingController message = TextEditingController();
 
@@ -87,10 +89,7 @@ class _MessagePageState extends State<MessagePage> {
               ]),
               Row(
                 children: [
-                  Text(
-                      widget.connector.connected
-                          ? getNetworkName(widget.session.chainId)
-                          : 'Not Connected',
+                  Text(network,
                       style: TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0),
                         fontSize: 16,

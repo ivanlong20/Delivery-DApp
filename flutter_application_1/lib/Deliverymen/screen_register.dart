@@ -21,132 +21,138 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text(widget.title)),
-        body: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 10),
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Your Name',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                SizedBox(height: 10),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      Name.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: Name,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.perm_identity),
-                      labelText: '  Name',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                SizedBox(height: 10),
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Your HKID',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                SizedBox(height: 10),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      HKID.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: HKID,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.perm_identity),
-                      labelText: '  HKID',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                SizedBox(height: 10),
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Your License Plate',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                SizedBox(height: 10),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      licenseplateNo.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: licenseplateNo,
-                  decoration: InputDecoration(
-                      icon: const FaIcon(FontAwesomeIcons.car),
-                      labelText: '  License plate number',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                SizedBox(height: 10),
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Your email address',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                SizedBox(height: 10),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      email.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: email,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.email),
-                      labelText: '  Email address',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                SizedBox(height: 10),
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'New Password',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                SizedBox(height: 10),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      password.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: password,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.password),
-                      labelText: '  Password',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                SizedBox(height: 40),
-                FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
-                    onPressed: () => {
-                          register(email.text, password.text, Name.text,
-                              HKID.text, licenseplateNo.text)
-                        },
-                    child: Text('Continue', style: TextStyle(fontSize: 18)))
-              ],
-            )));
+        body: SingleChildScrollView(
+            child: Container(
+                child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 10),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Your Name',
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(height: 10),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              Name.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: Name,
+                          decoration: InputDecoration(
+                              icon: const Icon(Icons.perm_identity),
+                              labelText: '  Name',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Your HKID',
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(height: 10),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              HKID.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: HKID,
+                          decoration: InputDecoration(
+                              icon: const FaIcon(FontAwesomeIcons.idCard),
+                              labelText: '  HKID',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Your License Plate',
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(height: 10),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              licenseplateNo.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: licenseplateNo,
+                          decoration: InputDecoration(
+                              icon: const FaIcon(FontAwesomeIcons.car),
+                              labelText: '  License plate number',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Your email address',
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(height: 10),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              email.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: email,
+                          decoration: InputDecoration(
+                              icon: const Icon(Icons.email),
+                              labelText: '  Email address',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'New Password',
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(height: 10),
+                        TextField(
+                          obscureText: true,
+                          onChanged: (text) {
+                            setState(() {
+                              password.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: password,
+                          decoration: InputDecoration(
+                              icon: const Icon(Icons.password),
+                              labelText: '  Password',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        SizedBox(height: 40),
+                        FilledButton(
+                            style: FilledButton.styleFrom(
+                                minimumSize: Size(400, 50)),
+                            onPressed: () => {
+                                  register(email.text, password.text, Name.text,
+                                      HKID.text, licenseplateNo.text)
+                                },
+                            child: Text('Continue',
+                                style: TextStyle(fontSize: 18)))
+                      ],
+                    )))));
   }
 
   Future<bool?> showInvalidRegisterDialog() {

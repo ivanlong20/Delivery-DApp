@@ -16,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text(widget.title)),
         body: Padding(
             padding: EdgeInsets.all(20),
@@ -52,6 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                     )),
                 SizedBox(height: 10),
                 TextField(
+                  obscureText: true,
                   onChanged: (text) {
                     setState(() {
                       password.text = text;

@@ -7,14 +7,18 @@ import 'package:web3dart/crypto.dart';
 import 'screen_home.dart';
 import '../etherscan_api.dart';
 import '../screen_user_selection.dart';
+
 // import 'package:web3dart/web3dart.dart';
 // import 'package:flutter_web3/flutter_web3.dart';
 var _signature, _session, _uri;
 
-getAddress(){
+getAddress() {
   return _session.accounts[0].toString();
 }
 
+getNetwork() {
+  return _session.chainId;
+}
 
 class ConnectMetamaskPage extends StatefulWidget {
   const ConnectMetamaskPage({super.key, required this.title});

@@ -86,18 +86,17 @@ class _OrderPageState extends State<OrderPage> {
             ])),
             ListTile(
               leading: const Icon(Icons.local_shipping_rounded),
-              title: const Text('Send Package'),
+              title: const Text('View Available Orders'),
               onTap: openHomePage,
             ),
             ListTile(
-                leading: const Icon(Icons.history),
-                title: const Text('Order Tracking & History'),
+                leading: const FaIcon(FontAwesomeIcons.solidCircleCheck),
+                title: const Text('Acctepted Orders'),
                 onTap: openOrderPage),
             ListTile(
-              leading: const Icon(Icons.message),
-              title: const Text('Message'),
-              onTap: openMessagePage,
-            ),
+                leading: const Icon(Icons.message),
+                title: const Text('Message'),
+                onTap: openMessagePage),
             ListTile(
                 leading: const Icon(Icons.wallet),
                 title: const Text('Wallet'),
@@ -129,23 +128,23 @@ class _OrderPageState extends State<OrderPage> {
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-              title: 'Send Package',
+              title: 'View Available Orders',
               session: widget.session,
               connector: widget.connector)),
     );
   }
 
-  openOrderPage() {
+ openOrderPage() {
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => OrderPage(
-              title: 'Order Tracking & History',
+              title: 'Accepted Orders',
               session: widget.session,
               connector: widget.connector)),
     );
   }
-
+  
   openMessagePage() {
     Navigator.push(
       context,

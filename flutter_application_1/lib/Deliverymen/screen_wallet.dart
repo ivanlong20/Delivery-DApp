@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:etherscan_api/etherscan_api.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'screen_home.dart';
-import 'screen_order.dart';
+import 'screen_accepted_order.dart';
 import 'screen_message.dart';
 import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
@@ -35,7 +36,7 @@ class _WalletPageState extends State<WalletPage> {
           children: <Widget>[
             DrawerHeader(
                 child: Column(children: [
-              Row(children: [
+              const Row(children: [
                 Text(
                   'Balance',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
@@ -51,13 +52,13 @@ class _WalletPageState extends State<WalletPage> {
                             (1 / 1000000000000000000);
                         return Text(
                           balance.toStringAsFixed(5),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontSize: 36,
                           ),
                         );
                       } else {
-                        return Text(
+                        return const Text(
                           '0',
                           style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
@@ -66,7 +67,7 @@ class _WalletPageState extends State<WalletPage> {
                         );
                       }
                     }),
-                Text(' ETH',
+                const Text(' ETH',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
@@ -74,11 +75,8 @@ class _WalletPageState extends State<WalletPage> {
               ]),
               Row(
                 children: [
-                  Text(
-                      widget.connector.connected
-                          ? getNetworkName(widget.session.chainId)
-                          : 'Not Connected',
-                      style: TextStyle(
+                  Text(network,
+                      style: const TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0),
                         fontSize: 16,
                       ))
@@ -86,22 +84,21 @@ class _WalletPageState extends State<WalletPage> {
               )
             ])),
             ListTile(
-              leading: Icon(Icons.local_shipping_rounded),
-              title: Text('Send Package'),
+              leading: const Icon(Icons.local_shipping_rounded),
+              title: const Text('View Available Orders'),
               onTap: openHomePage,
             ),
             ListTile(
-              leading: Icon(Icons.history),
-              title: Text('Order Tracking & History'),
-              onTap: openOrderPage,
-            ),
+                leading: const FaIcon(FontAwesomeIcons.solidCircleCheck),
+                title: const Text('Acctepted Orders'),
+                onTap: openOrderPage),
             ListTile(
-                leading: Icon(Icons.message),
-                title: Text('Message'),
+                leading: const Icon(Icons.message),
+                title: const Text('Message'),
                 onTap: openMessagePage),
             ListTile(
-                leading: Icon(Icons.wallet),
-                title: Text('Wallet'),
+                leading: const Icon(Icons.wallet),
+                title: const Text('Wallet'),
                 onTap: openWalletPage),
             ListTile(
                 leading: const Icon(Icons.logout),
@@ -274,7 +271,7 @@ class _WalletPageState extends State<WalletPage> {
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-              title: 'Send Package',
+              title: 'View Available Orders',
               session: widget.session,
               connector: widget.connector)),
     );
@@ -285,7 +282,7 @@ class _WalletPageState extends State<WalletPage> {
       context,
       MaterialPageRoute(
           builder: (context) => OrderPage(
-              title: 'Order Tracking & History',
+              title: 'Accepted Orders',
               session: widget.session,
               connector: widget.connector)),
     );

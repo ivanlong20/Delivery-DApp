@@ -9,6 +9,7 @@ import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
 final finalBalance = getBalance(getAddress());
+final network = getNetworkName(getNetwork());
 
 final eth = getEthereumPrice();
 TextEditingController textController1 = TextEditingController();
@@ -94,6 +95,7 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text(widget.title)),
         drawer: Drawer(
           child: ListView(
@@ -140,9 +142,7 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   children: [
                     Text(
-                        widget.connector.connected
-                            ? getNetworkName(widget.session.chainId)
-                            : 'Not Connected',
+                        network,
                         style: const TextStyle(
                           color: Color.fromARGB(255, 0, 0, 0),
                           fontSize: 16,
@@ -174,137 +174,145 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: Padding(
-            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-            child: Column(
-              children: [
-                const Row(children: [
-                  Text('Shipping Details',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left)
-                ]),
-                const SizedBox(height: 20),
-                const Row(children: [
-                  Text('From',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
-                ]),
-                const SizedBox(height: 5),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      textController1.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: textController1,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.pin_drop_outlined),
-                      labelText: '  Enter Sender\'s address',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                const SizedBox(height: 15),
-                Container(
-                    alignment: Alignment.topLeft,
-                    child: Wrap(
-                        spacing: 5,
-                        children: List<Widget>.generate(5, (int index) {
-                          return ChoiceChip(
-                            label: Text(district[index]),
-                            selected: _choiceIndex1 == index,
-                            selectedColor: Color.fromARGB(255, 221, 221, 221),
-                            onSelected: (bool selected) {
-                              setState(() {
-                                _choiceIndex1 = selected ? index : null;
-                              });
-                            },
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50)),
-                          );
-                        }))),
-                const SizedBox(height: 10),
-                const Row(children: [
-                  Text('To',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
-                ]),
-                const SizedBox(height: 5),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      textController2.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: textController2,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.flag),
-                      labelText: '  Enter Receiver\'s address',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                const SizedBox(height: 15),
-                Container(
-                    alignment: Alignment.topLeft,
-                    child: Wrap(
-                        spacing: 5,
-                        children: List<Widget>.generate(5, (int index) {
-                          return ChoiceChip(
-                            label: Text(district[index]),
-                            selected: _choiceIndex2 == index,
-                            selectedColor: Color.fromARGB(255, 221, 221, 221),
-                            onSelected: (bool selected) {
-                              setState(() {
-                                _choiceIndex2 = selected ? index : null;
-                              });
-                            },
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50)),
-                          );
-                        }))),
-                SizedBox(
-                  height: 20,
-                ),
-                const Row(children: [
-                  Text('Package Information',
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
-                ]),
-                SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      textController3.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: textController3,
-                  decoration: InputDecoration(
-                      icon: const FaIcon(FontAwesomeIcons.box),
-                      labelText: 'What\'s in your package?',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                const SizedBox(height: 30),
-                FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
-                    onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ItemInfoPage(
-                                    title: 'Item Details',
-                                    session: widget.session,
-                                    connector: widget.connector)),
-                          )
-                        },
-                    child: Text('Continue', style: TextStyle(fontSize: 18)))
-              ],
-            )));
+        body: SingleChildScrollView(
+            child: Container(
+                child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                    child: Column(
+                      children: [
+                        const Row(children: [
+                          Text('Shipping Details',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.left)
+                        ]),
+                        const SizedBox(height: 20),
+                        const Row(children: [
+                          Text('From',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w600))
+                        ]),
+                        const SizedBox(height: 5),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              textController1.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: textController1,
+                          decoration: InputDecoration(
+                              icon: const Icon(Icons.pin_drop_outlined),
+                              labelText: '  Enter Sender\'s address',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        const SizedBox(height: 15),
+                        Container(
+                            alignment: Alignment.topLeft,
+                            child: Wrap(
+                                spacing: 5,
+                                children: List<Widget>.generate(5, (int index) {
+                                  return ChoiceChip(
+                                    label: Text(district[index]),
+                                    selected: _choiceIndex1 == index,
+                                    selectedColor:
+                                        Color.fromARGB(255, 221, 221, 221),
+                                    onSelected: (bool selected) {
+                                      setState(() {
+                                        _choiceIndex1 = selected ? index : null;
+                                      });
+                                    },
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                  );
+                                }))),
+                        const SizedBox(height: 10),
+                        const Row(children: [
+                          Text('To',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w600))
+                        ]),
+                        const SizedBox(height: 5),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              textController2.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: textController2,
+                          decoration: InputDecoration(
+                              icon: const Icon(Icons.flag),
+                              labelText: '  Enter Receiver\'s address',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        const SizedBox(height: 15),
+                        Container(
+                            alignment: Alignment.topLeft,
+                            child: Wrap(
+                                spacing: 5,
+                                children: List<Widget>.generate(5, (int index) {
+                                  return ChoiceChip(
+                                    label: Text(district[index]),
+                                    selected: _choiceIndex2 == index,
+                                    selectedColor:
+                                        Color.fromARGB(255, 221, 221, 221),
+                                    onSelected: (bool selected) {
+                                      setState(() {
+                                        _choiceIndex2 = selected ? index : null;
+                                      });
+                                    },
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                  );
+                                }))),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        const Row(children: [
+                          Text('Package Information',
+                              style: TextStyle(
+                                  fontSize: 24, fontWeight: FontWeight.w600))
+                        ]),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              textController3.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: textController3,
+                          decoration: InputDecoration(
+                              icon: const FaIcon(FontAwesomeIcons.box),
+                              labelText: 'What\'s in your package?',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        const SizedBox(height: 30),
+                        FilledButton(
+                            style: FilledButton.styleFrom(
+                                minimumSize: Size(400, 50)),
+                            onPressed: () => {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ItemInfoPage(
+                                            title: 'Item Details',
+                                            session: widget.session,
+                                            connector: widget.connector)),
+                                  )
+                                },
+                            child: Text('Continue',
+                                style: TextStyle(fontSize: 18)))
+                      ],
+                    )))));
   }
 
   openWalletPage() {
@@ -625,220 +633,230 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Padding(
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            Row(
-              children: [
-                Text('Receiver\'s Wallet Address',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
-              ],
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              onChanged: (text) {
-                setState(() {
-                  textController4.text = text;
-                });
-              },
-              maxLines: 1,
-              controller: textController4,
-              decoration: InputDecoration(
-                  icon: const Icon(Icons.wallet),
-                  labelText: 'i.e. 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30))),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Text('Paid By',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                    spacing: 5,
-                    children: List<Widget>.generate(2, (int index) {
-                      return ChoiceChip(
-                        label: Text(payerList[index]),
-                        selected: _choiceIndex3 == index,
-                        selectedColor: Color.fromARGB(255, 221, 221, 221),
-                        onSelected: (bool selected) {
-                          setState(() {
-                            _choiceIndex3 = selected ? index : null;
-                          });
-                        },
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50)),
-                      );
-                    }))),
-            const SizedBox(height: 20),
-            (_choiceIndex3 == 1)
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: SingleChildScrollView(
+            child: Container(
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+              child:
+                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                Row(
+                  children: [
+                    Text('Receiver\'s Wallet Address',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      textController4.text = text;
+                    });
+                  },
+                  maxLines: 1,
+                  controller: textController4,
+                  decoration: InputDecoration(
+                      icon: const Icon(Icons.wallet),
+                      labelText:
+                          'i.e. 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30))),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Text('Paid By',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                    alignment: Alignment.topLeft,
+                    child: Wrap(
+                        spacing: 5,
+                        children: List<Widget>.generate(2, (int index) {
+                          return ChoiceChip(
+                            label: Text(payerList[index]),
+                            selected: _choiceIndex3 == index,
+                            selectedColor: Color.fromARGB(255, 221, 221, 221),
+                            onSelected: (bool selected) {
+                              setState(() {
+                                _choiceIndex3 = selected ? index : null;
+                              });
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50)),
+                          );
+                        }))),
+                const SizedBox(height: 20),
+                (_choiceIndex3 == 1)
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Additional Product Amount',
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w600))
+                          Row(
+                            children: [
+                              Text('Additional Product Amount',
+                                  style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w600))
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          TextField(
+                            onChanged: (text) {
+                              setState(() {
+                                textController5.text = text;
+                              });
+                            },
+                            maxLines: 1,
+                            controller: textController5,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                                icon: const Icon(Icons.attach_money),
+                                labelText: ' HKD',
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(30))),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Text(
+                                'Total Amount',
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              FutureBuilder<dynamic>(
+                                  future: combineAllFee(
+                                      calculateFee(
+                                          _sizePickerIndex1,
+                                          _sizePickerIndex2,
+                                          _sizePickerIndex3,
+                                          _weightPickerIndex,
+                                          ethPrice),
+                                      ethPrice),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<dynamic> snapshot) {
+                                    if (snapshot.hasData) {
+                                      priceReceiver = snapshot.data;
+                                      return Text(
+                                        priceReceiver.toStringAsFixed(8),
+                                        style: const TextStyle(
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w700),
+                                      );
+                                    } else {
+                                      return const Text(
+                                        '0',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w700),
+                                      );
+                                    }
+                                  }),
+                              Text(' ETH',
+                                  style: TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                          FilledButton(
+                              style: FilledButton.styleFrom(
+                                  minimumSize: Size(400, 50)),
+                              onPressed: () => {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PaymentPage(
+                                              title: 'Payment Details',
+                                              session: widget.session,
+                                              connector: widget.connector)),
+                                    )
+                                  },
+                              child: Text('Confirm',
+                                  style: TextStyle(fontSize: 18)))
                         ],
-                      ),
-                      const SizedBox(height: 20),
-                      TextField(
-                        onChanged: (text) {
-                          setState(() {
-                            textController5.text = text;
-                          });
-                        },
-                        maxLines: 1,
-                        controller: textController5,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                            icon: const Icon(Icons.attach_money),
-                            labelText: ' HKD',
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30))),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Total Amount',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          FutureBuilder<dynamic>(
-                              future: combineAllFee(
-                                  calculateFee(
+                          Row(
+                            children: [
+                              Text(
+                                'Total Amount',
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              FutureBuilder<dynamic>(
+                                  future: calculateFee(
                                       _sizePickerIndex1,
                                       _sizePickerIndex2,
                                       _sizePickerIndex3,
                                       _weightPickerIndex,
                                       ethPrice),
-                                  ethPrice),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<dynamic> snapshot) {
-                                if (snapshot.hasData) {
-                                  priceReceiver = snapshot.data;
-                                  return Text(
-                                    priceReceiver.toStringAsFixed(8),
-                                    style: const TextStyle(
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w700),
-                                  );
-                                } else {
-                                  return const Text(
-                                    '0',
-                                    style: TextStyle(
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w700),
-                                  );
-                                }
-                              }),
-                          Text(' ETH',
-                              style: TextStyle(
-                                  fontSize: 32, fontWeight: FontWeight.w700)),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<dynamic> snapshot) {
+                                    if (snapshot.hasData) {
+                                      priceSender = snapshot.data;
+                                      return Text(
+                                        priceSender.toStringAsFixed(8),
+                                        style: const TextStyle(
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w700),
+                                      );
+                                    } else {
+                                      return const Text(
+                                        '0',
+                                        style: TextStyle(
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontSize: 32,
+                                            fontWeight: FontWeight.w700),
+                                      );
+                                    }
+                                  }),
+                              Text(' ETH',
+                                  style: TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                          FilledButton(
+                              style: FilledButton.styleFrom(
+                                  minimumSize: Size(400, 50)),
+                              onPressed: () => {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PaymentPage(
+                                              title: 'Payment Details',
+                                              session: widget.session,
+                                              connector: widget.connector)),
+                                    )
+                                  },
+                              child:
+                                  Text('Pay', style: TextStyle(fontSize: 18)))
                         ],
-                      ),
-                      const SizedBox(height: 40),
-                      FilledButton(
-                          style: FilledButton.styleFrom(
-                              minimumSize: Size(400, 50)),
-                          onPressed: () => {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PaymentPage(
-                                          title: 'Payment Details',
-                                          session: widget.session,
-                                          connector: widget.connector)),
-                                )
-                              },
-                          child:
-                              Text('Confirm', style: TextStyle(fontSize: 18)))
-                    ],
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Total Amount',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          FutureBuilder<dynamic>(
-                              future: calculateFee(
-                                  _sizePickerIndex1,
-                                  _sizePickerIndex2,
-                                  _sizePickerIndex3,
-                                  _weightPickerIndex,
-                                  ethPrice),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<dynamic> snapshot) {
-                                if (snapshot.hasData) {
-                                  priceSender = snapshot.data;
-                                  return Text(
-                                    priceSender.toStringAsFixed(8),
-                                    style: const TextStyle(
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w700),
-                                  );
-                                } else {
-                                  return const Text(
-                                    '0',
-                                    style: TextStyle(
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 32,
-                                        fontWeight: FontWeight.w700),
-                                  );
-                                }
-                              }),
-                          Text(' ETH',
-                              style: TextStyle(
-                                  fontSize: 32, fontWeight: FontWeight.w700)),
-                        ],
-                      ),
-                      const SizedBox(height: 40),
-                      FilledButton(
-                          style: FilledButton.styleFrom(
-                              minimumSize: Size(400, 50)),
-                          onPressed: () => {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PaymentPage(
-                                          title: 'Payment Details',
-                                          session: widget.session,
-                                          connector: widget.connector)),
-                                )
-                              },
-                          child: Text('Pay', style: TextStyle(fontSize: 18)))
-                    ],
-                  )
-          ])),
-    );
+                      )
+              ])),
+        )));
   }
 }
 

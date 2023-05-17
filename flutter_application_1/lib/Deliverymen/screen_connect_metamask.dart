@@ -16,6 +16,10 @@ getAddress() {
   return _session.accounts[0].toString();
 }
 
+getNetwork(){
+  return _session.chainId;
+}
+
 class ConnectMetamaskPage extends StatefulWidget {
   const ConnectMetamaskPage({super.key, required this.title});
   final String title;
