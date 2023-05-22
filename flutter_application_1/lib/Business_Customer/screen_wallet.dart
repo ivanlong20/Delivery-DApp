@@ -9,16 +9,15 @@ import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
-final finalBalance = getBalance(getAddress());
-final network = getNetworkName(getNetwork());
+// final finalBalance = getBalance(getAddress());
+// final network = getNetworkName(getNetwork());
 
 class WalletPage extends StatefulWidget {
   final String title;
-  var session, connector;
+  var connector;
   WalletPage(
       {Key? key,
       required this.title,
-      required this.session,
       required this.connector})
       : super(key: key);
   @override
@@ -43,7 +42,7 @@ class _WalletPageState extends State<WalletPage> {
               ]),
               Row(children: [
                 FutureBuilder<dynamic>(
-                    future: finalBalance,
+                    // future: finalBalance,
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
@@ -74,14 +73,14 @@ class _WalletPageState extends State<WalletPage> {
               ]),
               Row(
                 children: [
-                  Text(
-                      widget.connector.connected
-                          ? getNetworkName(widget.session.chainId)
-                          : 'Not Connected',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 0, 0, 0),
-                        fontSize: 16,
-                      ))
+                  // Text(
+                  //     widget.connector.connected
+                  //         ? getNetworkName(widget.session.chainId)
+                  //         : 'Not Connected',
+                  //     style: TextStyle(
+                  //       color: Color.fromARGB(255, 0, 0, 0),
+                  //       fontSize: 16,
+                  //     ))
                 ],
               )
             ])),
@@ -126,7 +125,7 @@ class _WalletPageState extends State<WalletPage> {
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               FutureBuilder<dynamic>(
-                  future: finalBalance,
+                  // future: finalBalance,
                   builder:
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasData) {
@@ -168,20 +167,20 @@ class _WalletPageState extends State<WalletPage> {
               height: 5,
             ),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              Text(network,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 24,
-                  )),
+              // Text(network,
+              //     style: TextStyle(
+              //       fontWeight: FontWeight.w600,
+              //       fontSize: 24,
+              //     )),
             ]),
             SizedBox(
               height: 30,
             ),
-            QrImageView(
-              data: getAddress(),
-              version: QrVersions.auto,
-              size: 300.0,
-            ),
+            // QrImageView(
+            //   data: getAddress(),
+            //   version: QrVersions.auto,
+            //   size: 300.0,
+            // ),
             SizedBox(
               height: 30,
             ),
@@ -218,15 +217,15 @@ class _WalletPageState extends State<WalletPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Flexible(
-                            child: Text(
-                          getAddress(),
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ))
+                        // Flexible(
+                        //     child: Text(
+                        //   getAddress(),
+                        //   style: TextStyle(
+                        //     color: Color.fromARGB(255, 0, 0, 0),
+                        //     fontSize: 20,
+                        //     fontWeight: FontWeight.w700,
+                        //   ),
+                        // ))
                       ],
                     ),
                   ],
@@ -237,12 +236,12 @@ class _WalletPageState extends State<WalletPage> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
-                    Clipboard.setData(
-                            ClipboardData(text: getAddress().toString()))
-                        .then((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text("Wallet Address copied to clipboard")));
-                    });
+                    // Clipboard.setData(
+                    //         ClipboardData(text: getAddress().toString()))
+                    //     .then((_) {
+                    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    //       content: Text("Wallet Address copied to clipboard")));
+                    // });
                   },
                   icon: Icon(
                     Icons.copy,
@@ -264,7 +263,6 @@ class _WalletPageState extends State<WalletPage> {
       MaterialPageRoute(
           builder: (context) => WalletPage(
               title: 'Wallet',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -275,7 +273,6 @@ class _WalletPageState extends State<WalletPage> {
       MaterialPageRoute(
           builder: (context) => HomePage(
               title: 'Send Package',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -286,7 +283,6 @@ class _WalletPageState extends State<WalletPage> {
       MaterialPageRoute(
           builder: (context) => OrderPage(
               title: 'Order Tracking & History',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -297,21 +293,20 @@ class _WalletPageState extends State<WalletPage> {
       MaterialPageRoute(
           builder: (context) => MessagePage(
               title: 'Message',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
 
   logout() {
-    widget.connector.on(
-        'disconnect',
-        (payload) => setState(() {
-              widget.session = null;
-            }));
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => UserSelectionPage(title: 'Landing Page')),
-    );
+    // widget.connector.on(
+    //     'disconnect',
+    //     (payload) => setState(() {
+    //           widget.session = null;
+    //         }));
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (context) => UserSelectionPage(title: 'Landing Page')),
+    // );
   }
 }

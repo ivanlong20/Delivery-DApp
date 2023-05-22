@@ -8,8 +8,8 @@ import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
-final finalBalance = getBalance(getAddress());
-final network = getNetworkName(getNetwork());
+// final finalBalance = getBalance(getAddress());
+// final network = getNetworkName(getNetwork());
 
 final eth = getEthereumPrice();
 TextEditingController textController1 = TextEditingController();
@@ -72,11 +72,10 @@ combineAllFee(deliveryFee, ethPrice) async {
 
 class HomePage extends StatefulWidget {
   final String title;
-  var session, connector;
+  var connector;
   HomePage(
       {Key? key,
       required this.title,
-      required this.session,
       required this.connector})
       : super(key: key);
   @override
@@ -110,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                 ]),
                 Row(children: [
                   FutureBuilder<dynamic>(
-                      future: finalBalance,
+                      // future: finalBalance,
                       builder: (BuildContext context,
                           AsyncSnapshot<dynamic> snapshot) {
                         if (snapshot.hasData) {
@@ -141,12 +140,12 @@ class _HomePageState extends State<HomePage> {
                 ]),
                 Row(
                   children: [
-                    Text(
-                        network,
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontSize: 16,
-                        ))
+                    // Text(
+                    //     network,
+                    //     style: const TextStyle(
+                    //       color: Color.fromARGB(255, 0, 0, 0),
+                    //       fontSize: 16,
+                    //     ))
                   ],
                 )
               ])),
@@ -305,7 +304,6 @@ class _HomePageState extends State<HomePage> {
                                     MaterialPageRoute(
                                         builder: (context) => ItemInfoPage(
                                             title: 'Item Details',
-                                            session: widget.session,
                                             connector: widget.connector)),
                                   )
                                 },
@@ -321,7 +319,6 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
           builder: (context) => WalletPage(
               title: 'Wallet',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -332,7 +329,6 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
           builder: (context) => HomePage(
               title: 'Ship',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -343,7 +339,6 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
           builder: (context) => OrderPage(
               title: 'Order Tracking & History',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -354,22 +349,21 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
           builder: (context) => MessagePage(
               title: 'Message',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
 
   logout() {
-    widget.connector.on(
-        'disconnect',
-        (payload) => setState(() {
-              widget.session = null;
-            }));
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => UserSelectionPage(title: 'Landing Page')),
-    );
+    // widget.connector.on(
+    //     'disconnect',
+    //     (payload) => setState(() {
+    //           widget.session = null;
+    //         }));
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //       builder: (context) => UserSelectionPage(title: 'Landing Page')),
+    // );
   }
 }
 //
@@ -378,11 +372,10 @@ class _HomePageState extends State<HomePage> {
 
 class ItemInfoPage extends StatefulWidget {
   final String title;
-  final session, connector;
+  final  connector;
   ItemInfoPage(
       {Key? key,
       required this.title,
-      required this.session,
       required this.connector})
       : super(key: key);
   @override
@@ -599,7 +592,6 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                             MaterialPageRoute(
                                 builder: (context) => PaymentPage(
                                     title: 'Payment Details',
-                                    session: widget.session,
                                     connector: widget.connector)),
                           )
                         },
@@ -615,11 +607,10 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
 
 class PaymentPage extends StatefulWidget {
   final String title;
-  final session, connector;
+  final  connector;
   PaymentPage(
       {Key? key,
       required this.title,
-      required this.session,
       required this.connector})
       : super(key: key);
   @override
@@ -780,7 +771,6 @@ class _PaymentPageState extends State<PaymentPage> {
                                       MaterialPageRoute(
                                           builder: (context) => PaymentPage(
                                               title: 'Payment Details',
-                                              session: widget.session,
                                               connector: widget.connector)),
                                     )
                                   },
@@ -847,7 +837,6 @@ class _PaymentPageState extends State<PaymentPage> {
                                       MaterialPageRoute(
                                           builder: (context) => PaymentPage(
                                               title: 'Payment Details',
-                                              session: widget.session,
                                               connector: widget.connector)),
                                     )
                                   },

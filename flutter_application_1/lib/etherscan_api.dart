@@ -39,6 +39,8 @@ getNetworkName(chainId) {
       return 'Goreli Testnet';
     case 42:
       return 'Kovan Testnet';
+    case 11155111:
+      return 'Sepolia Testnet';
     case 137:
       return 'Polygon Mainnet';
     default:
