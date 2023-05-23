@@ -295,13 +295,14 @@ class _HomePageState extends State<HomePage> {
                             style: FilledButton.styleFrom(
                                 minimumSize: Size(400, 50)),
                             onPressed: () => {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ItemInfoPage(
-                                            title: 'Item Details',
-                                            connector: widget.connector)),
-                                  )
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //       builder: (context) => ItemInfoPage(
+                                  //           title: 'Item Details',
+                                  //           connector: widget.connector)),
+                                  // )
+                                  connector
                                 },
                             child: Text('Continue',
                                 style: TextStyle(fontSize: 18)))

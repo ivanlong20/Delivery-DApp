@@ -12,6 +12,9 @@ import 'package:web_socket_channel/io.dart';
 import 'package:path/path.dart';
 import 'dart:io';
 
+
+
+
 class WalletConnectEthereumCredentials extends CustomTransactionSender {
   WalletConnectEthereumCredentials({required this.provider});
 
@@ -110,13 +113,14 @@ class EthereumConnector implements WalletConnector {
       {required String recipientAddress,
       required double amount,
       required String event,
-      required String function}) async {
-    final EthereumAddress contractAddr =
-        EthereumAddress.fromHex('0xf451659CF5688e31a31fC3316efbcC2339A490Fb');
-    final File abiFile = File(join(dirname(Platform.script.path), 'abi.json'));
-    final abiCode = await abiFile.readAsString();
+      required String function,
+      required String orderID}) async {
+        
+    final EthereumAddress contractAddress =
+        EthereumAddress.fromHex('0xf985ad80f2E0cE9E1FDff7B0DBCDb76a06d123cC');
+    final abiCode = await File(dirname('smart_contract/abi.json')).readAsString();
     final contract = DeployedContract(
-        ContractAbi.fromJson(abiCode, 'MetaCoin'), contractAddr);
+        ContractAbi.fromJson(abiCode, 'Delivery'), contractAddress);
 
     // read the contract abi and tell web3dart where it's deployed (contractAddr)
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
@@ -124,40 +128,39 @@ class EthereumConnector implements WalletConnector {
     final recipient = EthereumAddress.fromHex(recipientAddress);
 
     // extracting some functions and events that we'll need later
-    final transferEvent = contract.event('Transfer');
-    final balanceFunction = contract.function('getBalance');
-    final sendFunction = contract.function('sendCoin');
+    final varEvent = contract.event('Transfer');
+    final varFunction = contract.function(function);
 
     // listen for the Transfer event when it's emitted by the contract above
-    final subscription = client
-        .events(FilterOptions.events(contract: contract, event: transferEvent))
-        .take(1)
-        .listen((event) {
-      final decoded = transferEvent.decodeResults(event.topics!, event.data!);
+    // final subscription = client
+    //     .events(FilterOptions.events(contract: contract, event: varEvent))
+    //     .take(1)
+    //     .listen((event) {
+    //   final decoded = varEvent.decodeResults(event.topics!, event.data!);
 
-      final from = decoded[0] as EthereumAddress;
-      final to = decoded[1] as EthereumAddress;
-      final value = decoded[2] as BigInt;
+    //   final from = decoded[0] as EthereumAddress;
+    //   final to = decoded[1] as EthereumAddress;
+    //   final value = decoded[2] as BigInt;
 
-      print('$from sent $value MetaCoins to $to');
-    });
+    //   print('$from sent $value MetaCoins to $to');
+    // });
 
     // check our balance in MetaCoins by calling the appropriate function
-    final balance = await client.call(
-        contract: contract, function: balanceFunction, params: [ownAddress]);
+    final balance = await client
+        .call(contract: contract, function: varFunction, params: [ownAddress]);
     print('We have ${balance.first} MetaCoins');
 
     await client.sendTransaction(
       credentials,
       Transaction.callContract(
         contract: contract,
-        function: sendFunction,
-        parameters: [recipient, balance.first],
+        function: varFunction,
+        parameters: [int.parse(orderID)],
       ),
     );
 
-    await subscription.asFuture();
-    await subscription.cancel();
+    // await subscription.asFuture();
+    // await subscription.cancel();
 
     await client.dispose();
   }

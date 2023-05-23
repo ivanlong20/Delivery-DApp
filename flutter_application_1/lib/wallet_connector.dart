@@ -11,7 +11,12 @@ abstract class WalletConnector {
     required double amount,
   });
 
-  
+  Future<void> sendSmartContractTransaction(
+      {required String recipientAddress,
+      required double amount,
+      required String event,
+      required String function,
+      required String orderID});
 
   Future<void> openWalletApp();
 
