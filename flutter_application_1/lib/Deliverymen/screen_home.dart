@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'screen_connect_metamask.dart';
-import '../etherscan_api.dart';
 import '../screen_user_selection.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,17 +7,13 @@ import 'screen_accepted_order.dart';
 import 'screen_message.dart';
 import 'screen_wallet.dart';
 
-final finalBalance = getBalance(getAddress());
-final network = getNetworkName(getNetwork());
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
 
 class HomePage extends StatefulWidget {
   final String title;
-  var connector, session;
-  HomePage(
-      {super.key,
-      required this.title,
-      required this.connector,
-      required this.session});
+  var connector;
+  HomePage({super.key, required this.title, required this.connector});
   @override
   State<StatefulWidget> createState() => _HomePageState();
 }
@@ -46,8 +41,7 @@ class _HomePageState extends State<HomePage> {
                       builder: (BuildContext context,
                           AsyncSnapshot<dynamic> snapshot) {
                         if (snapshot.hasData) {
-                          var balance = int.parse(snapshot.data) *
-                              (1 / 1000000000000000000);
+                          var balance = snapshot.data;
                           return Text(
                             balance.toStringAsFixed(5),
                             style: const TextStyle(
@@ -112,10 +106,8 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              WalletPage(title: 'Wallet', connector: widget.connector)),
     );
   }
 
@@ -124,9 +116,7 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-              title: 'View Available Orders',
-              session: widget.session,
-              connector: widget.connector)),
+              title: 'View Available Orders', connector: widget.connector)),
     );
   }
 
@@ -134,10 +124,8 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => OrderPage(
-              title: 'Accepted Orders',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              OrderPage(title: 'Accepted Orders', connector: widget.connector)),
     );
   }
 
@@ -145,25 +133,19 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              MessagePage(title: 'Message', connector: widget.connector)),
     );
   }
 
   logout() async {
-    await FirebaseAuth.instance.signOut();
-    widget.connector.on(
-        'disconnect',
-        (payload) => setState(() {
-              widget.session = null;
-            }));
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => UserSelectionPage(title: 'Landing Page')),
     );
+    await FirebaseAuth.instance.signOut();
+    await widget.connector.killSession();
   }
 }
 

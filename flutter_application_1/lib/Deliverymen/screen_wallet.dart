@@ -1,26 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:etherscan_api/etherscan_api.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'screen_home.dart';
 import 'screen_accepted_order.dart';
 import 'screen_message.dart';
-import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-final finalBalance = getBalance(getAddress());
-final network = getNetworkName(getNetwork());
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
 
 class WalletPage extends StatefulWidget {
   final String title;
-  var session, connector;
-  WalletPage(
-      {Key? key,
-      required this.title,
-      required this.session,
-      required this.connector})
+  var connector;
+  WalletPage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<WalletPage> createState() => _WalletPageState();
@@ -48,8 +43,7 @@ class _WalletPageState extends State<WalletPage> {
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        var balance = int.parse(snapshot.data) *
-                            (1 / 1000000000000000000);
+                        var balance = snapshot.data;
                         return Text(
                           balance.toStringAsFixed(5),
                           style: const TextStyle(
@@ -127,8 +121,7 @@ class _WalletPageState extends State<WalletPage> {
                   builder:
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasData) {
-                      var balance =
-                          int.parse(snapshot.data) * (1 / 1000000000000000000);
+                      var balance = snapshot.data;
                       return Text(
                         balance.toStringAsFixed(10),
                         style: const TextStyle(
@@ -175,7 +168,7 @@ class _WalletPageState extends State<WalletPage> {
               height: 30,
             ),
             QrImageView(
-              data: getAddress(),
+              data: connector.address,
               version: QrVersions.auto,
               size: 300.0,
             ),
@@ -217,7 +210,7 @@ class _WalletPageState extends State<WalletPage> {
                       children: [
                         Flexible(
                             child: Text(
-                          getAddress(),
+                          connector.address,
                           style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontSize: 20,
@@ -235,7 +228,7 @@ class _WalletPageState extends State<WalletPage> {
                 ElevatedButton.icon(
                   onPressed: () {
                     Clipboard.setData(
-                            ClipboardData(text: getAddress().toString()))
+                            ClipboardData(text: connector.address.toString()))
                         .then((_) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Wallet Address copied to clipboard")));
@@ -259,10 +252,8 @@ class _WalletPageState extends State<WalletPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              WalletPage(title: 'Wallet', connector: widget.connector)),
     );
   }
 
@@ -271,9 +262,7 @@ class _WalletPageState extends State<WalletPage> {
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-              title: 'View Available Orders',
-              session: widget.session,
-              connector: widget.connector)),
+              title: 'View Available Orders', connector: widget.connector)),
     );
   }
 
@@ -281,10 +270,8 @@ class _WalletPageState extends State<WalletPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => OrderPage(
-              title: 'Accepted Orders',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              OrderPage(title: 'Accepted Orders', connector: widget.connector)),
     );
   }
 
@@ -292,23 +279,18 @@ class _WalletPageState extends State<WalletPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              MessagePage(title: 'Message', connector: widget.connector)),
     );
   }
 
-  logout() {
-    widget.connector.on(
-        'disconnect',
-        (payload) => setState(() {
-              widget.session = null;
-            }));
+  logout() async {
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => UserSelectionPage(title: 'Landing Page')),
     );
+    await FirebaseAuth.instance.signOut();
+    await widget.connector.killSession();
   }
 }

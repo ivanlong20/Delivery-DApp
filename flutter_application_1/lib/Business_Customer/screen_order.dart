@@ -3,20 +3,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
 import 'screen_wallet.dart';
 import 'screen_message.dart';
-import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
-// final finalBalance = getBalance(getAddress());
-// final network = getNetworkName(getNetwork());
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
 
 class OrderPage extends StatefulWidget {
   final String title;
   var connector;
-  OrderPage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  OrderPage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -44,12 +40,11 @@ class _OrderPageState extends State<OrderPage> {
               ]),
               Row(children: [
                 FutureBuilder<dynamic>(
-                    // future: finalBalance,
+                    future: finalBalance,
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        var balance = int.parse(snapshot.data) *
-                            (1 / 1000000000000000000);
+                        var balance = snapshot.data;
                         return Text(
                           balance.toStringAsFixed(5),
                           style: const TextStyle(
@@ -75,11 +70,11 @@ class _OrderPageState extends State<OrderPage> {
               ]),
               Row(
                 children: [
-                  // Text(network,
-                  //     style: const TextStyle(
-                  //       color: Color.fromARGB(255, 0, 0, 0),
-                  //       fontSize: 16,
-                  //     ))
+                  Text(network,
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                      ))
                 ],
               )
             ])),
@@ -116,9 +111,8 @@ class _OrderPageState extends State<OrderPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              connector: widget.connector)),
+          builder: (context) =>
+              WalletPage(title: 'Wallet', connector: widget.connector)),
     );
   }
 
@@ -126,9 +120,8 @@ class _OrderPageState extends State<OrderPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => HomePage(
-              title: 'Send Package',
-              connector: widget.connector)),
+          builder: (context) =>
+              HomePage(title: 'Send Package', connector: widget.connector)),
     );
   }
 
@@ -137,8 +130,7 @@ class _OrderPageState extends State<OrderPage> {
       context,
       MaterialPageRoute(
           builder: (context) => OrderPage(
-              title: 'Order Tracking & History',
-              connector: widget.connector)),
+              title: 'Order Tracking & History', connector: widget.connector)),
     );
   }
 
@@ -146,23 +138,18 @@ class _OrderPageState extends State<OrderPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              connector: widget.connector)),
+          builder: (context) =>
+              MessagePage(title: 'Message', connector: widget.connector)),
     );
   }
 
-  logout() {
-    // widget.connector.on(
-    //     'disconnect',
-    //     (payload) => setState(() {
-    //           widget.session = null;
-    //         }));
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => UserSelectionPage(title: 'Landing Page')),
-    // );
+  logout() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UserSelectionPage(title: 'Landing Page')),
+    );
+    await widget.connector.killSession();
   }
 }
 

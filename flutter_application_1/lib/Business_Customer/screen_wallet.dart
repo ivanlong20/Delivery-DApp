@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:etherscan_api/etherscan_api.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'screen_home.dart';
 import 'screen_order.dart';
 import 'screen_message.dart';
-import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
-// final finalBalance = getBalance(getAddress());
-// final network = getNetworkName(getNetwork());
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
 
 class WalletPage extends StatefulWidget {
   final String title;
   var connector;
-  WalletPage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  WalletPage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<WalletPage> createState() => _WalletPageState();
@@ -42,12 +37,11 @@ class _WalletPageState extends State<WalletPage> {
               ]),
               Row(children: [
                 FutureBuilder<dynamic>(
-                    // future: finalBalance,
+                    future: finalBalance,
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        var balance = int.parse(snapshot.data) *
-                            (1 / 1000000000000000000);
+                        var balance = snapshot.data;
                         return Text(
                           balance.toStringAsFixed(5),
                           style: TextStyle(
@@ -73,14 +67,11 @@ class _WalletPageState extends State<WalletPage> {
               ]),
               Row(
                 children: [
-                  // Text(
-                  //     widget.connector.connected
-                  //         ? getNetworkName(widget.session.chainId)
-                  //         : 'Not Connected',
-                  //     style: TextStyle(
-                  //       color: Color.fromARGB(255, 0, 0, 0),
-                  //       fontSize: 16,
-                  //     ))
+                  Text(network,
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                      ))
                 ],
               )
             ])),
@@ -125,12 +116,11 @@ class _WalletPageState extends State<WalletPage> {
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               FutureBuilder<dynamic>(
-                  // future: finalBalance,
+                  future: finalBalance,
                   builder:
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.hasData) {
-                      var balance =
-                          int.parse(snapshot.data) * (1 / 1000000000000000000);
+                      var balance = snapshot.data;
                       return Text(
                         balance.toStringAsFixed(10),
                         style: const TextStyle(
@@ -167,20 +157,20 @@ class _WalletPageState extends State<WalletPage> {
               height: 5,
             ),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-              // Text(network,
-              //     style: TextStyle(
-              //       fontWeight: FontWeight.w600,
-              //       fontSize: 24,
-              //     )),
+              Text(network,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 24,
+                  )),
             ]),
             SizedBox(
               height: 30,
             ),
-            // QrImageView(
-            //   data: getAddress(),
-            //   version: QrVersions.auto,
-            //   size: 300.0,
-            // ),
+            QrImageView(
+              data: widget.connector.address,
+              version: QrVersions.auto,
+              size: 300.0,
+            ),
             SizedBox(
               height: 30,
             ),
@@ -217,15 +207,15 @@ class _WalletPageState extends State<WalletPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        // Flexible(
-                        //     child: Text(
-                        //   getAddress(),
-                        //   style: TextStyle(
-                        //     color: Color.fromARGB(255, 0, 0, 0),
-                        //     fontSize: 20,
-                        //     fontWeight: FontWeight.w700,
-                        //   ),
-                        // ))
+                        Flexible(
+                            child: Text(
+                          widget.connector.address,
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ))
                       ],
                     ),
                   ],
@@ -236,12 +226,12 @@ class _WalletPageState extends State<WalletPage> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
-                    // Clipboard.setData(
-                    //         ClipboardData(text: getAddress().toString()))
-                    //     .then((_) {
-                    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    //       content: Text("Wallet Address copied to clipboard")));
-                    // });
+                    Clipboard.setData(ClipboardData(
+                            text: widget.connector.address.toString()))
+                        .then((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text("Wallet Address copied to clipboard")));
+                    });
                   },
                   icon: Icon(
                     Icons.copy,
@@ -261,9 +251,8 @@ class _WalletPageState extends State<WalletPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              connector: widget.connector)),
+          builder: (context) =>
+              WalletPage(title: 'Wallet', connector: widget.connector)),
     );
   }
 
@@ -271,9 +260,8 @@ class _WalletPageState extends State<WalletPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => HomePage(
-              title: 'Send Package',
-              connector: widget.connector)),
+          builder: (context) =>
+              HomePage(title: 'Send Package', connector: widget.connector)),
     );
   }
 
@@ -282,8 +270,7 @@ class _WalletPageState extends State<WalletPage> {
       context,
       MaterialPageRoute(
           builder: (context) => OrderPage(
-              title: 'Order Tracking & History',
-              connector: widget.connector)),
+              title: 'Order Tracking & History', connector: widget.connector)),
     );
   }
 
@@ -291,22 +278,17 @@ class _WalletPageState extends State<WalletPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              connector: widget.connector)),
+          builder: (context) =>
+              MessagePage(title: 'Message', connector: widget.connector)),
     );
   }
 
-  logout() {
-    // widget.connector.on(
-    //     'disconnect',
-    //     (payload) => setState(() {
-    //           widget.session = null;
-    //         }));
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => UserSelectionPage(title: 'Landing Page')),
-    // );
+  logout() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UserSelectionPage(title: 'Landing Page')),
+    );
+    await widget.connector.killSession();
   }
 }

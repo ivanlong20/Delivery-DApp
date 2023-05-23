@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
 import 'screen_order.dart';
 import 'screen_wallet.dart';
-import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
-// final finalBalance = getBalance(getAddress());
-// final network = getNetworkName(getNetwork());
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
 
 TextEditingController wallet_address = TextEditingController();
 TextEditingController message = TextEditingController();
@@ -16,10 +14,7 @@ TextEditingController message = TextEditingController();
 class MessagePage extends StatefulWidget {
   final String title;
   var connector;
-  MessagePage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  MessagePage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<MessagePage> createState() => _MessagePageState();
@@ -36,8 +31,7 @@ class _MessagePageState extends State<MessagePage> {
             context,
             MaterialPageRoute(
                 builder: (context) => NewMessagePage(
-                    title: 'New Message',
-                    connector: widget.connector)),
+                    title: 'New Message', connector: widget.connector)),
           );
         },
         child: const Icon(Icons.add),
@@ -56,12 +50,11 @@ class _MessagePageState extends State<MessagePage> {
               ]),
               Row(children: [
                 FutureBuilder<dynamic>(
-                    // future: finalBalance,
+                    future: finalBalance,
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        var balance = int.parse(snapshot.data) *
-                            (1 / 1000000000000000000);
+                        var balance = snapshot.data;
                         return Text(
                           balance.toStringAsFixed(5),
                           style: TextStyle(
@@ -87,11 +80,11 @@ class _MessagePageState extends State<MessagePage> {
               ]),
               Row(
                 children: [
-                  // Text(network,
-                  //     style: TextStyle(
-                  //       color: Color.fromARGB(255, 0, 0, 0),
-                  //       fontSize: 16,
-                  //     ))
+                  Text(network,
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                        fontSize: 16,
+                      ))
                 ],
               )
             ])),
@@ -128,9 +121,8 @@ class _MessagePageState extends State<MessagePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              connector: widget.connector)),
+          builder: (context) =>
+              WalletPage(title: 'Wallet', connector: widget.connector)),
     );
   }
 
@@ -138,9 +130,8 @@ class _MessagePageState extends State<MessagePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => HomePage(
-              title: 'Send Package',
-              connector: widget.connector)),
+          builder: (context) =>
+              HomePage(title: 'Send Package', connector: widget.connector)),
     );
   }
 
@@ -149,8 +140,7 @@ class _MessagePageState extends State<MessagePage> {
       context,
       MaterialPageRoute(
           builder: (context) => OrderPage(
-              title: 'Order Tracking & History',
-              connector: widget.connector)),
+              title: 'Order Tracking & History', connector: widget.connector)),
     );
   }
 
@@ -158,33 +148,25 @@ class _MessagePageState extends State<MessagePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              connector: widget.connector)),
+          builder: (context) =>
+              MessagePage(title: 'Message', connector: widget.connector)),
     );
   }
 
-  logout() {
-    // widget.connector.on(
-    //     'disconnect',
-    //     (payload) => setState(() {
-    //           widget.session = null;
-    //         }));
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => UserSelectionPage(title: 'Landing Page')),
-    // );
+  logout() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UserSelectionPage(title: 'Landing Page')),
+    );
+    await widget.connector.killSession();
   }
 }
 
 class NewMessagePage extends StatefulWidget {
   final String title;
   final connector;
-  NewMessagePage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  NewMessagePage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<NewMessagePage> createState() => _NewMessagePageState();
@@ -246,14 +228,13 @@ class _NewMessagePageState extends State<NewMessagePage> {
             FilledButton(
                 style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
                 onPressed: () => {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => ItemInfoPage(
-                      //           title: 'Item Details',
-                      //           session: widget.session,
-                      //           connector: widget.connector)),
-                      // )
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ItemInfoPage(
+                                title: 'Item Details',
+                                connector: widget.connector)),
+                      )
                     },
                 child: Text('Send', style: TextStyle(fontSize: 18)))
           ],
@@ -347,9 +328,7 @@ class MessageListView extends StatelessWidget {
       context,
       MaterialPageRoute(
           builder: (context) => MessageDetailsPage(
-              title: 'Message Details',
-              index: index,
-              connector: connector)),
+              title: 'Message Details', index: index, connector: connector)),
     );
   }
 }
@@ -379,8 +358,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
               context,
               MaterialPageRoute(
                   builder: (context) => NewMessagePage(
-                      title: 'New Message',
-                      connector: widget.connector)),
+                      title: 'New Message', connector: widget.connector)),
             );
           },
           label: const Text('Reply'),

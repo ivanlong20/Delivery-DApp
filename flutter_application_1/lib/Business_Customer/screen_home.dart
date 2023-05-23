@@ -8,8 +8,8 @@ import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 
-// final finalBalance = getBalance(getAddress());
-// final network = getNetworkName(getNetwork());
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
 
 final eth = getEthereumPrice();
 TextEditingController textController1 = TextEditingController();
@@ -73,10 +73,7 @@ combineAllFee(deliveryFee, ethPrice) async {
 class HomePage extends StatefulWidget {
   final String title;
   var connector;
-  HomePage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  HomePage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<HomePage> createState() => _HomePageState();
@@ -109,12 +106,12 @@ class _HomePageState extends State<HomePage> {
                 ]),
                 Row(children: [
                   FutureBuilder<dynamic>(
-                      // future: finalBalance,
+                      future: finalBalance,
                       builder: (BuildContext context,
                           AsyncSnapshot<dynamic> snapshot) {
                         if (snapshot.hasData) {
-                          var balance = int.parse(snapshot.data) *
-                              (1 / 1000000000000000000);
+                          print(snapshot.data);
+                          var balance = snapshot.data;
                           return Text(
                             balance.toStringAsFixed(5),
                             style: const TextStyle(
@@ -140,12 +137,11 @@ class _HomePageState extends State<HomePage> {
                 ]),
                 Row(
                   children: [
-                    // Text(
-                    //     network,
-                    //     style: const TextStyle(
-                    //       color: Color.fromARGB(255, 0, 0, 0),
-                    //       fontSize: 16,
-                    //     ))
+                    Text(network,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          fontSize: 16,
+                        ))
                   ],
                 )
               ])),
@@ -317,9 +313,8 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              connector: widget.connector)),
+          builder: (context) =>
+              WalletPage(title: 'Wallet', connector: widget.connector)),
     );
   }
 
@@ -327,9 +322,8 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => HomePage(
-              title: 'Ship',
-              connector: widget.connector)),
+          builder: (context) =>
+              HomePage(title: 'Ship', connector: widget.connector)),
     );
   }
 
@@ -338,8 +332,7 @@ class _HomePageState extends State<HomePage> {
       context,
       MaterialPageRoute(
           builder: (context) => OrderPage(
-              title: 'Order Tracking & History',
-              connector: widget.connector)),
+              title: 'Order Tracking & History', connector: widget.connector)),
     );
   }
 
@@ -347,23 +340,18 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              connector: widget.connector)),
+          builder: (context) =>
+              MessagePage(title: 'Message', connector: widget.connector)),
     );
   }
 
-  logout() {
-    // widget.connector.on(
-    //     'disconnect',
-    //     (payload) => setState(() {
-    //           widget.session = null;
-    //         }));
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //       builder: (context) => UserSelectionPage(title: 'Landing Page')),
-    // );
+  logout() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => UserSelectionPage(title: 'Landing Page')),
+    );
+    await widget.connector.killSession();
   }
 }
 //
@@ -372,11 +360,8 @@ class _HomePageState extends State<HomePage> {
 
 class ItemInfoPage extends StatefulWidget {
   final String title;
-  final  connector;
-  ItemInfoPage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  final connector;
+  ItemInfoPage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<ItemInfoPage> createState() => _ItemInfoPageState();
@@ -607,11 +592,8 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
 
 class PaymentPage extends StatefulWidget {
   final String title;
-  final  connector;
-  PaymentPage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  final connector;
+  PaymentPage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -621,8 +603,11 @@ class _PaymentPageState extends State<PaymentPage> {
   final ethPrice = eth;
   List<String> payerList = ['Sender', 'Receiver'];
 
+
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),

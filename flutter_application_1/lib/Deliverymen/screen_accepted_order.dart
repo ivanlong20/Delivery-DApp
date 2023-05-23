@@ -3,21 +3,17 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
 import 'screen_wallet.dart';
 import 'screen_message.dart';
-import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../screen_user_selection.dart';
 
-final finalBalance = getBalance(getAddress());
-final network = getNetworkName(getNetwork());
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
 
 class OrderPage extends StatefulWidget {
   final String title;
-  var session, connector;
-  OrderPage(
-      {Key? key,
-      required this.title,
-      required this.session,
-      required this.connector})
+  var connector;
+  OrderPage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -49,8 +45,7 @@ class _OrderPageState extends State<OrderPage> {
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        var balance = int.parse(snapshot.data) *
-                            (1 / 1000000000000000000);
+                        var balance = snapshot.data;
                         return Text(
                           balance.toStringAsFixed(5),
                           style: const TextStyle(
@@ -116,10 +111,8 @@ class _OrderPageState extends State<OrderPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              WalletPage(title: 'Wallet', connector: widget.connector)),
     );
   }
 
@@ -128,45 +121,36 @@ class _OrderPageState extends State<OrderPage> {
       context,
       MaterialPageRoute(
           builder: (context) => HomePage(
-              title: 'View Available Orders',
-              session: widget.session,
-              connector: widget.connector)),
+              title: 'View Available Orders', connector: widget.connector)),
     );
   }
 
- openOrderPage() {
+  openOrderPage() {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => OrderPage(
-              title: 'Accepted Orders',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              OrderPage(title: 'Accepted Orders', connector: widget.connector)),
     );
   }
-  
+
   openMessagePage() {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              session: widget.session,
-              connector: widget.connector)),
+          builder: (context) =>
+              MessagePage(title: 'Message', connector: widget.connector)),
     );
   }
 
-  logout() {
-    widget.connector.on(
-        'disconnect',
-        (payload) => setState(() {
-              widget.session = null;
-            }));
+  logout() async {
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => UserSelectionPage(title: 'Landing Page')),
     );
+    await FirebaseAuth.instance.signOut();
+    await widget.connector.killSession();
   }
 }
 

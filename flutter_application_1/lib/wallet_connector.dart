@@ -11,6 +11,8 @@ abstract class WalletConnector {
     required double amount,
   });
 
+  
+
   Future<void> openWalletApp();
 
   Future<double> getBalance();

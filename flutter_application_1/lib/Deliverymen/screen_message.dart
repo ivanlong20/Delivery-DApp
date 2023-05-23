@@ -3,23 +3,24 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
 import 'screen_accepted_order.dart';
 import 'screen_wallet.dart';
-import '../etherscan_api.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-final finalBalance = getBalance(getAddress());
-final network = getNetworkName(getNetwork());
+
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
+
 
 TextEditingController wallet_address = TextEditingController();
 TextEditingController message = TextEditingController();
 
 class MessagePage extends StatefulWidget {
   final String title;
-  var session, connector;
+  var connector;
   MessagePage(
       {Key? key,
       required this.title,
-      required this.session,
       required this.connector})
       : super(key: key);
   @override
@@ -38,7 +39,6 @@ class _MessagePageState extends State<MessagePage> {
             MaterialPageRoute(
                 builder: (context) => NewMessagePage(
                     title: 'New Message',
-                    session: widget.session,
                     connector: widget.connector)),
           );
         },
@@ -62,8 +62,7 @@ class _MessagePageState extends State<MessagePage> {
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        var balance = int.parse(snapshot.data) *
-                            (1 / 1000000000000000000);
+                        var balance = snapshot.data;
                         return Text(
                           balance.toStringAsFixed(5),
                           style: const TextStyle(
@@ -121,7 +120,7 @@ class _MessagePageState extends State<MessagePage> {
           ],
         ),
       ),
-      body: MessageListView(widget.session, widget.connector),
+      body: MessageListView( widget.connector),
     );
   }
 
@@ -131,7 +130,6 @@ class _MessagePageState extends State<MessagePage> {
       MaterialPageRoute(
           builder: (context) => WalletPage(
               title: 'Wallet',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -142,7 +140,6 @@ class _MessagePageState extends State<MessagePage> {
       MaterialPageRoute(
           builder: (context) => HomePage(
               title: 'View Available Orders',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -153,7 +150,6 @@ class _MessagePageState extends State<MessagePage> {
       MaterialPageRoute(
           builder: (context) => OrderPage(
               title: 'Accepted Orders',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
@@ -164,32 +160,27 @@ class _MessagePageState extends State<MessagePage> {
       MaterialPageRoute(
           builder: (context) => MessagePage(
               title: 'Message',
-              session: widget.session,
               connector: widget.connector)),
     );
   }
 
-  logout() {
-    widget.connector.on(
-        'disconnect',
-        (payload) => setState(() {
-              widget.session = null;
-            }));
+  logout() async {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => UserSelectionPage(title: 'Landing Page')),
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => UserSelectionPage(title: 'Landing Page')),
+      );
+      await FirebaseAuth.instance.signOut();
+      await widget.connector.killSession();
   }
 }
 
 class NewMessagePage extends StatefulWidget {
   final String title;
-  final session, connector;
+  final connector;
   NewMessagePage(
       {Key? key,
       required this.title,
-      required this.session,
       required this.connector})
       : super(key: key);
   @override
@@ -257,7 +248,6 @@ class _NewMessagePageState extends State<NewMessagePage> {
                       //   MaterialPageRoute(
                       //       builder: (context) => ItemInfoPage(
                       //           title: 'Item Details',
-                      //           session: widget.session,
                       //           connector: widget.connector)),
                       // )
                     },
@@ -270,8 +260,8 @@ class _NewMessagePageState extends State<NewMessagePage> {
 }
 
 class MessageListView extends StatelessWidget {
-  var session, connector;
-  MessageListView(this.session, this.connector);
+  var connector;
+  MessageListView(this.connector);
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
@@ -355,7 +345,6 @@ class MessageListView extends StatelessWidget {
           builder: (context) => MessageDetailsPage(
               title: 'Message Details',
               index: index,
-              session: session,
               connector: connector)),
     );
   }
@@ -363,13 +352,12 @@ class MessageListView extends StatelessWidget {
 
 class MessageDetailsPage extends StatefulWidget {
   final String title;
-  final session, connector;
+  final connector;
   final index;
   MessageDetailsPage(
       {Key? key,
       required this.title,
       required this.index,
-      required this.session,
       required this.connector})
       : super(key: key);
   @override
@@ -388,7 +376,6 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
               MaterialPageRoute(
                   builder: (context) => NewMessagePage(
                       title: 'New Message',
-                      session: widget.session,
                       connector: widget.connector)),
             );
           },
