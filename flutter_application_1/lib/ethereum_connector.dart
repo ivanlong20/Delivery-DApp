@@ -124,31 +124,22 @@ class EthereumConnector implements WalletConnector {
       required BigInt productAmount}) async {
     final EthereumAddress contractAddress =
         EthereumAddress.fromHex('0xf985ad80f2E0cE9E1FDff7B0DBCDb76a06d123cC');
+
     final recipientrWalletAddress =
         EthereumAddress.fromHex(receiverWalletAddress);
-    final abiCode =
-        await rootBundle.loadString("assets/smart_contract/abi.json");
 
-    final contract = DeployedContract(
-        ContractAbi.fromJson(abiCode, 'Delivery'), contractAddress);
-
-    // read the contract abi and tell web3dart where it's deployed (contractAddr)
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
+
     final senderWalletAddress =
         EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
-    final varEvent = contract.event('OrderCreated');
+
     var orderID, date;
     final delivery = Delivery(address: contractAddress, client: client);
 
-    final subscription = client
-        .events(FilterOptions.events(contract: contract, event: varEvent))
-        .take(1)
-        .listen((event) {
-      final decoded = varEvent.decodeResults(event.topics!, event.data!);
-
-      orderID = decoded[0] as BigInt;
+    final subscription = delivery.orderCreatedEvents().take(1).listen((event) {
+      orderID = event.orderID;
       orderID.toString();
-      final timestamp = decoded[1] as BigInt;
+      final timestamp = event.timestamp;
 
       date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
 
@@ -178,28 +169,11 @@ class EthereumConnector implements WalletConnector {
     Transaction transaction = Transaction(
       from: senderWalletAddress,
       maxGas: 1000000,
-      gasPrice: EtherAmount.inWei(BigInt.from(10000000000)),
     );
 
-    delivery.createDeliveryOrder(
-      senderWalletAddress,
-      recipientrWalletAddress,
-      deliveryAddressInfo,
-      packageInfo,
-      paymentInfo,
-      credentials: credentials,
-    );
-
-    await client.call(
-        contract: contract,
-        function: contract.function('createDeliveryOrder'),
-        params: [
-          senderWalletAddress,
-          recipientrWalletAddress,
-          deliveryAddressInfo,
-          packageInfo,
-          paymentInfo
-        ]);
+    delivery.createDeliveryOrder(senderWalletAddress, recipientrWalletAddress,
+        deliveryAddressInfo, packageInfo, paymentInfo,
+        credentials: credentials, transaction: transaction);
 
     await subscription.asFuture();
     await subscription.cancel();
