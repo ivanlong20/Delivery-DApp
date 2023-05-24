@@ -7,24 +7,32 @@ import 'screen_order.dart';
 import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
+import 'package:web3dart/web3dart.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
 
 final eth = getEthereumPrice();
-TextEditingController textController1 = TextEditingController();
-TextEditingController textController2 = TextEditingController();
-int? _choiceIndex1;
-int? _choiceIndex2;
-TextEditingController textController3 = TextEditingController();
+TextEditingController senderDeliveryAddress = TextEditingController();
+TextEditingController recipientDeliveryAddress = TextEditingController();
+int? senderDistrictIndex1;
+int? recipientDistrictIndex2;
+List<String> district = [
+  'Hong Kong',
+  'Kowloon',
+  'Others',
+  'New Territories',
+  'Island District',
+];
+TextEditingController packageDescription = TextEditingController();
 
-int _sizePickerIndex1 = 0;
-int _sizePickerIndex2 = 0;
-int _sizePickerIndex3 = 0;
+int _sizePickerIndexH = 0;
+int _sizePickerIndexW = 0;
+int _sizePickerIndexD = 0;
 double _weightPickerIndex = 0.0;
-TextEditingController textController4 = TextEditingController();
-int? _choiceIndex3;
-TextEditingController textController5 = TextEditingController();
+TextEditingController receiverWalletAddress = TextEditingController();
+int? paidBy;
+TextEditingController productAmountinHKD = TextEditingController()..text = '0';
 
 var priceSender, priceReceiver;
 
@@ -52,7 +60,7 @@ calculateFee(width, height, depth, weight, ethPrice) async {
 }
 
 getProductAmount() {
-  return textController5.text;
+  return productAmountinHKD.text;
 }
 
 combineAllFee(deliveryFee, ethPrice) async {
@@ -82,14 +90,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    List<String> district = [
-      'Hong Kong',
-      'Kowloon',
-      'Others',
-      'New Territories',
-      'Island District',
-    ];
-
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text(widget.title)),
@@ -191,11 +191,11 @@ class _HomePageState extends State<HomePage> {
                         TextField(
                           onChanged: (text) {
                             setState(() {
-                              textController1.text = text;
+                              senderDeliveryAddress.text = text;
                             });
                           },
                           maxLines: 1,
-                          controller: textController1,
+                          controller: senderDeliveryAddress,
                           decoration: InputDecoration(
                               icon: const Icon(Icons.pin_drop_outlined),
                               labelText: '  Enter Sender\'s address',
@@ -210,12 +210,13 @@ class _HomePageState extends State<HomePage> {
                                 children: List<Widget>.generate(5, (int index) {
                                   return ChoiceChip(
                                     label: Text(district[index]),
-                                    selected: _choiceIndex1 == index,
+                                    selected: senderDistrictIndex1 == index,
                                     selectedColor:
                                         Color.fromARGB(255, 221, 221, 221),
                                     onSelected: (bool selected) {
                                       setState(() {
-                                        _choiceIndex1 = selected ? index : null;
+                                        senderDistrictIndex1 =
+                                            selected ? index : null;
                                       });
                                     },
                                     shape: RoundedRectangleBorder(
@@ -233,11 +234,11 @@ class _HomePageState extends State<HomePage> {
                         TextField(
                           onChanged: (text) {
                             setState(() {
-                              textController2.text = text;
+                              recipientDeliveryAddress.text = text;
                             });
                           },
                           maxLines: 1,
-                          controller: textController2,
+                          controller: recipientDeliveryAddress,
                           decoration: InputDecoration(
                               icon: const Icon(Icons.flag),
                               labelText: '  Enter Receiver\'s address',
@@ -252,12 +253,13 @@ class _HomePageState extends State<HomePage> {
                                 children: List<Widget>.generate(5, (int index) {
                                   return ChoiceChip(
                                     label: Text(district[index]),
-                                    selected: _choiceIndex2 == index,
+                                    selected: recipientDistrictIndex2 == index,
                                     selectedColor:
                                         Color.fromARGB(255, 221, 221, 221),
                                     onSelected: (bool selected) {
                                       setState(() {
-                                        _choiceIndex2 = selected ? index : null;
+                                        recipientDistrictIndex2 =
+                                            selected ? index : null;
                                       });
                                     },
                                     shape: RoundedRectangleBorder(
@@ -279,11 +281,11 @@ class _HomePageState extends State<HomePage> {
                         TextField(
                           onChanged: (text) {
                             setState(() {
-                              textController3.text = text;
+                              packageDescription.text = text;
                             });
                           },
                           maxLines: 1,
-                          controller: textController3,
+                          controller: packageDescription,
                           decoration: InputDecoration(
                               icon: const FaIcon(FontAwesomeIcons.box),
                               labelText: 'What\'s in your package?',
@@ -295,14 +297,13 @@ class _HomePageState extends State<HomePage> {
                             style: FilledButton.styleFrom(
                                 minimumSize: Size(400, 50)),
                             onPressed: () => {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (context) => ItemInfoPage(
-                                  //           title: 'Item Details',
-                                  //           connector: widget.connector)),
-                                  // )
-                                  connector
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ItemInfoPage(
+                                            title: 'Item Details',
+                                            connector: widget.connector)),
+                                  )
                                 },
                             child: Text('Continue',
                                 style: TextStyle(fontSize: 18)))
@@ -376,8 +377,8 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
     convertFeeToHKD() async {
       double eth = await ethPrice;
       double HKD = 0;
-      HKD = await calculateFee(_sizePickerIndex1, _sizePickerIndex2,
-              _sizePickerIndex3, _weightPickerIndex, eth) *
+      HKD = await calculateFee(_sizePickerIndexH, _sizePickerIndexW,
+              _sizePickerIndexD, _weightPickerIndex, eth) *
           eth;
       return HKD;
     }
@@ -428,11 +429,11 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     NumberPicker(
-                      value: _sizePickerIndex1,
+                      value: _sizePickerIndexH,
                       minValue: 0,
                       maxValue: 150,
                       onChanged: (value) =>
-                          setState(() => _sizePickerIndex1 = value),
+                          setState(() => _sizePickerIndexH = value),
                     ),
                     Text(
                       'X',
@@ -440,11 +441,11 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                     NumberPicker(
-                      value: _sizePickerIndex2,
+                      value: _sizePickerIndexW,
                       minValue: 0,
                       maxValue: 150,
                       onChanged: (value) =>
-                          setState(() => _sizePickerIndex2 = value),
+                          setState(() => _sizePickerIndexW = value),
                     ),
                     Text(
                       'X',
@@ -452,11 +453,11 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                     NumberPicker(
-                      value: _sizePickerIndex3,
+                      value: _sizePickerIndexD,
                       minValue: 0,
                       maxValue: 150,
                       onChanged: (value) =>
-                          setState(() => _sizePickerIndex3 = value),
+                          setState(() => _sizePickerIndexD = value),
                     ),
                     Text('Cm',
                         style: TextStyle(
@@ -499,9 +500,9 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                   children: [
                     FutureBuilder<dynamic>(
                         future: calculateFee(
-                            _sizePickerIndex1,
-                            _sizePickerIndex2,
-                            _sizePickerIndex3,
+                            _sizePickerIndexH,
+                            _sizePickerIndexW,
+                            _sizePickerIndexD,
                             _weightPickerIndex,
                             ethPrice),
                         builder: (BuildContext context,
@@ -604,11 +605,8 @@ class _PaymentPageState extends State<PaymentPage> {
   final ethPrice = eth;
   List<String> payerList = ['Sender', 'Receiver'];
 
-
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
@@ -630,11 +628,11 @@ class _PaymentPageState extends State<PaymentPage> {
                 TextField(
                   onChanged: (text) {
                     setState(() {
-                      textController4.text = text;
+                      receiverWalletAddress.text = text;
                     });
                   },
                   maxLines: 1,
-                  controller: textController4,
+                  controller: receiverWalletAddress,
                   decoration: InputDecoration(
                       icon: const Icon(Icons.wallet),
                       labelText:
@@ -658,11 +656,11 @@ class _PaymentPageState extends State<PaymentPage> {
                         children: List<Widget>.generate(2, (int index) {
                           return ChoiceChip(
                             label: Text(payerList[index]),
-                            selected: _choiceIndex3 == index,
+                            selected: paidBy == index,
                             selectedColor: Color.fromARGB(255, 221, 221, 221),
                             onSelected: (bool selected) {
                               setState(() {
-                                _choiceIndex3 = selected ? index : null;
+                                paidBy = selected ? index : null;
                               });
                             },
                             shape: RoundedRectangleBorder(
@@ -670,7 +668,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           );
                         }))),
                 const SizedBox(height: 20),
-                (_choiceIndex3 == 1)
+                (paidBy == 1)
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -686,11 +684,11 @@ class _PaymentPageState extends State<PaymentPage> {
                           TextField(
                             onChanged: (text) {
                               setState(() {
-                                textController5.text = text;
+                                productAmountinHKD.text = text;
                               });
                             },
                             maxLines: 1,
-                            controller: textController5,
+                            controller: productAmountinHKD,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                                 icon: const Icon(Icons.attach_money),
@@ -714,9 +712,9 @@ class _PaymentPageState extends State<PaymentPage> {
                               FutureBuilder<dynamic>(
                                   future: combineAllFee(
                                       calculateFee(
-                                          _sizePickerIndex1,
-                                          _sizePickerIndex2,
-                                          _sizePickerIndex3,
+                                          _sizePickerIndexH,
+                                          _sizePickerIndexW,
+                                          _sizePickerIndexD,
                                           _weightPickerIndex,
                                           ethPrice),
                                       ethPrice),
@@ -781,9 +779,9 @@ class _PaymentPageState extends State<PaymentPage> {
                             children: [
                               FutureBuilder<dynamic>(
                                   future: calculateFee(
-                                      _sizePickerIndex1,
-                                      _sizePickerIndex2,
-                                      _sizePickerIndex3,
+                                      _sizePickerIndexH,
+                                      _sizePickerIndexW,
+                                      _sizePickerIndexD,
                                       _weightPickerIndex,
                                       ethPrice),
                                   builder: (BuildContext context,
@@ -817,21 +815,36 @@ class _PaymentPageState extends State<PaymentPage> {
                           FilledButton(
                               style: FilledButton.styleFrom(
                                   minimumSize: Size(400, 50)),
-                              onPressed: () => {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => PaymentPage(
-                                              title: 'Payment Details',
-                                              connector: widget.connector)),
-                                    )
-                                  },
+                              onPressed: () => {transaction()},
                               child:
                                   Text('Pay', style: TextStyle(fontSize: 18)))
                         ],
                       )
               ])),
         )));
+  }
+
+  transaction() async {
+    print(productAmountinHKD.text);
+        Future.delayed(Duration.zero, () => widget.connector.openWalletApp());
+    await connector
+        .callCreateDeliveryOrder(
+            receiverWalletAddress: receiverWalletAddress.text,
+            senderAddress: senderDeliveryAddress.text,
+            senderDistrict: district[senderDistrictIndex1!],
+            receiverAddress: recipientDeliveryAddress.text,
+            receiverDistrict: district[recipientDistrictIndex2!],
+            packageDiscription: packageDescription.text,
+            packageHeight: BigInt.from(_sizePickerIndexH),
+            packageWidth: BigInt.from(_sizePickerIndexW),
+            packageDepth: BigInt.from(_sizePickerIndexD),
+            packageWeight: BigInt.from(_sizePickerIndexW * 1000),
+            payBySender: (paidBy == 0) ? true : false,
+            deliveryFee: BigInt.from(priceSender * 1e18),
+            productAmount: BigInt.from(double.parse(productAmountinHKD.text) *
+                (await ethPrice) *
+                1e18))
+        .then((value) => print(value));
   }
 }
 

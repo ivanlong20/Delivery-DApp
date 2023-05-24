@@ -1,7 +1,8 @@
-//https://github.com/Anonymousgaurav/flutter_blockchain_payment
+//Reference: https://github.com/Anonymousgaurav/flutter_blockchain_payment
 
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'wallet_connector.dart';
 import 'package:http/http.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
@@ -11,9 +12,7 @@ import 'package:web3dart/web3dart.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:path/path.dart';
 import 'dart:io';
-
-
-
+import 'delivery.g.dart';
 
 class WalletConnectEthereumCredentials extends CustomTransactionSender {
   WalletConnectEthereumCredentials({required this.provider});
@@ -109,60 +108,170 @@ class EthereumConnector implements WalletConnector {
       );
 
   @override
-  Future<String?> sendSmartContractTransaction(
-      {required String recipientAddress,
-      required double amount,
-      required String event,
-      required String function,
-      required String orderID}) async {
-        
+  Future<dynamic> callCreateDeliveryOrder(
+      {required String receiverWalletAddress,
+      required String senderAddress,
+      required String senderDistrict,
+      required String receiverAddress,
+      required String receiverDistrict,
+      required String packageDiscription,
+      required BigInt packageHeight,
+      required BigInt packageWidth,
+      required BigInt packageDepth,
+      required BigInt packageWeight,
+      required bool payBySender,
+      required BigInt deliveryFee,
+      required BigInt productAmount}) async {
     final EthereumAddress contractAddress =
         EthereumAddress.fromHex('0xf985ad80f2E0cE9E1FDff7B0DBCDb76a06d123cC');
-    final abiCode = await File(dirname('smart_contract/abi.json')).readAsString();
+    final recipientrWalletAddress =
+        EthereumAddress.fromHex(receiverWalletAddress);
+    final abiCode =
+        await rootBundle.loadString("assets/smart_contract/abi.json");
+
     final contract = DeployedContract(
         ContractAbi.fromJson(abiCode, 'Delivery'), contractAddress);
 
     // read the contract abi and tell web3dart where it's deployed (contractAddr)
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
-    final ownAddress = await credentials.extractAddress();
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final varEvent = contract.event('OrderCreated');
+    var orderID, date;
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final subscription = client
+        .events(FilterOptions.events(contract: contract, event: varEvent))
+        .take(1)
+        .listen((event) {
+      final decoded = varEvent.decodeResults(event.topics!, event.data!);
+
+      orderID = decoded[0] as BigInt;
+      orderID.toString();
+      final timestamp = decoded[1] as BigInt;
+
+      date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
+
+      print('$orderID created at $date');
+    });
+
+    final deliveryAddressInfo = [
+      senderAddress,
+      senderDistrict,
+      receiverAddress,
+      receiverDistrict
+    ];
+    final packageInfo = [
+      packageDiscription,
+      packageHeight,
+      packageWidth,
+      packageDepth,
+      packageWeight
+    ];
+    final paymentInfo = [
+      payBySender,
+      deliveryFee,
+      productAmount,
+      BigInt.from(0)
+    ];
+
+    Transaction transaction = Transaction(
+      from: senderWalletAddress,
+      maxGas: 1000000,
+      gasPrice: EtherAmount.inWei(BigInt.from(10000000000)),
+    );
+
+    delivery.createDeliveryOrder(
+      senderWalletAddress,
+      recipientrWalletAddress,
+      deliveryAddressInfo,
+      packageInfo,
+      paymentInfo,
+      credentials: credentials,
+    );
+
+    await client.call(
+        contract: contract,
+        function: contract.function('createDeliveryOrder'),
+        params: [
+          senderWalletAddress,
+          recipientrWalletAddress,
+          deliveryAddressInfo,
+          packageInfo,
+          paymentInfo
+        ]);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    await client.dispose();
+    final orderInfo = [orderID, date];
+    return orderInfo;
+  }
+
+  @override
+  Future<dynamic> sendTransaction(
+      {required String recipientAddress,
+      required double amount,
+      required String? eventName,
+      required String functionName,
+      required List<dynamic> params}) async {
+    final EthereumAddress contractAddress =
+        EthereumAddress.fromHex('0xf985ad80f2E0cE9E1FDff7B0DBCDb76a06d123cC');
+    final abiCode =
+        await File(dirname('smart_contract/abi.json')).readAsString();
+    final contract = DeployedContract(
+        ContractAbi.fromJson(abiCode, 'Delivery'), contractAddress);
+
+    // read the contract abi and tell web3dart where it's deployed (contractAddr)
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+    final senderAddress = await credentials.extractAddress();
     final recipient = EthereumAddress.fromHex(recipientAddress);
+    var subscription;
 
     // extracting some functions and events that we'll need later
-    final varEvent = contract.event('Transfer');
-    final varFunction = contract.function(function);
+    final varFunction = contract.function(functionName);
 
-    // listen for the Transfer event when it's emitted by the contract above
-    // final subscription = client
-    //     .events(FilterOptions.events(contract: contract, event: varEvent))
-    //     .take(1)
-    //     .listen((event) {
-    //   final decoded = varEvent.decodeResults(event.topics!, event.data!);
+    if (eventName != null) {
+      final varEvent = contract.event(eventName);
+      // listen for the Transfer event when it's emitted by the contract above
+      subscription = client
+          .events(FilterOptions.events(contract: contract, event: varEvent))
+          .take(1)
+          .listen((event) {
+        final decoded = varEvent.decodeResults(event.topics!, event.data!);
 
-    //   final from = decoded[0] as EthereumAddress;
-    //   final to = decoded[1] as EthereumAddress;
-    //   final value = decoded[2] as BigInt;
+        final from = decoded[0] as EthereumAddress;
+        final to = decoded[1] as EthereumAddress;
+        final value = decoded[2] as BigInt;
 
-    //   print('$from sent $value MetaCoins to $to');
-    // });
+        print('$from sent $value MetaCoins to $to');
+      });
+    }
 
     // check our balance in MetaCoins by calling the appropriate function
-    final balance = await client
-        .call(contract: contract, function: varFunction, params: [ownAddress]);
-    print('We have ${balance.first} MetaCoins');
+    final balance = await client.call(
+        contract: contract, function: varFunction, params: [senderAddress]);
+    print('${balance.first} ETH remaining');
 
-    await client.sendTransaction(
+    final result = await client.sendTransaction(
       credentials,
       Transaction.callContract(
         contract: contract,
         function: varFunction,
-        parameters: [int.parse(orderID)],
+        parameters: params,
       ),
     );
 
-    // await subscription.asFuture();
-    // await subscription.cancel();
+    print(result);
+
+    if (subscription != null) {
+      await subscription.asFuture();
+      await subscription.cancel();
+    }
 
     await client.dispose();
+    return result;
   }
 
   @override

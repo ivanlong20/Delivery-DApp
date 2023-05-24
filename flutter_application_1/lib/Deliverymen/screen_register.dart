@@ -9,6 +9,7 @@ TextEditingController HKID = TextEditingController();
 TextEditingController licenseplateNo = TextEditingController();
 TextEditingController email = TextEditingController();
 TextEditingController password = TextEditingController();
+TextEditingController confirmPassword = TextEditingController();
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key, required this.title});
@@ -138,6 +139,29 @@ class _RegisterPageState extends State<RegisterPage> {
                           decoration: InputDecoration(
                               icon: const Icon(Icons.password),
                               labelText: '  Password',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Confirm New Password',
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(height: 10),
+                        TextField(
+                          obscureText: true,
+                          onChanged: (text) {
+                            setState(() {
+                              password.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          controller: password,
+                          decoration: InputDecoration(
+                              icon: const Icon(Icons.password),
+                              labelText: '  Re-enter Your New Password',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),

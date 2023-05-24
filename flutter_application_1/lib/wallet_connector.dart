@@ -1,4 +1,4 @@
-//https://github.com/Anonymousgaurav/flutter_blockchain_payment
+//Reference: https://github.com/Anonymousgaurav/flutter_blockchain_payment
 
 import 'package:flutter/material.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
@@ -11,12 +11,20 @@ abstract class WalletConnector {
     required double amount,
   });
 
-  Future<void> sendSmartContractTransaction(
-      {required String recipientAddress,
-      required double amount,
-      required String event,
-      required String function,
-      required String orderID});
+  Future<dynamic> callCreateDeliveryOrder(
+      {required String receiverWalletAddress,
+      required String senderAddress,
+      required String senderDistrict,
+      required String receiverAddress,
+      required String receiverDistrict,
+      required String packageDiscription,
+      required BigInt packageHeight,
+      required BigInt packageWidth,
+      required BigInt packageDepth,
+      required BigInt packageWeight,
+      required bool payBySender,
+      required BigInt deliveryFee,
+      required BigInt productAmount});
 
   Future<void> openWalletApp();
 

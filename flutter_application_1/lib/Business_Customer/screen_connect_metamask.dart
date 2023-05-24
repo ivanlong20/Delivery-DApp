@@ -1,4 +1,4 @@
-//https://github.com/Anonymousgaurav/flutter_blockchain_payment
+//Reference: https://github.com/Anonymousgaurav/flutter_blockchain_payment
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -108,8 +108,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                           connector.networkName,
                                           style: const TextStyle(fontSize: 18),
                                         )
-                                      ])
-                                  ,
+                                      ]),
                                 ],
                               ),
                               const SizedBox(height: 100),

@@ -1,4 +1,4 @@
-//https://github.com/Anonymousgaurav/flutter_blockchain_payment
+//Reference: https://github.com/Anonymousgaurav/flutter_blockchain_payment
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -182,7 +182,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) =>
-            HomePage(title: 'Send Package', connector: connector),
+            HomePage(title: 'Available Orders', connector: connector),
       ),
     );
   }
