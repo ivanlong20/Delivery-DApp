@@ -376,7 +376,7 @@ class EthereumConnector implements WalletConnector {
     final delivery = Delivery(address: contractAddress, client: client);
 
     final order = await delivery.getBusinessCustomerOrder(senderWalletAddress);
-    print('$order');
+    // print('$order');
     return order;
   }
 
