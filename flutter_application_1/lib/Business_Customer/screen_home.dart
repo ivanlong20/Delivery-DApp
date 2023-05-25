@@ -7,7 +7,7 @@ import 'screen_order.dart';
 import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:intl/intl.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
@@ -816,8 +816,8 @@ class _PaymentPageState extends State<PaymentPage> {
                               style: FilledButton.styleFrom(
                                   minimumSize: Size(400, 50)),
                               onPressed: () => {transaction()},
-                              child:
-                                  Text('Pay', style: TextStyle(fontSize: 18)))
+                              child: Text('Confirm',
+                                  style: TextStyle(fontSize: 18)))
                         ],
                       )
               ])),
@@ -826,7 +826,11 @@ class _PaymentPageState extends State<PaymentPage> {
 
   transaction() async {
     print(productAmountinHKD.text);
-        Future.delayed(Duration.zero, () => widget.connector.openWalletApp());
+    Future.delayed(Duration.zero, () => widget.connector.openWalletApp());
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadingPage()),
+    );
     await connector
         .callCreateDeliveryOrder(
             receiverWalletAddress: receiverWalletAddress.text,
@@ -844,7 +848,145 @@ class _PaymentPageState extends State<PaymentPage> {
             productAmount: BigInt.from(double.parse(productAmountinHKD.text) *
                 (await ethPrice) *
                 1e18))
-        .then((value) => print(value));
+        .then((value) => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PaymentConfirmationPage(
+                          title: 'Order Confirmation',
+                          orderID: value[0],
+                          date: value[1],
+                          connector: widget.connector,
+                        )),
+              )
+            });
+  }
+}
+
+class PaymentConfirmationPage extends StatefulWidget {
+  final String title;
+  final BigInt orderID;
+  final DateTime date;
+  final connector;
+  PaymentConfirmationPage(
+      {Key? key,
+      required this.title,
+      required this.orderID,
+      required this.date,
+      required this.connector})
+      : super(key: key);
+
+  @override
+  State<PaymentConfirmationPage> createState() =>
+      _PaymentConfirmationPageState();
+}
+
+class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Order ID: #' + widget.orderID.toString(),
+                style: TextStyle(
+                    color: Color.fromARGB(255, 0, 0, 0),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500)),
+            const SizedBox(height: 10),
+            Text('Time: ' + DateFormat('dd/MM/yyyy HH:mm').format(widget.date),
+                style: TextStyle(
+                    color: Color.fromARGB(255, 0, 0, 0),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500)),
+            const SizedBox(height: 10),
+            (paidBy == 0)
+                ? Column(children: [
+                    Text('Status: Submitted',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500)),
+                    const SizedBox(height: 40),
+                    FilledButton(
+                        style:
+                            FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                        onPressed: () => {payBySender()},
+                        child: Text('Pay Now', style: TextStyle(fontSize: 18)))
+                  ])
+                : Column(children: [
+                    Text('Status: Submitted, Pending to Pay by Recipent',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 32,
+                            fontWeight: FontWeight.w700)),
+                    FilledButton(
+                        style:
+                            FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                        onPressed: () => {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage(
+                                        title: 'Ship', connector: connector)),
+                              )
+                            },
+                        child: Text('Return', style: TextStyle(fontSize: 18)))
+                  ])
+          ],
+        )));
+  }
+
+  payBySender() async {
+    
+    Future.delayed(Duration.zero, () => connector.openWalletApp());
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadingPage()),
+    );
+
+    await connector.payBySender(
+        orderID: widget.orderID, deliveryFee: BigInt.from(priceSender * 1e18));
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Payment Successful')));
+    
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(title: 'Ship', connector: connector),
+        ));
+  }
+
+}
+
+class LoadingPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+        body: Center(
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      strokeWidth: 4,
+                    ),
+                    const SizedBox(height: 50),
+                    Text('Waiting for Completion',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500))
+                  ],
+                ))));
   }
 }
 

@@ -26,6 +26,9 @@ abstract class WalletConnector {
       required BigInt deliveryFee,
       required BigInt productAmount});
 
+  Future<dynamic> payBySender(
+      {required BigInt orderID, required BigInt deliveryFee});
+
   Future<void> openWalletApp();
 
   Future<double> getBalance();

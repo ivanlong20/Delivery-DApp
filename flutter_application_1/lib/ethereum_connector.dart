@@ -60,6 +60,8 @@ class EthereumConnector implements WalletConnector {
   late final WalletConnectQrCodeModal _connector;
   late final EthereumWalletConnectProvider _provider;
   final client = Web3Client('https://rpc2.sepolia.org/', Client());
+  final EthereumAddress contractAddress =
+      EthereumAddress.fromHex('0xb099BFfB7E0040871EC1E312BB1A0035F76bDbc4');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(
@@ -107,6 +109,7 @@ class EthereumConnector implements WalletConnector {
         onDisconnect: onDisconnect,
       );
 
+  //1. Create Order and Receive Payment
   @override
   Future<dynamic> callCreateDeliveryOrder(
       {required String receiverWalletAddress,
@@ -122,9 +125,6 @@ class EthereumConnector implements WalletConnector {
       required bool payBySender,
       required BigInt deliveryFee,
       required BigInt productAmount}) async {
-    final EthereumAddress contractAddress =
-        EthereumAddress.fromHex('0xf985ad80f2E0cE9E1FDff7B0DBCDb76a06d123cC');
-
     final recipientrWalletAddress =
         EthereumAddress.fromHex(receiverWalletAddress);
 
@@ -138,7 +138,6 @@ class EthereumConnector implements WalletConnector {
 
     final subscription = delivery.orderCreatedEvents().take(1).listen((event) {
       orderID = event.orderID;
-      orderID.toString();
       final timestamp = event.timestamp;
 
       date = DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000);
@@ -165,22 +164,79 @@ class EthereumConnector implements WalletConnector {
       productAmount,
       BigInt.from(0)
     ];
+    Transaction transaction;
 
-    Transaction transaction = Transaction(
+    transaction = Transaction(
       from: senderWalletAddress,
-      maxGas: 1000000,
+      // maxGas: 1000000,
     );
 
-    delivery.createDeliveryOrder(senderWalletAddress, recipientrWalletAddress,
-        deliveryAddressInfo, packageInfo, paymentInfo,
+    await delivery.createDeliveryOrder(senderWalletAddress,
+        recipientrWalletAddress, deliveryAddressInfo, packageInfo, paymentInfo,
         credentials: credentials, transaction: transaction);
 
     await subscription.asFuture();
     await subscription.cancel();
 
-    await client.dispose();
     final orderInfo = [orderID, date];
     return orderInfo;
+  }
+
+  // Cancel Order
+  @override
+  Future<dynamic> cancelOrder({required BigInt orderID}) async {
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+
+    var status;
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final subscription = delivery.orderCanceledEvents().take(1).listen((event) {
+      status = event.status;
+
+      print('$status');
+    });
+
+    await delivery.cancelOrder(orderID, credentials: credentials);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    return status;
+  }
+
+  //2. Payment
+  @override
+  Future<dynamic> payBySender(
+      {required BigInt orderID, required BigInt deliveryFee}) async {
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+
+    var state;
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final subscription =
+        delivery.orderPaidBySenderEvents().take(1).listen((event) {
+      state = event.status;
+
+      print('$state State');
+    });
+
+    Transaction transaction = Transaction(
+        from: senderWalletAddress,
+        value: EtherAmount.fromBigInt(EtherUnit.wei, deliveryFee));
+
+    await delivery.payBySender(orderID,
+        credentials: credentials, transaction: transaction);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    return state;
   }
 
   @override
