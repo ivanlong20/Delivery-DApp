@@ -26,8 +26,27 @@ abstract class WalletConnector {
       required BigInt deliveryFee,
       required BigInt productAmount});
 
+  Future<dynamic> cancelOrder({required BigInt orderID});
+
   Future<dynamic> payBySender(
       {required BigInt orderID, required BigInt deliveryFee});
+
+  Future<dynamic> payByRecipient(
+      {required BigInt orderID, required BigInt totalAmount});
+
+  Future<dynamic> deliveryAcceptOrder({required BigInt orderID});
+
+  Future<dynamic> deliveryPickupOrder({required BigInt orderID});
+
+  Future<dynamic> deliveryConfirmCompleted({required BigInt orderID});
+
+  Future<dynamic> getSubmittedOrder();
+
+  Future<dynamic> getDeliverymanOrder();
+
+  Future<dynamic> getOrderFromBusinessAndCustomer();
+
+  Future<dynamic> getOrderStatus({required BigInt orderID});
 
   Future<void> openWalletApp();
 

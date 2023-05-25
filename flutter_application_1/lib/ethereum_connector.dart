@@ -239,6 +239,156 @@ class EthereumConnector implements WalletConnector {
     return state;
   }
 
+  //2. Payment
+  @override
+  Future<dynamic> payByRecipient(
+      {required BigInt orderID, required BigInt totalAmount}) async {
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+
+    var state;
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final subscription =
+        delivery.orderPaidByReceiverEvents().take(1).listen((event) {
+      state = event.status;
+
+      print('$state State');
+    });
+
+    Transaction transaction = Transaction(
+        from: senderWalletAddress,
+        value: EtherAmount.fromBigInt(EtherUnit.wei, totalAmount));
+
+    await delivery.payByReceipient(orderID,
+        credentials: credentials, transaction: transaction);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    return state;
+  }
+
+  //3. Deliverymen Accept Order
+  @override
+  Future<dynamic> deliveryAcceptOrder({required BigInt orderID}) async {
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+
+    var state;
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final subscription = delivery.orderAcceptedEvents().take(1).listen((event) {
+      state = event.status;
+
+      print('$state State');
+    });
+
+    await delivery.acceptOrder(orderID, credentials: credentials);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    return state;
+  }
+
+  //4. Deliverymen Pickup Order
+  @override
+  Future<dynamic> deliveryPickupOrder({required BigInt orderID}) async {
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+
+    var state;
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final subscription = delivery.orderPickedUpEvents().take(1).listen((event) {
+      state = event.status;
+
+      print('$state State');
+    });
+
+    await delivery.orderPickedUp(orderID, credentials: credentials);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    return state;
+  }
+
+  //5. Recipient confirm order received
+  @override
+  Future<dynamic> deliveryConfirmCompleted({required BigInt orderID}) async {
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+
+    var state;
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final subscription =
+        delivery.orderDeliveredEvents().take(1).listen((event) {
+      state = event.status;
+
+      print('$state State');
+    });
+
+    await delivery.deliveryCompleted(orderID, credentials: credentials);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    return state;
+  }
+
+  // For Deliverymen
+  @override
+  Future<dynamic> getSubmittedOrder() async {
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final order = await delivery.getSubmittedOrder();
+
+    return order;
+  }
+
+  // For Deliverymen
+  @override
+  Future<dynamic> getDeliverymanOrder() async {
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final order = await delivery.getDeliverymanOrder(senderWalletAddress);
+    print('$order');
+    return order;
+  }
+
+  //For Business and Customer
+  @override
+  Future<dynamic> getOrderFromBusinessAndCustomer() async {
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final order = await delivery.getBusinessCustomerOrder(senderWalletAddress);
+    print('$order');
+    return order;
+  }
+
+  @override
+  Future<dynamic> getOrderStatus({required BigInt orderID}) async {
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final status = await delivery.getOrderStatus(orderID);
+
+    return status;
+  }
+
   @override
   Future<String?> sendAmount({
     required String recipientAddress,
