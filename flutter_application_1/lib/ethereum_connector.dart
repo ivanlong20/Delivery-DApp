@@ -59,9 +59,9 @@ class WalletConnectEthereumCredentials extends CustomTransactionSender {
 class EthereumConnector implements WalletConnector {
   late final WalletConnectQrCodeModal _connector;
   late final EthereumWalletConnectProvider _provider;
-  final client = Web3Client('https://rpc2.sepolia.org/', Client());
+  final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
-      EthereumAddress.fromHex('0xb099BFfB7E0040871EC1E312BB1A0035F76bDbc4');
+      EthereumAddress.fromHex('0x6Bf87ea01a0BfBceaA2C6dB6C67cadDbe405fA89');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(

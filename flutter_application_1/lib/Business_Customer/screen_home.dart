@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'package:numberpicker/numberpicker.dart';
 import '../etherscan_api.dart';
 import 'screen_wallet.dart';
@@ -8,6 +9,8 @@ import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 import 'package:intl/intl.dart';
+import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:flutter/services.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
@@ -407,14 +410,14 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     width: 50,
                   ),
                   Text(
-                    'H    ',
+                    'H   ',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(
                     width: 72,
                   ),
                   Text(
-                    'W  ',
+                    ' W  ',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                   ),
                   SizedBox(
@@ -461,7 +464,7 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                     ),
                     Text('Cm',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600))
+                            fontSize: 14, fontWeight: FontWeight.w600))
                   ],
                 ),
                 SizedBox(
@@ -626,6 +629,9 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
                 const SizedBox(height: 20),
                 TextField(
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(42),
+                  ],
                   onChanged: (text) {
                     setState(() {
                       receiverWalletAddress.text = text;
@@ -640,7 +646,20 @@ class _PaymentPageState extends State<PaymentPage> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
+                Center(
+                  child: TextButton(
+                      onPressed: () {
+                        BarcodeScanner.scan().then((value) {
+                          setState(() {
+                            receiverWalletAddress.text =
+                                value.rawContent.substring(9);
+                          });
+                        });
+                      },
+                      child: Text('Scan with QR code')),
+                ),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Text('Paid By',
@@ -942,7 +961,6 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
   }
 
   payBySender() async {
-    
     Future.delayed(Duration.zero, () => connector.openWalletApp());
 
     Navigator.push(
@@ -955,14 +973,13 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
 
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Payment Successful')));
-    
+
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => HomePage(title: 'Ship', connector: connector),
         ));
   }
-
 }
 
 class LoadingPage extends StatelessWidget {

@@ -172,7 +172,7 @@ class _WalletPageState extends State<WalletPage> {
               size: 300.0,
             ),
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             Container(
                 padding: EdgeInsets.all(15),
@@ -220,7 +220,7 @@ class _WalletPageState extends State<WalletPage> {
                     ),
                   ],
                 )),
-            SizedBox(height: 35),
+            SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

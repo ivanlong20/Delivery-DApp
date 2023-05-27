@@ -22,11 +22,13 @@ final network = connector.networkName;
 getOrderCount() async {
   final allOrders = await connector.getOrderFromBusinessAndCustomer();
   final allOrder = List.from(await allOrders);
+  Future.delayed(Duration(seconds: 3));
   return allOrder.length;
 }
 
 Future<List<dynamic>> getOrderInfo() async {
   final allOrders = await connector.getOrderFromBusinessAndCustomer();
+  var id = [];
   var senderAddress = [];
   var senderDistrict = [];
   var receiverAddress = [];
@@ -47,25 +49,27 @@ Future<List<dynamic>> getOrderInfo() async {
   var orderCount = orders.length;
 
   for (int i = 0; i < orderCount; i++) {
-    senderAddress.add(orders[i][1][0]);
-    senderDistrict.add(orders[i][1][1]);
-    receiverAddress.add(orders[i][1][2]);
-    receiverDistrict.add(orders[i][1][3]);
-    packageDescription.add(orders[i][2][0]);
-    packageHeight.add(orders[i][2][1]);
-    packageWidth.add(orders[i][2][2]);
-    packageDepth.add(orders[i][2][3]);
-    packageWeight.add(orders[i][2][4].toDouble() * 1000);
-    paidBySender.add(orders[i][3][0]);
-    deliveryFee.add(orders[i][3][1].toDouble() * (1 / 1e18));
-    productAmount.add(orders[i][3][2]);
-    totalAmount.add(orders[i][3][3].toDouble() * (1 / 1e18));
-    orderStatus.add(orders[i][4]);
+    id.add(orders[i][0]);
+    senderAddress.add(orders[i][2][0]);
+    senderDistrict.add(orders[i][2][1]);
+    receiverAddress.add(orders[i][2][2]);
+    receiverDistrict.add(orders[i][2][3]);
+    packageDescription.add(orders[i][3][0]);
+    packageHeight.add(orders[i][3][1]);
+    packageWidth.add(orders[i][3][2]);
+    packageDepth.add(orders[i][3][3]);
+    packageWeight.add(orders[i][3][4].toDouble() / 1000);
+    paidBySender.add(orders[i][4][0]);
+    deliveryFee.add(orders[i][4][1].toDouble() * (1 / 1e18));
+    productAmount.add(orders[i][4][2].toDouble() * (1 / 1e18));
+    totalAmount.add(orders[i][4][3].toDouble() * (1 / 1e18));
+    orderStatus.add(orders[i][5]);
     orderDate
-        .add(DateTime.fromMillisecondsSinceEpoch(orders[i][5].toInt() * 1000));
+        .add(DateTime.fromMillisecondsSinceEpoch(orders[i][6].toInt() * 1000));
   }
   print(totalAmount);
   return [
+    id,
     senderAddress,
     senderDistrict,
     receiverAddress,
@@ -84,16 +88,17 @@ Future<List<dynamic>> getOrderInfo() async {
   ];
 }
 
-// fetch() async {
-//   var order = await connector.getOrderFromBusinessAndCustomer();
-//   print(order[0][0][0]);
-//   print(order[0][1]);
-//   print(order[0][2]);
-//   print(order[0][3]);
-//   print(order[0][4]);
-//   print(order[0][5]);
-//   return order;
-// }
+fetch() async {
+  var order = await connector.getOrderFromBusinessAndCustomer();
+  // print(order[0][0][0]);
+  // print(order[0][1]);
+  // print(order[0][2]);
+  // print(order[0][3]);
+  // print(order[0][4]);
+  // print(order[0][5]);
+  print(order.length);
+  // return order;
+}
 
 class OrderPage extends StatefulWidget {
   final String title;
@@ -243,7 +248,8 @@ class TransactionListView extends StatelessWidget {
   const TransactionListView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<dynamic>(
+    return Center(
+        child: FutureBuilder<dynamic>(
       future: getOrderCount(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -252,12 +258,13 @@ class TransactionListView extends StatelessWidget {
               future: getOrderInfo(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  var orderDate = snapshot.data?[14];
-                  var senderAddress = snapshot.data?[0];
-                  var senderDistrict = snapshot.data?[1];
-                  var receiverAddress = snapshot.data?[2];
-                  var receiverDistrict = snapshot.data?[3];
-                  var orderStatus = snapshot.data?[11];
+                  var id = snapshot.data?[0];
+                  var orderDate = snapshot.data?[15];
+                  var senderAddress = snapshot.data?[1];
+                  var senderDistrict = snapshot.data?[2];
+                  var receiverAddress = snapshot.data?[3];
+                  var receiverDistrict = snapshot.data?[4];
+                  var orderStatus = snapshot.data?[14];
                   return ListView.separated(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                     itemCount: orderCount,
@@ -265,6 +272,7 @@ class TransactionListView extends StatelessWidget {
                       return InkWell(
                           onTap: () {
                             enterTransactionDetailsPage(index, context);
+                            // fetch();
                           },
                           child: Container(
                               decoration: BoxDecoration(
@@ -274,20 +282,20 @@ class TransactionListView extends StatelessWidget {
                                       color: const Color.fromARGB(
                                           255, 255, 255, 255)),
                                   borderRadius: BorderRadius.circular(20)),
-                              height: 150,
+                              height: 180,
                               child: Padding(
                                   padding:
-                                      const EdgeInsets.fromLTRB(10, 10, 5, 5),
+                                      const EdgeInsets.fromLTRB(10, 5, 5, 5),
                                   child: Column(
                                     children: [
                                       Row(
                                         children: [
                                           Text(
-                                            'Order #123456',
+                                            'Order #' + id[index].toString(),
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w700),
                                           ),
-                                          const SizedBox(width: 120),
+                                          const SizedBox(width: 100),
                                           Text(
                                             DateFormat('dd/MM/yyyy HH:mm')
                                                 .format(orderDate[index]),
@@ -297,22 +305,21 @@ class TransactionListView extends StatelessWidget {
                                         ],
                                       ),
                                       SizedBox(
-                                        height: 10,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                              senderAddress[index] +
-                                                  ", " +
-                                                  senderDistrict[index],
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600))
-                                        ],
-                                      ),
-                                      SizedBox(
                                         height: 5,
+                                      ),
+                                      Center(
+                                          child: Flexible(
+                                              child: Text(
+                                        senderAddress[index] +
+                                            ", " +
+                                            senderDistrict[index],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14),
+                                        textAlign: TextAlign.center,
+                                      ))),
+                                      SizedBox(
+                                        height: 2,
                                       ),
                                       Row(
                                         mainAxisAlignment:
@@ -322,22 +329,21 @@ class TransactionListView extends StatelessWidget {
                                         ],
                                       ),
                                       SizedBox(
-                                        height: 5,
+                                        height: 2,
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                              receiverAddress[index] +
-                                                  ", " +
-                                                  receiverDistrict[index],
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w600))
-                                        ],
-                                      ),
+                                      Center(
+                                          child: Flexible(
+                                              child: Text(
+                                        receiverAddress[index] +
+                                            ", " +
+                                            receiverDistrict[index],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14),
+                                        textAlign: TextAlign.center,
+                                      ))),
                                       SizedBox(
-                                        height: 7,
+                                        height: 10,
                                       ),
                                       Row(
                                         children: [
@@ -380,7 +386,7 @@ class TransactionListView extends StatelessWidget {
           );
         }
       },
-    );
+    ));
   }
 
   enterTransactionDetailsPage(index, context) {
@@ -411,158 +417,218 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
           title: Text(widget.title),
           backgroundColor: Color.fromARGB(255, 255, 255, 255),
         ),
-        body: Padding(
-            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text('Order #123456',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w700)),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(children: [
-                  Text('Date: ',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-                  Text('13/4/2023',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600))
-                ]),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text('From',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Address',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text('To',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Address',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text('Amount',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('0.2' + ' ETH',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text('Parcel Information',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text(
-                            'Contents: ' +
-                                'Mobile Phone, Documents, Clothes, Shoes, etc.',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text(
-                            'Size: ' + 'w' + ' x ' + 'h' + ' x ' + 'l' + ' cm',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Weight: ' + '10.5' + ' Kg',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Status',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Pending',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Flexible(
-                        child: Text('Parcel Location',
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.w600)))
-                  ],
-                ),
-                Text(index.toString()),
-              ],
-            )));
+        body: Center(
+            child: FutureBuilder(
+                future: getOrderInfo(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    var id = snapshot.data?[0];
+                    var orderDate = snapshot.data?[15];
+                    var senderAddress = snapshot.data?[1];
+                    var senderDistrict = snapshot.data?[2];
+                    var receiverAddress = snapshot.data?[3];
+                    var receiverDistrict = snapshot.data?[4];
+                    var amount = snapshot.data?[13];
+                    var parcelDescription = snapshot.data?[5];
+                    var parcelWidth = snapshot.data?[6];
+                    var parcelHeight = snapshot.data?[7];
+                    var parcelDepth = snapshot.data?[8];
+                    var parcelWeight = snapshot.data?[9];
+                    var orderStatus = snapshot.data?[14];
+                    print(snapshot.data?[14]);
+                    return Padding(
+                        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text('Order #' + id[index].toString(),
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700)),
+                                const SizedBox(width: 70),
+                                Text(
+                                    DateFormat('dd/MM/yyyy HH:mm')
+                                        .format(orderDate[index]),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500))
+                              ],
+                            ),
+                            SizedBox(height: 5),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Text('From',
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                        senderAddress[index] +
+                                            ", " +
+                                            senderDistrict[index],
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Text('To',
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                        receiverAddress[index] +
+                                            ", " +
+                                            receiverDistrict[index],
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Text('Amount',
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w500))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                        amount[index].toStringAsFixed(10) +
+                                            ' ETH',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Text('Parcel Information',
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w500))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                        'Description : ' +
+                                            parcelDescription[index],
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                        'Size: ' +
+                                            parcelWidth[index].toString() +
+                                            ' x ' +
+                                            parcelHeight[index].toString() +
+                                            ' x ' +
+                                            parcelDepth[index].toString() +
+                                            ' cm',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                        'Weight: ' +
+                                            parcelWeight[index].toString() +
+                                            ' Kg',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text('Status',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text(
+                                        OrderState[orderStatus[index].toInt()],
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                Flexible(
+                                    child: Text('Parcel Location',
+                                        style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w600)))
+                              ],
+                            ),
+                            Text(index.toString()),
+                          ],
+                        ));
+                  } else {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const CircularProgressIndicator(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                          strokeWidth: 4,
+                        ),
+                      ],
+                    );
+                  }
+                })));
   }
 }
