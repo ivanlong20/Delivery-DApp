@@ -112,8 +112,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                           connector.networkName,
                                           style: const TextStyle(fontSize: 18),
                                         )
-                                      ])
-                                  ,
+                                      ]),
                                 ],
                               ),
                               const SizedBox(height: 100),
@@ -133,7 +132,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                           context,
                                           MaterialPageRoute(builder: (context) {
                                             return HomePage(
-                                              title: 'Send Package',
+                                              title: 'View Available Orders',
                                               connector: connector,
                                             );
                                           }),

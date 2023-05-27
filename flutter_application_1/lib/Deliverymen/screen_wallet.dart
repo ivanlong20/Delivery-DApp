@@ -168,12 +168,12 @@ class _WalletPageState extends State<WalletPage> {
               height: 30,
             ),
             QrImageView(
-              data: connector.address,
+              data: widget.connector.address,
               version: QrVersions.auto,
               size: 300.0,
             ),
             SizedBox(
-              height: 30,
+              height: 20,
             ),
             Container(
                 padding: EdgeInsets.all(15),
@@ -210,7 +210,7 @@ class _WalletPageState extends State<WalletPage> {
                       children: [
                         Flexible(
                             child: Text(
-                          connector.address,
+                          widget.connector.address,
                           style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontSize: 20,
@@ -221,14 +221,14 @@ class _WalletPageState extends State<WalletPage> {
                     ),
                   ],
                 )),
-            SizedBox(height: 35),
+            SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
-                    Clipboard.setData(
-                            ClipboardData(text: connector.address.toString()))
+                    Clipboard.setData(ClipboardData(
+                            text: widget.connector.address.toString()))
                         .then((_) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text("Wallet Address copied to clipboard")));

@@ -168,7 +168,7 @@ class EthereumConnector implements WalletConnector {
 
     transaction = Transaction(
       from: senderWalletAddress,
-      // maxGas: 1000000,
+      maxGas: 1000000,
     );
 
     await delivery.createDeliveryOrder(senderWalletAddress,
@@ -287,8 +287,11 @@ class EthereumConnector implements WalletConnector {
 
       print('$state State');
     });
+    Transaction transaction =
+        Transaction(from: senderWalletAddress, maxGas: 100000);
 
-    await delivery.acceptOrder(orderID, credentials: credentials);
+    await delivery.acceptOrder(orderID,
+        credentials: credentials, transaction: transaction);
 
     await subscription.asFuture();
     await subscription.cancel();
@@ -312,8 +315,12 @@ class EthereumConnector implements WalletConnector {
 
       print('$state State');
     });
+    Transaction transaction = Transaction(
+      from: senderWalletAddress,
+    );
 
-    await delivery.orderPickedUp(orderID, credentials: credentials);
+    await delivery.orderPickedUp(orderID,
+        credentials: credentials, transaction: transaction);
 
     await subscription.asFuture();
     await subscription.cancel();
@@ -325,6 +332,8 @@ class EthereumConnector implements WalletConnector {
   @override
   Future<dynamic> deliveryConfirmCompleted({required BigInt orderID}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -335,8 +344,12 @@ class EthereumConnector implements WalletConnector {
 
       print('$state State');
     });
+    Transaction transaction = Transaction(
+      from: senderWalletAddress,
+    );
 
-    await delivery.deliveryCompleted(orderID, credentials: credentials);
+    await delivery.deliveryCompleted(orderID,
+        credentials: credentials, transaction: transaction);
 
     await subscription.asFuture();
     await subscription.cancel();

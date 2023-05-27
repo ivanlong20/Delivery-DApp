@@ -6,9 +6,88 @@ import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../screen_user_selection.dart';
+import 'package:intl/intl.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
+
+var OrderState = [
+  'Submitted',
+  'Pending',
+  'Picking Up',
+  'Delivering',
+  'Delivered',
+  'Canceled'
+];
+
+// getOrderCount() async {
+//   final allOrders = await connector.getDeliverymanOrder();
+//   final allOrder = List.from(await allOrders);
+//   Future.delayed(Duration(seconds: 3));
+//   return allOrder.length;
+// }
+
+// Future<List<dynamic>> getOrderInfo() async {
+//   final allOrders = await connector.getDeliverymanOrder();
+//   var id = [];
+//   var senderAddress = [];
+//   var senderDistrict = [];
+//   var receiverAddress = [];
+//   var receiverDistrict = [];
+//   var packageDescription = [];
+//   var packageHeight = [];
+//   var packageWidth = [];
+//   var packageDepth = [];
+//   var packageWeight = [];
+//   var paidBySender = [];
+//   var deliveryFee = [];
+//   var productAmount = [];
+//   var totalAmount = [];
+//   var orderStatus = [];
+//   var orderDate = [];
+
+//   var orders = List.from(await allOrders);
+//   var orderCount = orders.length;
+
+//   for (int i = 0; i < orderCount; i++) {
+//     id.add(orders[i][0]);
+//     senderAddress.add(orders[i][2][0]);
+//     senderDistrict.add(orders[i][2][1]);
+//     receiverAddress.add(orders[i][2][2]);
+//     receiverDistrict.add(orders[i][2][3]);
+//     packageDescription.add(orders[i][3][0]);
+//     packageHeight.add(orders[i][3][1]);
+//     packageWidth.add(orders[i][3][2]);
+//     packageDepth.add(orders[i][3][3]);
+//     packageWeight.add(orders[i][3][4].toDouble() / 1000);
+//     paidBySender.add(orders[i][4][0]);
+//     deliveryFee.add(orders[i][4][1].toDouble() * (1 / 1e18));
+//     productAmount.add(orders[i][4][2].toDouble() * (1 / 1e18));
+//     totalAmount.add(orders[i][4][3].toDouble() * (1 / 1e18));
+//     orderStatus.add(orders[i][5]);
+//     orderDate
+//         .add(DateTime.fromMillisecondsSinceEpoch(orders[i][6].toInt() * 1000));
+//   }
+//   print(totalAmount);
+//   return [
+//     id,
+//     senderAddress,
+//     senderDistrict,
+//     receiverAddress,
+//     receiverDistrict,
+//     packageDescription,
+//     packageHeight,
+//     packageWidth,
+//     packageDepth,
+//     packageWeight,
+//     paidBySender,
+//     deliveryFee,
+//     productAmount,
+//     totalAmount,
+//     orderStatus,
+//     orderDate
+//   ];
+// }
 
 class OrderPage extends StatefulWidget {
   final String title;
@@ -157,82 +236,145 @@ class _OrderPageState extends State<OrderPage> {
 class TransactionListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return InkWell(
-            onTap: () {
-              enterTransactionDetailsPage(index, context);
-            },
-            child: Container(
-                decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                    border: Border.all(
-                        color: const Color.fromARGB(255, 255, 255, 255)),
-                    borderRadius: BorderRadius.circular(20)),
-                height: 150,
-                child: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 10, 5, 5),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              'Order #123456',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                            const SizedBox(width: 170),
-                            Text(
-                              '13/4/2023',
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Sender\'s Address',
-                                style: TextStyle(fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [FaIcon(FontAwesomeIcons.arrowDownLong)],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Receiver\'s Address',
-                                style: TextStyle(fontWeight: FontWeight.w600))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 7,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              'Status: Pending',
-                              style: TextStyle(fontWeight: FontWeight.w800),
-                            )
-                          ],
-                        )
-                      ],
-                    ))));
+    return Center(
+        child: FutureBuilder<dynamic>(
+      future: getOrderCount(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final orderCount = snapshot.data;
+          return FutureBuilder(
+              future: getOrderInfo(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  var id = snapshot.data?[0];
+                  var orderDate = snapshot.data?[15];
+                  var senderAddress = snapshot.data?[1];
+                  var senderDistrict = snapshot.data?[2];
+                  var receiverAddress = snapshot.data?[3];
+                  var receiverDistrict = snapshot.data?[4];
+                  var orderStatus = snapshot.data?[14];
+                  return ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    itemCount: orderCount,
+                    itemBuilder: (BuildContext context, int index) {
+                      return InkWell(
+                          onTap: () {
+                            enterTransactionDetailsPage(index, context);
+                            // fetch();
+                          },
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  color:
+                                      const Color.fromARGB(255, 255, 255, 255),
+                                  border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 255, 255, 255)),
+                                  borderRadius: BorderRadius.circular(20)),
+                              height: 180,
+                              child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 5, 5, 5),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Order #' + id[index].toString(),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                          const SizedBox(width: 100),
+                                          Text(
+                                            DateFormat('dd/MM/yyyy HH:mm')
+                                                .format(orderDate[index]),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500),
+                                          )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Center(
+                                          child: Flexible(
+                                              child: Text(
+                                        senderAddress[index] +
+                                            ", " +
+                                            senderDistrict[index],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14),
+                                        textAlign: TextAlign.center,
+                                      ))),
+                                      SizedBox(
+                                        height: 2,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          FaIcon(FontAwesomeIcons.arrowDownLong)
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Center(
+                                          child: Flexible(
+                                              child: Text(
+                                        receiverAddress[index] +
+                                            ", " +
+                                            receiverDistrict[index],
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14),
+                                        textAlign: TextAlign.center,
+                                      ))),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Status: ' +
+                                                OrderState[
+                                                    orderStatus[index].toInt()],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w800),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ))));
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const SizedBox(height: 20),
+                  );
+                } else {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                        strokeWidth: 4,
+                      ),
+                    ],
+                  );
+                }
+              });
+        } else {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(
+                color: Color.fromARGB(255, 0, 0, 0),
+                strokeWidth: 4,
+              ),
+            ],
+          );
+        }
       },
-      separatorBuilder: (BuildContext context, int index) =>
-          const SizedBox(height: 20),
-    );
+    ));
   }
 
   enterTransactionDetailsPage(index, context) {

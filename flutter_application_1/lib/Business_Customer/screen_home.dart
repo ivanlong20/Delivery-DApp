@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                                   fontSize: 24, fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left)
                         ]),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
                         const Row(children: [
                           Text('From',
                               style: TextStyle(
@@ -768,15 +768,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           FilledButton(
                               style: FilledButton.styleFrom(
                                   minimumSize: Size(400, 50)),
-                              onPressed: () => {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => PaymentPage(
-                                              title: 'Payment Details',
-                                              connector: widget.connector)),
-                                    )
-                                  },
+                              onPressed: () => {transaction()},
                               child: Text('Confirm',
                                   style: TextStyle(fontSize: 18)))
                         ],

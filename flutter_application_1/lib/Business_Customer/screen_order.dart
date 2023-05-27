@@ -7,6 +7,10 @@ import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 import 'package:intl/intl.dart';
 
+
+final finalBalance = connector.getBalance();
+final network = connector.networkName;
+
 var OrderState = [
   'Submitted',
   'Pending',
@@ -15,9 +19,6 @@ var OrderState = [
   'Delivered',
   'Canceled'
 ];
-
-final finalBalance = connector.getBalance();
-final network = connector.networkName;
 
 getOrderCount() async {
   final allOrders = await connector.getOrderFromBusinessAndCustomer();
@@ -329,7 +330,7 @@ class TransactionListView extends StatelessWidget {
                                         ],
                                       ),
                                       SizedBox(
-                                        height: 2,
+                                        height: 5,
                                       ),
                                       Center(
                                           child: Flexible(
@@ -353,9 +354,9 @@ class TransactionListView extends StatelessWidget {
                                                     orderStatus[index].toInt()],
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w800),
-                                          )
+                                          ),
                                         ],
-                                      )
+                                      ),
                                     ],
                                   ))));
                     },
@@ -417,218 +418,230 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
           title: Text(widget.title),
           backgroundColor: Color.fromARGB(255, 255, 255, 255),
         ),
-        body: Center(
-            child: FutureBuilder(
-                future: getOrderInfo(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    var id = snapshot.data?[0];
-                    var orderDate = snapshot.data?[15];
-                    var senderAddress = snapshot.data?[1];
-                    var senderDistrict = snapshot.data?[2];
-                    var receiverAddress = snapshot.data?[3];
-                    var receiverDistrict = snapshot.data?[4];
-                    var amount = snapshot.data?[13];
-                    var parcelDescription = snapshot.data?[5];
-                    var parcelWidth = snapshot.data?[6];
-                    var parcelHeight = snapshot.data?[7];
-                    var parcelDepth = snapshot.data?[8];
-                    var parcelWeight = snapshot.data?[9];
-                    var orderStatus = snapshot.data?[14];
-                    print(snapshot.data?[14]);
-                    return Padding(
-                        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+        body: SingleChildScrollView(
+            child: Center(
+                child: FutureBuilder(
+                    future: getOrderInfo(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        var id = snapshot.data?[0];
+                        var orderDate = snapshot.data?[15];
+                        var senderAddress = snapshot.data?[1];
+                        var senderDistrict = snapshot.data?[2];
+                        var receiverAddress = snapshot.data?[3];
+                        var receiverDistrict = snapshot.data?[4];
+                        var amount = snapshot.data?[13];
+                        var parcelDescription = snapshot.data?[5];
+                        var parcelWidth = snapshot.data?[6];
+                        var parcelHeight = snapshot.data?[7];
+                        var parcelDepth = snapshot.data?[8];
+                        var parcelWeight = snapshot.data?[9];
+                        var orderStatus = snapshot.data?[14];
+                        var payBySender = snapshot.data?[10];
+                        print(snapshot.data?[14]);
+                        return Padding(
+                            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text('Order #' + id[index].toString(),
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700)),
+                                    const SizedBox(width: 75),
+                                    Text(
+                                        DateFormat('dd/MM/yyyy HH:mm')
+                                            .format(orderDate[index]),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500))
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(children: [
+                                  Text(
+                                    'Payment: ' +
+                                        (payBySender[index] == true
+                                            ? 'Sender'
+                                            : 'Receiver'),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w600),
+                                  )
+                                ]),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text('From',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text(
+                                            senderAddress[index] +
+                                                ", " +
+                                                senderDistrict[index],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text('To',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text(
+                                            receiverAddress[index] +
+                                                ", " +
+                                                receiverDistrict[index],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Amount',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text(
+                                            amount[index].toStringAsFixed(10) +
+                                                ' ETH',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Text('Parcel Information',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text(
+                                            'Description : ' +
+                                                parcelDescription[index],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text(
+                                            'Size: ' +
+                                                parcelWidth[index].toString() +
+                                                ' x ' +
+                                                parcelHeight[index].toString() +
+                                                ' x ' +
+                                                parcelDepth[index].toString() +
+                                                ' cm',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text(
+                                            'Weight: ' +
+                                                parcelWeight[index].toString() +
+                                                ' Kg',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text('Status',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700)))
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text(
+                                            OrderState[
+                                                orderStatus[index].toInt()],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w600)))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                        child: Text('Parcel Location',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700)))
+                                  ],
+                                )
+                              ],
+                            ));
+                      } else {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Row(
-                              children: [
-                                Text('Order #' + id[index].toString(),
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700)),
-                                const SizedBox(width: 70),
-                                Text(
-                                    DateFormat('dd/MM/yyyy HH:mm')
-                                        .format(orderDate[index]),
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500))
-                              ],
+                            const CircularProgressIndicator(
+                              color: Color.fromARGB(255, 0, 0, 0),
+                              strokeWidth: 4,
                             ),
-                            SizedBox(height: 5),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Text('From',
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w500))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                        senderAddress[index] +
-                                            ", " +
-                                            senderDistrict[index],
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Text('To',
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w500))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                        receiverAddress[index] +
-                                            ", " +
-                                            receiverDistrict[index],
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Text('Amount',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w500))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                        amount[index].toStringAsFixed(10) +
-                                            ' ETH',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Text('Parcel Information',
-                                    style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w500))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                        'Description : ' +
-                                            parcelDescription[index],
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                        'Size: ' +
-                                            parcelWidth[index].toString() +
-                                            ' x ' +
-                                            parcelHeight[index].toString() +
-                                            ' x ' +
-                                            parcelDepth[index].toString() +
-                                            ' cm',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                        'Weight: ' +
-                                            parcelWeight[index].toString() +
-                                            ' Kg',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text('Status',
-                                        style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text(
-                                        OrderState[orderStatus[index].toInt()],
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              children: [
-                                Flexible(
-                                    child: Text('Parcel Location',
-                                        style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w600)))
-                              ],
-                            ),
-                            Text(index.toString()),
                           ],
-                        ));
-                  } else {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const CircularProgressIndicator(
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          strokeWidth: 4,
-                        ),
-                      ],
-                    );
-                  }
-                })));
+                        );
+                      }
+                    }))));
   }
 }

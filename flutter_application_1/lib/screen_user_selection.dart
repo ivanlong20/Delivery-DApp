@@ -28,7 +28,7 @@ class UserSelectionPage extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (context) {
                     return const ConnectMetamaskPage(
-                        title: 'Connect Your Crypto Wallet');
+                        title: 'Connect Your Wallet');
                   }),
                 );
               },
@@ -43,13 +43,15 @@ class UserSelectionPage extends StatelessWidget {
               style: FilledButton.styleFrom(
                   minimumSize: Size(350, 75),
                   backgroundColor: Color.fromRGBO(170, 170, 170, 1)),
-              onPressed: () {Navigator.push(
+              onPressed: () {
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
                     return const LoginRegisterSelectionPage(
                         title: 'Login / Register');
                   }),
-                );},
+                );
+              },
               child: Text(
                   style: TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
                   'Delivery Partner'),

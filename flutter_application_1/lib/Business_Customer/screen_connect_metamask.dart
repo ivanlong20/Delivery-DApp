@@ -118,8 +118,7 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                   Column(children: [
                                     TextButton(
                                       style: FilledButton.styleFrom(
-                                        minimumSize: const Size(200, 50),
-                                        maximumSize: const Size(250, 75),
+                                        minimumSize: const Size(350, 50),
                                         backgroundColor:
                                             const Color.fromARGB(255, 0, 0, 0),
                                       ),
@@ -142,11 +141,10 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
                                               fontWeight: FontWeight.w600),
                                           'Login'),
                                     ),
-                                    const SizedBox(height: 30),
+                                    const SizedBox(height: 15),
                                     OutlinedButton(
                                       style: FilledButton.styleFrom(
-                                        minimumSize: const Size(200, 50),
-                                        maximumSize: const Size(250, 75),
+                                        minimumSize: const Size(350, 50),
                                       ),
                                       onPressed: () async {
                                         Navigator.push(
