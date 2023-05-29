@@ -61,7 +61,7 @@ class EthereumConnector implements WalletConnector {
   late final EthereumWalletConnectProvider _provider;
   final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
-      EthereumAddress.fromHex('0x6Bf87ea01a0BfBceaA2C6dB6C67cadDbe405fA89');
+      EthereumAddress.fromHex('0x967c8ac769e15c4E805D92F2012c75b3b0610995');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(
@@ -359,10 +359,10 @@ class EthereumConnector implements WalletConnector {
 
   // For Deliverymen
   @override
-  Future<dynamic> getSubmittedOrder() async {
+  Future<dynamic> getPendingOrder() async {
     final delivery = Delivery(address: contractAddress, client: client);
 
-    final order = await delivery.getSubmittedOrder();
+    final order = await delivery.getPendingOrder();
 
     return order;
   }
@@ -394,12 +394,46 @@ class EthereumConnector implements WalletConnector {
   }
 
   @override
-  Future<dynamic> getOrderStatus({required BigInt orderID}) async {
+  Future<dynamic> sendMessage(
+      {required BigInt orderID,
+      required String receiverAddress,
+      required String content}) async {
+
+    final credentials = WalletConnectEthereumCredentials(provider: _provider);
+    final senderWalletAddress =
+        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final receiverWalletAddress = EthereumAddress.fromHex(receiverAddress);
+
+    var messageID, date;
     final delivery = Delivery(address: contractAddress, client: client);
 
-    final status = await delivery.getOrderStatus(orderID);
+    final subscription = delivery.messageSentEvents().take(1).listen((event) {
+      messageID = event.messageID;
+      date =
+          DateTime.fromMillisecondsSinceEpoch(event.timestamp.toInt() * 1000);
 
-    return status;
+      print('$orderID created at $date');
+    });
+    Transaction transaction = Transaction(
+      from: senderWalletAddress,
+    );
+
+    await delivery.sendMessage(orderID, receiverWalletAddress, content,
+        credentials: credentials, transaction: transaction);
+
+    await subscription.asFuture();
+    await subscription.cancel();
+
+    return [messageID, date];
+  }
+
+  @override
+  Future<dynamic> getMessage({required BigInt orderID, required String userType}) async {
+    final delivery = Delivery(address: contractAddress, client: client);
+
+    final messages = await delivery.getMessage(orderID, userType);
+
+    return messages;
   }
 
   @override

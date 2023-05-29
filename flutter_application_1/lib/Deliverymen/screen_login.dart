@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  ConnectMetamaskPage(title: 'Connect Your Crypto Wallet'),
+                  ConnectMetamaskPage(title: 'Connect Your Wallet'),
             ))
         : showInvalidLoginDialog();
   }

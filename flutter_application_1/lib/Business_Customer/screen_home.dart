@@ -925,7 +925,7 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
                     const SizedBox(height: 40),
                     FilledButton(
                         style:
-                            FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                            FilledButton.styleFrom(minimumSize: Size(350, 50)),
                         onPressed: () => {payBySender()},
                         child: Text('Pay Now', style: TextStyle(fontSize: 18)))
                   ])
@@ -933,11 +933,12 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
                     Text('Status: Submitted, Pending to Pay by Recipent',
                         style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 32,
-                            fontWeight: FontWeight.w700)),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500)),
+                    const SizedBox(height: 40),
                     FilledButton(
                         style:
-                            FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                            FilledButton.styleFrom(minimumSize: Size(350, 50)),
                         onPressed: () => {
                               Navigator.push(
                                 context,

@@ -4,7 +4,7 @@
 import 'package:web3dart/web3dart.dart' as _i1;
 
 final _contractAbi = _i1.ContractAbi.fromJson(
-  '[{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"acceptOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"cancelOrder","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"_addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"_packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"_paymentInfo","type":"tuple"}],"name":"createDeliveryOrder","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"deliveryCompleted","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"InvalidState","type":"error"},{"inputs":[],"name":"OnlyDeliveryman","type":"error"},{"inputs":[],"name":"OnlyReceiver","type":"error"},{"inputs":[],"name":"OnlySender","type":"error"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderAccepted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"OrderCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderDelivered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderPaidByReceiver","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderPaidBySender","type":"event"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"orderPickedUp","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderPickedUp","type":"event"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"payByReceipient","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"payBySender","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAllOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct Delivery.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"wallet_address","type":"address"}],"name":"getBusinessCustomerOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct Delivery.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"wallet_address","type":"address"}],"name":"getDeliverymanOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct Delivery.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"getOrderStatus","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getSubmittedOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct Delivery.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"orders","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"}]',
+  '[{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"acceptOrder","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"cancelOrder","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"_addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"_packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"_paymentInfo","type":"tuple"}],"name":"createDeliveryOrder","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"deliveryCompleted","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"InvalidState","type":"error"},{"inputs":[],"name":"OnlyDeliveryman","type":"error"},{"inputs":[],"name":"OnlyReceiver","type":"error"},{"inputs":[],"name":"OnlySender","type":"error"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"messageID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"MessageSent","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderAccepted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderCanceled","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"orderID","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"OrderCreated","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderDelivered","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderPaidByReceiver","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderPaidBySender","type":"event"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"orderPickedUp","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"status","type":"string"}],"name":"OrderPickedUp","type":"event"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"payByReceipient","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"}],"name":"payBySender","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"},{"internalType":"address","name":"sender","type":"address"},{"internalType":"string","name":"content","type":"string"}],"name":"sendMessage","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balances","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"wallet_address","type":"address"}],"name":"getBusinessCustomerOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint256[]","name":"messageID","type":"uint256[]"}],"internalType":"struct Delivery.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"wallet_address","type":"address"}],"name":"getDeliverymanOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint256[]","name":"messageID","type":"uint256[]"}],"internalType":"struct Delivery.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_orderId","type":"uint256"},{"internalType":"string","name":"userType","type":"string"}],"name":"getMessage","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"receiver","type":"address"},{"internalType":"string","name":"content","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"internalType":"struct Delivery.Message[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getPendingOrder","outputs":[{"components":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"},{"internalType":"uint256[]","name":"messageID","type":"uint256[]"}],"internalType":"struct Delivery.Order[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"messages","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"receiver","type":"address"},{"internalType":"string","name":"content","type":"string"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"orders","outputs":[{"internalType":"uint256","name":"id","type":"uint256"},{"components":[{"internalType":"address payable","name":"sender","type":"address"},{"internalType":"address payable","name":"receiver","type":"address"},{"internalType":"address payable","name":"deliveryman","type":"address"}],"internalType":"struct Delivery.Address","name":"walletAddress","type":"tuple"},{"components":[{"internalType":"string","name":"senderAddress","type":"string"},{"internalType":"string","name":"senderDistrict","type":"string"},{"internalType":"string","name":"receiverAddress","type":"string"},{"internalType":"string","name":"receiverDistrict","type":"string"}],"internalType":"struct Delivery.DeliveryAddressInfo","name":"addressInfo","type":"tuple"},{"components":[{"internalType":"string","name":"packageDescription","type":"string"},{"internalType":"uint256","name":"packageHeight","type":"uint256"},{"internalType":"uint256","name":"packageWidth","type":"uint256"},{"internalType":"uint256","name":"packageDepth","type":"uint256"},{"internalType":"uint256","name":"packageWeight","type":"uint256"}],"internalType":"struct Delivery.Package","name":"packageInfo","type":"tuple"},{"components":[{"internalType":"bool","name":"payBySender","type":"bool"},{"internalType":"uint256","name":"deliveryFee","type":"uint256"},{"internalType":"uint256","name":"productAmount","type":"uint256"},{"internalType":"uint256","name":"totalAmount","type":"uint256"}],"internalType":"struct Delivery.Payment","name":"paymentInfo","type":"tuple"},{"internalType":"enum Delivery.State","name":"orderStatus","type":"uint8"},{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"}]',
   'Delivery',
 );
 
@@ -165,37 +165,47 @@ class Delivery extends _i1.GeneratedContract {
     );
   }
 
+  /// The optional [transaction] parameter can be used to override parameters
+  /// like the gas price, nonce and max gas. The `data` and `to` fields will be
+  /// set by the contract.
+  Future<String> sendMessage(
+    BigInt _orderId,
+    _i1.EthereumAddress sender,
+    String content, {
+    required _i1.Credentials credentials,
+    _i1.Transaction? transaction,
+  }) async {
+    final function = self.abi.functions[7];
+    assert(checkSignature(function, '2da17371'));
+    final params = [
+      _orderId,
+      sender,
+      content,
+    ];
+    return write(
+      credentials,
+      transaction,
+      function,
+      params,
+    );
+  }
+
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
   Future<BigInt> balances(
-    _i1.EthereumAddress $param11, {
+    _i1.EthereumAddress $param14, {
     _i1.BlockNum? atBlock,
   }) async {
-    final function = self.abi.functions[7];
+    final function = self.abi.functions[8];
     assert(checkSignature(function, '27e235e3'));
-    final params = [$param11];
+    final params = [$param14];
     final response = await read(
       function,
       params,
       atBlock,
     );
     return (response[0] as BigInt);
-  }
-
-  /// The optional [atBlock] parameter can be used to view historical data. When
-  /// set, the function will be evaluated in the specified block. By default, the
-  /// latest on-chain block will be used.
-  Future<List<dynamic>> getAllOrder({_i1.BlockNum? atBlock}) async {
-    final function = self.abi.functions[8];
-    assert(checkSignature(function, '3dfbbad4'));
-    final params = [];
-    final response = await read(
-      function,
-      params,
-      atBlock,
-    );
-    return (response[0] as List<dynamic>).cast<dynamic>();
   }
 
   /// The optional [atBlock] parameter can be used to view historical data. When
@@ -237,27 +247,31 @@ class Delivery extends _i1.GeneratedContract {
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
-  Future<String> getOrderStatus(
-    BigInt _orderId, {
+  Future<List<dynamic>> getMessage(
+    BigInt _orderId,
+    String userType, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[11];
-    assert(checkSignature(function, '45fa8aae'));
-    final params = [_orderId];
+    assert(checkSignature(function, '2e713b7b'));
+    final params = [
+      _orderId,
+      userType,
+    ];
     final response = await read(
       function,
       params,
       atBlock,
     );
-    return (response[0] as String);
+    return (response[0] as List<dynamic>).cast<dynamic>();
   }
 
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
-  Future<List<dynamic>> getSubmittedOrder({_i1.BlockNum? atBlock}) async {
+  Future<List<dynamic>> getPendingOrder({_i1.BlockNum? atBlock}) async {
     final function = self.abi.functions[12];
-    assert(checkSignature(function, 'bcc20214'));
+    assert(checkSignature(function, '4a41aa47'));
     final params = [];
     final response = await read(
       function,
@@ -270,19 +284,58 @@ class Delivery extends _i1.GeneratedContract {
   /// The optional [atBlock] parameter can be used to view historical data. When
   /// set, the function will be evaluated in the specified block. By default, the
   /// latest on-chain block will be used.
-  Future<Orders> orders(
-    BigInt $param15, {
+  Future<Messages> messages(
+    BigInt $param19, {
     _i1.BlockNum? atBlock,
   }) async {
     final function = self.abi.functions[13];
+    assert(checkSignature(function, '0d80fefd'));
+    final params = [$param19];
+    final response = await read(
+      function,
+      params,
+      atBlock,
+    );
+    return Messages(response);
+  }
+
+  /// The optional [atBlock] parameter can be used to view historical data. When
+  /// set, the function will be evaluated in the specified block. By default, the
+  /// latest on-chain block will be used.
+  Future<Orders> orders(
+    BigInt $param20, {
+    _i1.BlockNum? atBlock,
+  }) async {
+    final function = self.abi.functions[14];
     assert(checkSignature(function, 'a85c38ef'));
-    final params = [$param15];
+    final params = [$param20];
     final response = await read(
       function,
       params,
       atBlock,
     );
     return Orders(response);
+  }
+
+  /// Returns a live stream of all MessageSent events emitted by this contract.
+  Stream<MessageSent> messageSentEvents({
+    _i1.BlockNum? fromBlock,
+    _i1.BlockNum? toBlock,
+  }) {
+    final event = self.event('MessageSent');
+    final filter = _i1.FilterOptions.events(
+      contract: self,
+      event: event,
+      fromBlock: fromBlock,
+      toBlock: toBlock,
+    );
+    return client.events(filter).map((_i1.FilterEvent result) {
+      final decoded = event.decodeResults(
+        result.topics!,
+        result.data!,
+      );
+      return MessageSent(decoded);
+    });
   }
 
   /// Returns a live stream of all OrderAccepted events emitted by this contract.
@@ -433,6 +486,25 @@ class Delivery extends _i1.GeneratedContract {
   }
 }
 
+class Messages {
+  Messages(List<dynamic> response)
+      : id = (response[0] as BigInt),
+        sender = (response[1] as _i1.EthereumAddress),
+        receiver = (response[2] as _i1.EthereumAddress),
+        content = (response[3] as String),
+        timestamp = (response[4] as BigInt);
+
+  final BigInt id;
+
+  final _i1.EthereumAddress sender;
+
+  final _i1.EthereumAddress receiver;
+
+  final String content;
+
+  final BigInt timestamp;
+}
+
 class Orders {
   Orders(List<dynamic> response)
       : id = (response[0] as BigInt),
@@ -454,6 +526,16 @@ class Orders {
   final dynamic paymentInfo;
 
   final BigInt orderStatus;
+
+  final BigInt timestamp;
+}
+
+class MessageSent {
+  MessageSent(List<dynamic> response)
+      : messageID = (response[0] as BigInt),
+        timestamp = (response[1] as BigInt);
+
+  final BigInt messageID;
 
   final BigInt timestamp;
 }

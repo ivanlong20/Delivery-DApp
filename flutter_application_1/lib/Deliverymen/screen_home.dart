@@ -21,14 +21,17 @@ var OrderState = [
 ];
 
 getOrderCount() async {
-  final allOrders = await connector.getSubmittedOrder();
+  var allOrders;
+  allOrders = await connector.getPendingOrder();
   final allOrder = List.from(await allOrders);
   Future.delayed(Duration(seconds: 5));
   return allOrder.length;
 }
 
 Future<List<dynamic>> getOrderInfo() async {
-  final allOrders = await connector.getSubmittedOrder();
+  var allOrders;
+  allOrders = await connector.getPendingOrder();
+
   var id = [];
   var senderAddress = [];
   var senderDistrict = [];
@@ -329,6 +332,24 @@ class AvailableOrderListView extends StatelessWidget {
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 20),
                   );
+                } else if (snapshot.hasError) {
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "No Orders Available",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 20),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Please check again later",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 20),
+                        ),
+                      ]);
                 } else {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -341,6 +362,20 @@ class AvailableOrderListView extends StatelessWidget {
                   );
                 }
               });
+        } else if (snapshot.hasError) {
+          return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(
+              "No Orders Available",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              "Please check again later",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+            ),
+          ]);
         } else {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,

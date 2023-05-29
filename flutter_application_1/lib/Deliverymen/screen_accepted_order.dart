@@ -20,74 +20,74 @@ var OrderState = [
   'Canceled'
 ];
 
-// getOrderCount() async {
-//   final allOrders = await connector.getDeliverymanOrder();
-//   final allOrder = List.from(await allOrders);
-//   Future.delayed(Duration(seconds: 3));
-//   return allOrder.length;
-// }
+getOrderCount() async {
+  final allOrders = await connector.getDeliverymanOrder();
+  final allOrder = List.from(await allOrders);
+  Future.delayed(Duration(seconds: 3));
+  return allOrder.length;
+}
 
-// Future<List<dynamic>> getOrderInfo() async {
-//   final allOrders = await connector.getDeliverymanOrder();
-//   var id = [];
-//   var senderAddress = [];
-//   var senderDistrict = [];
-//   var receiverAddress = [];
-//   var receiverDistrict = [];
-//   var packageDescription = [];
-//   var packageHeight = [];
-//   var packageWidth = [];
-//   var packageDepth = [];
-//   var packageWeight = [];
-//   var paidBySender = [];
-//   var deliveryFee = [];
-//   var productAmount = [];
-//   var totalAmount = [];
-//   var orderStatus = [];
-//   var orderDate = [];
+Future<List<dynamic>> getOrderInfo() async {
+  final allOrders = await connector.getDeliverymanOrder();
+  var id = [];
+  var senderAddress = [];
+  var senderDistrict = [];
+  var receiverAddress = [];
+  var receiverDistrict = [];
+  var packageDescription = [];
+  var packageHeight = [];
+  var packageWidth = [];
+  var packageDepth = [];
+  var packageWeight = [];
+  var paidBySender = [];
+  var deliveryFee = [];
+  var productAmount = [];
+  var totalAmount = [];
+  var orderStatus = [];
+  var orderDate = [];
 
-//   var orders = List.from(await allOrders);
-//   var orderCount = orders.length;
+  var orders = List.from(await allOrders);
+  var orderCount = orders.length;
 
-//   for (int i = 0; i < orderCount; i++) {
-//     id.add(orders[i][0]);
-//     senderAddress.add(orders[i][2][0]);
-//     senderDistrict.add(orders[i][2][1]);
-//     receiverAddress.add(orders[i][2][2]);
-//     receiverDistrict.add(orders[i][2][3]);
-//     packageDescription.add(orders[i][3][0]);
-//     packageHeight.add(orders[i][3][1]);
-//     packageWidth.add(orders[i][3][2]);
-//     packageDepth.add(orders[i][3][3]);
-//     packageWeight.add(orders[i][3][4].toDouble() / 1000);
-//     paidBySender.add(orders[i][4][0]);
-//     deliveryFee.add(orders[i][4][1].toDouble() * (1 / 1e18));
-//     productAmount.add(orders[i][4][2].toDouble() * (1 / 1e18));
-//     totalAmount.add(orders[i][4][3].toDouble() * (1 / 1e18));
-//     orderStatus.add(orders[i][5]);
-//     orderDate
-//         .add(DateTime.fromMillisecondsSinceEpoch(orders[i][6].toInt() * 1000));
-//   }
-//   print(totalAmount);
-//   return [
-//     id,
-//     senderAddress,
-//     senderDistrict,
-//     receiverAddress,
-//     receiverDistrict,
-//     packageDescription,
-//     packageHeight,
-//     packageWidth,
-//     packageDepth,
-//     packageWeight,
-//     paidBySender,
-//     deliveryFee,
-//     productAmount,
-//     totalAmount,
-//     orderStatus,
-//     orderDate
-//   ];
-// }
+  for (int i = 0; i < orderCount; i++) {
+    id.add(orders[i][0]);
+    senderAddress.add(orders[i][2][0]);
+    senderDistrict.add(orders[i][2][1]);
+    receiverAddress.add(orders[i][2][2]);
+    receiverDistrict.add(orders[i][2][3]);
+    packageDescription.add(orders[i][3][0]);
+    packageHeight.add(orders[i][3][1]);
+    packageWidth.add(orders[i][3][2]);
+    packageDepth.add(orders[i][3][3]);
+    packageWeight.add(orders[i][3][4].toDouble() / 1000);
+    paidBySender.add(orders[i][4][0]);
+    deliveryFee.add(orders[i][4][1].toDouble() * (1 / 1e18));
+    productAmount.add(orders[i][4][2].toDouble() * (1 / 1e18));
+    totalAmount.add(orders[i][4][3].toDouble() * (1 / 1e18));
+    orderStatus.add(orders[i][5]);
+    orderDate
+        .add(DateTime.fromMillisecondsSinceEpoch(orders[i][6].toInt() * 1000));
+  }
+  print(totalAmount);
+  return [
+    id,
+    senderAddress,
+    senderDistrict,
+    receiverAddress,
+    receiverDistrict,
+    packageDescription,
+    packageHeight,
+    packageWidth,
+    packageDepth,
+    packageWeight,
+    paidBySender,
+    deliveryFee,
+    productAmount,
+    totalAmount,
+    orderStatus,
+    orderDate
+  ];
+}
 
 class OrderPage extends StatefulWidget {
   final String title;
@@ -350,6 +350,24 @@ class TransactionListView extends StatelessWidget {
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 20),
                   );
+                } else if (snapshot.hasError) {
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "No Orders Available",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 20),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Please check again later",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 20),
+                        ),
+                      ]);
                 } else {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -362,6 +380,20 @@ class TransactionListView extends StatelessWidget {
                   );
                 }
               });
+        } else if (snapshot.hasError) {
+          return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(
+              "No Orders Available",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              "Please check again later",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+            ),
+          ]);
         } else {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,

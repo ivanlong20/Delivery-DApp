@@ -241,7 +241,7 @@ class _RegisterPageState extends State<RegisterPage> {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                ConnectMetamaskPage(title: 'Connect Your Crypto Wallet')),
+                ConnectMetamaskPage(title: 'Connect Your Wallet')),
       );
     } else {
       showInvalidRegisterDialog();
