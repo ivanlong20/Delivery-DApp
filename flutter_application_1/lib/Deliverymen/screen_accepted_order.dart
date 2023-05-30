@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 import 'screen_connect_metamask.dart';
 import 'package:intl/intl.dart';
 import 'app_drawer.dart';
+import 'screen_message.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
@@ -41,6 +43,8 @@ Future<List<dynamic>> getOrderInfo() async {
   var totalAmount = [];
   var orderStatus = [];
   var orderDate = [];
+  var senderwalletAddress = [];
+  var recipientwalletAddress = [];
 
   var orders = List.from(await allOrders);
   var orderCount = orders.length;
@@ -63,6 +67,8 @@ Future<List<dynamic>> getOrderInfo() async {
     orderStatus.add(orders[i][5]);
     orderDate
         .add(DateTime.fromMillisecondsSinceEpoch(orders[i][6].toInt() * 1000));
+    senderwalletAddress.add(orders[i][1][0]);
+    recipientwalletAddress.add(orders[i][1][1]);
   }
   print(totalAmount);
   return [
@@ -81,7 +87,9 @@ Future<List<dynamic>> getOrderInfo() async {
     productAmount,
     totalAmount,
     orderStatus,
-    orderDate
+    orderDate,
+    senderwalletAddress,
+    recipientwalletAddress
   ];
 }
 
@@ -123,6 +131,8 @@ class TransactionListView extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   var id = snapshot.data?[0];
+                  var senderWalletAddress = snapshot.data?[16];
+                  var recipientWalletAddress = snapshot.data?[17];
                   var orderDate = snapshot.data?[15];
                   var senderAddress = snapshot.data?[1];
                   var senderDistrict = snapshot.data?[2];
@@ -136,7 +146,17 @@ class TransactionListView extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       return InkWell(
                           onTap: () {
-                            enterTransactionDetailsPage(index, context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => TransactionDetailsPage(
+                                      title: 'Details',
+                                      index: index,
+                                      connector: connector,
+                                      orderID: id[index],
+                                      sender: senderWalletAddress,
+                                      receiver: recipientWalletAddress)),
+                            );
                             // fetch();
                           },
                           child: Container(
@@ -180,8 +200,7 @@ class TransactionListView extends StatelessWidget {
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Flexible(
-                                                  child: Text(
+                                              child: Text(
                                             senderAddress[index] +
                                                 ", " +
                                                 senderDistrict[index],
@@ -189,7 +208,7 @@ class TransactionListView extends StatelessWidget {
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 14),
                                             textAlign: TextAlign.center,
-                                          )))),
+                                          ))),
                                       SizedBox(
                                         height: 2,
                                       ),
@@ -209,8 +228,7 @@ class TransactionListView extends StatelessWidget {
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Flexible(
-                                                  child: Text(
+                                              child: Text(
                                             receiverAddress[index] +
                                                 ", " +
                                                 receiverDistrict[index],
@@ -218,7 +236,7 @@ class TransactionListView extends StatelessWidget {
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 14),
                                             textAlign: TextAlign.center,
-                                          )))),
+                                          ))),
                                       SizedBox(
                                         height: 10,
                                       ),
@@ -317,21 +335,20 @@ class TransactionListView extends StatelessWidget {
       },
     ));
   }
-
-  enterTransactionDetailsPage(index, context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) =>
-              TransactionDetailsPage(title: 'Details', index: index)),
-    );
-  }
 }
 
 class TransactionDetailsPage extends StatefulWidget {
   final String title;
   final index;
-  TransactionDetailsPage({Key? key, required this.title, required this.index})
+  var connector, orderID, sender, receiver;
+  TransactionDetailsPage(
+      {Key? key,
+      required this.title,
+      required this.index,
+      required this.connector,
+      required this.orderID,
+      required this.sender,
+      required this.receiver})
       : super(key: key);
   @override
   State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
@@ -355,7 +372,19 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                   height: 30,
                 ),
                 FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MessagePage(
+                            title: 'Messages',
+                            connector: widget.connector,
+                            orderID: widget.orderID,
+                            orderSender: widget.sender,
+                            orderReceiver: widget.receiver,
+                          ),
+                        ));
+                  },
                   child: Icon(Icons.message),
                 ),
                 SizedBox(

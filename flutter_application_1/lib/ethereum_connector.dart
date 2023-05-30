@@ -398,7 +398,6 @@ class EthereumConnector implements WalletConnector {
       {required BigInt orderID,
       required String receiverAddress,
       required String content}) async {
-
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
     final senderWalletAddress =
         EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
@@ -428,7 +427,8 @@ class EthereumConnector implements WalletConnector {
   }
 
   @override
-  Future<dynamic> getMessage({required BigInt orderID, required String userType}) async {
+  Future<dynamic> getMessage(
+      {required BigInt orderID, required String userType}) async {
     final delivery = Delivery(address: contractAddress, client: client);
 
     final messages = await delivery.getMessage(orderID, userType);

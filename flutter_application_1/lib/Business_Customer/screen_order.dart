@@ -8,7 +8,6 @@ import '../screen_user_selection.dart';
 import 'package:intl/intl.dart';
 import 'app_drawer.dart';
 
-
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
 
@@ -462,9 +461,6 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                             fontSize: 18,
                                             fontWeight: FontWeight.w700))
                                   ],
-                                ),
-                                SizedBox(
-                                  height: 10,
                                 ),
                                 Row(
                                   children: [

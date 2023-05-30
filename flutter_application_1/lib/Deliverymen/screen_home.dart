@@ -178,8 +178,8 @@ class AvailableOrderListView extends StatelessWidget {
                                       ),
                                       Expanded(
                                           flex: 35,
-                                          child: Center(
-                                              child: Flexible(
+                                          child: Flexible(
+                                              child: Center(
                                                   child: Text(
                                             senderAddress[index] +
                                                 ", " +
@@ -202,8 +202,8 @@ class AvailableOrderListView extends StatelessWidget {
                                       SizedBox(height: 10),
                                       Expanded(
                                         flex: 35,
-                                        child: Center(
-                                            child: Flexible(
+                                        child: Flexible(
+                                            child: Center(
                                                 child: Text(
                                           receiverAddress[index] +
                                               ", " +
