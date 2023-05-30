@@ -326,7 +326,7 @@
 			},
 			{
 				"internalType": "address",
-				"name": "sender",
+				"name": "receiver",
 				"type": "address"
 			},
 			{

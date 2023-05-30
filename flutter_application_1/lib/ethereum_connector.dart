@@ -61,7 +61,7 @@ class EthereumConnector implements WalletConnector {
   late final EthereumWalletConnectProvider _provider;
   final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
-      EthereumAddress.fromHex('0x967c8ac769e15c4E805D92F2012c75b3b0610995');
+      EthereumAddress.fromHex('0x707fA02Fb160999c102946c38D8Ce453130aaDe3');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(
@@ -412,7 +412,7 @@ class EthereumConnector implements WalletConnector {
       date =
           DateTime.fromMillisecondsSinceEpoch(event.timestamp.toInt() * 1000);
 
-      print('$orderID created at $date');
+      print('$messageID created at $date');
     });
     Transaction transaction = Transaction(
       from: senderWalletAddress,

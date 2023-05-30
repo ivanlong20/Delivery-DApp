@@ -1,27 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'screen_home.dart';
-import 'screen_accepted_order.dart';
-import 'screen_wallet.dart';
 import 'screen_connect_metamask.dart';
-import '../screen_user_selection.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
+import 'app_drawer.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
 
-
 TextEditingController wallet_address = TextEditingController();
 TextEditingController message = TextEditingController();
+
+getMessages(orderID) async {
+  final allMessages = await connector.getMessage(
+      orderID: BigInt.from(orderID), userType: "Deliverymen");
+  var messages = List.from(await allMessages);
+  var messageCount = messages.length;
+  var id = [];
+  var sender = [];
+  var receiver = [];
+  var content = [];
+  var messageTime = [];
+
+  for (int i = 0; i < messageCount; i++) {
+    id.add(messages[i][0]);
+    sender.add(messages[i][1]);
+    receiver.add(messages[i][2]);
+    content.add(messages[i][3]);
+    messageTime.add(
+        DateTime.fromMillisecondsSinceEpoch(messages[i][6].toInt() * 1000));
+  }
+  return [id, sender, receiver, content, messageTime];
+}
+
+sendMessages(orderID, receiver, content) async {
+  await connector.sendMessage(
+      orderID: BigInt.from(orderID),
+      receiverAddress: receiver,
+      content: content);
+}
 
 class MessagePage extends StatefulWidget {
   final String title;
   var connector;
-  MessagePage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  MessagePage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<MessagePage> createState() => _MessagePageState();
@@ -38,150 +57,22 @@ class _MessagePageState extends State<MessagePage> {
             context,
             MaterialPageRoute(
                 builder: (context) => NewMessagePage(
-                    title: 'New Message',
-                    connector: widget.connector)),
+                    title: 'New Message', connector: widget.connector)),
           );
         },
         child: const Icon(Icons.add),
       ),
       appBar: AppBar(title: Text(widget.title)),
-      drawer: Drawer(
-        child: ListView(
-          children: <Widget>[
-            DrawerHeader(
-                child: Column(children: [
-              const Row(children: [
-                Text(
-                  'Balance',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
-                )
-              ]),
-              Row(children: [
-                FutureBuilder<dynamic>(
-                    future: finalBalance,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      if (snapshot.hasData) {
-                        var balance = snapshot.data;
-                        return Text(
-                          balance.toStringAsFixed(5),
-                          style: const TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 36,
-                          ),
-                        );
-                      } else {
-                        return const Text(
-                          '0',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 36,
-                          ),
-                        );
-                      }
-                    }),
-                const Text(' ETH',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ))
-              ]),
-              Row(
-                children: [
-                  Text(network,
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 0, 0, 0),
-                        fontSize: 16,
-                      ))
-                ],
-              )
-            ])),
-            ListTile(
-              leading: const Icon(Icons.local_shipping_rounded),
-              title: const Text('View Available Orders'),
-              onTap: openHomePage,
-            ),
-            ListTile(
-                leading: const FaIcon(FontAwesomeIcons.solidCircleCheck),
-                title: const Text('Acctepted Orders'),
-                onTap: openOrderPage),
-            ListTile(
-                leading: const Icon(Icons.message),
-                title: const Text('Message'),
-                onTap: openMessagePage),
-            ListTile(
-                leading: const Icon(Icons.wallet),
-                title: const Text('Wallet'),
-                onTap: openWalletPage),
-            ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Logout'),
-                onTap: logout)
-          ],
-        ),
-      ),
-      body: MessageListView( widget.connector),
+      drawer: AppDrawer(connector: widget.connector),
+      body: MessageListView(widget.connector),
     );
-  }
-
-  openWalletPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => WalletPage(
-              title: 'Wallet',
-              connector: widget.connector)),
-    );
-  }
-
-  openHomePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => HomePage(
-              title: 'View Available Orders',
-              connector: widget.connector)),
-    );
-  }
-
-  openOrderPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => OrderPage(
-              title: 'Accepted Orders',
-              connector: widget.connector)),
-    );
-  }
-
-  openMessagePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Message',
-              connector: widget.connector)),
-    );
-  }
-
-  logout() async {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => UserSelectionPage(title: 'Landing Page')),
-      );
-      await FirebaseAuth.instance.signOut();
-      await widget.connector.killSession();
   }
 }
 
 class NewMessagePage extends StatefulWidget {
   final String title;
   final connector;
-  NewMessagePage(
-      {Key? key,
-      required this.title,
-      required this.connector})
+  NewMessagePage({Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<NewMessagePage> createState() => _NewMessagePageState();
@@ -343,9 +234,7 @@ class MessageListView extends StatelessWidget {
       context,
       MaterialPageRoute(
           builder: (context) => MessageDetailsPage(
-              title: 'Message Details',
-              index: index,
-              connector: connector)),
+              title: 'Message Details', index: index, connector: connector)),
     );
   }
 }
@@ -375,8 +264,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
               context,
               MaterialPageRoute(
                   builder: (context) => NewMessagePage(
-                      title: 'New Message',
-                      connector: widget.connector)),
+                      title: 'New Message', connector: widget.connector)),
             );
           },
           label: const Text('Reply'),
