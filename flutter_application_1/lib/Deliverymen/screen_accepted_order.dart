@@ -345,7 +345,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
     var index = widget.index;
     return Scaffold(
         floatingActionButton: Padding(
-            padding: EdgeInsets.all(15),
+            padding: EdgeInsets.all(0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -423,7 +423,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                         style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w700)),
-                                    const SizedBox(width: 75),
+                                    const SizedBox(width: 70),
                                     Text(
                                         DateFormat('dd/MM/yyyy HH:mm')
                                             .format(orderDate[index]),

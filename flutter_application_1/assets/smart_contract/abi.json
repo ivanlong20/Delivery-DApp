@@ -603,9 +603,9 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "string",
-				"name": "userType",
-				"type": "string"
+				"internalType": "address",
+				"name": "caller",
+				"type": "address"
 			}
 		],
 		"name": "getMessage",

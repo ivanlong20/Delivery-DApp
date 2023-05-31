@@ -7,6 +7,7 @@ import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 import 'package:intl/intl.dart';
 import 'app_drawer.dart';
+import 'package:barcode_scan2/barcode_scan2.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
@@ -29,6 +30,7 @@ getOrderCount() async {
 
 Future<List<dynamic>> getOrderInfo() async {
   final allOrders = await connector.getOrderFromBusinessAndCustomer();
+  print(allOrders);
   var id = [];
   var senderAddress = [];
   var senderDistrict = [];
@@ -92,7 +94,8 @@ Future<List<dynamic>> getOrderInfo() async {
     orderStatus,
     orderDate,
     senderwalletAddress,
-    recipientwalletAddress,deliverymanWalletAddress
+    recipientwalletAddress,
+    deliverymanWalletAddress
   ];
 }
 
@@ -169,7 +172,8 @@ class TransactionListView extends StatelessWidget {
                                 id[index],
                                 senderWalletAddress[index],
                                 recipientWalletAddress[index],
-                                orderStatus[index],deliverymanWalletAddress[index]);
+                                orderStatus[index],
+                                deliverymanWalletAddress[index]);
                             // fetch();
                           },
                           child: Container(
@@ -307,8 +311,15 @@ class TransactionListView extends StatelessWidget {
     ));
   }
 
-  enterTransactionDetailsPage(index, context, connector, id,
-      senderWalletAddress, recipientWalletAddress, orderStatus, deliverymanWalletAddress) {
+  enterTransactionDetailsPage(
+      index,
+      context,
+      connector,
+      id,
+      senderWalletAddress,
+      recipientWalletAddress,
+      orderStatus,
+      deliverymanWalletAddress) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -319,7 +330,8 @@ class TransactionListView extends StatelessWidget {
                 orderID: id,
                 sender: senderWalletAddress,
                 receiver: recipientWalletAddress,
-                orderStatus: orderStatus, deliveryman: deliverymanWalletAddress,
+                orderStatus: orderStatus,
+                deliveryman: deliverymanWalletAddress,
               )),
     );
   }
@@ -337,7 +349,8 @@ class TransactionDetailsPage extends StatefulWidget {
       required this.orderID,
       required this.sender,
       required this.receiver,
-      required this.orderStatus, required this.deliveryman})
+      required this.orderStatus,
+      required this.deliveryman})
       : super(key: key);
   @override
   State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
@@ -349,25 +362,30 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
     var index = widget.index;
     return Scaffold(
         floatingActionButton: Padding(
-            padding: EdgeInsets.all(15),
+            padding: EdgeInsets.all(0),
             child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MessagePage(
-                          title: 'Messages',
-                          connector: widget.connector,
-                          orderID: widget.orderID,
-                          orderSender: widget.sender,
-                          orderReceiver: widget.receiver,orderDeliveryman: widget.deliveryman,
-                        ),
-                      ));
-                },
-                child: Icon(Icons.message),
-              ),
-              SizedBox(height: 30),
+              (widget.orderStatus.toInt() == 2 ||
+                      widget.orderStatus.toInt() == 3 ||
+                      widget.orderStatus.toInt() == 4)
+                  ? FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MessagePage(
+                                title: 'Messages',
+                                connector: widget.connector,
+                                orderID: widget.orderID,
+                                orderSender: widget.sender,
+                                orderReceiver: widget.receiver,
+                                orderDeliveryman: widget.deliveryman,
+                              ),
+                            ));
+                      },
+                      child: Icon(Icons.message),
+                    )
+                  : const SizedBox(height: 0),
+              const SizedBox(height: 30),
               (widget.orderStatus.toInt() == 3 &&
                       connector.address == widget.receiver.toString())
                   ? FloatingActionButton(
@@ -413,7 +431,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                         style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w700)),
-                                    const SizedBox(width: 75),
+                                    const SizedBox(width: 70),
                                     Text(
                                         DateFormat('dd/MM/yyyy HH:mm')
                                             .format(orderDate[index]),
@@ -631,5 +649,35 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                         );
                       }
                     }))));
+  }
+
+  confirmReceived(deliverymanWalletAddress, orderID) async {
+    var scannedDeliverymanWalletAddress = "0";
+    BarcodeScanner.scan().then((value) {
+      setState(() {
+        deliverymanWalletAddress = value.rawContent.substring(9);
+      });
+    });
+    if (scannedDeliverymanWalletAddress == deliverymanWalletAddress) {
+      Future.delayed(Duration.zero, () => connector.openWalletApp());
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoadingPage()),
+      );
+
+      await connector.deliveryConfirmCompleted(orderID: BigInt.from(orderID));
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Order #' + orderID.toString() + ' Received')));
+          
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => OrderPage(
+                title: 'Order Tracking & History',
+                connector: widget.connector)),
+      );
+    }
   }
 }

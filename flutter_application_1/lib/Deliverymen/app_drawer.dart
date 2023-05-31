@@ -82,11 +82,6 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
               title: const Text('Acctepted Orders'),
               onTap: openOrderPage),
           ListTile(
-            leading: const Icon(Icons.message),
-            title: const Text('Message'),
-            // onTap: openMessagePage
-          ),
-          ListTile(
               leading: const Icon(Icons.wallet),
               title: const Text('Wallet'),
               onTap: openWalletPage),
@@ -125,15 +120,6 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
               OrderPage(title: 'Accepted Orders', connector: widget.connector)),
     );
   }
-
-  // openMessagePage() {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //         builder: (context) =>
-  //             MessagePage(title: 'Message', connector: widget.connector)),
-  //   );
-  // }
 
   logout() async {
     Navigator.push(

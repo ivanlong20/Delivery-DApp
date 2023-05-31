@@ -81,11 +81,6 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
               title: const Text('Order Tracking & History'),
               onTap: openOrderPage),
           ListTile(
-              leading: const Icon(Icons.message),
-              title: const Text('Message'),
-              // onTap: openMessagePage
-              ),
-          ListTile(
               leading: const Icon(Icons.wallet),
               title: const Text('Wallet'),
               onTap: openWalletPage),
@@ -124,15 +119,6 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
               title: 'Order Tracking & History', connector: widget.connector)),
     );
   }
-
-  // openMessagePage() {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //         builder: (context) =>
-  //             MessagePage(title: 'Message', connector: widget.connector)),
-  //   );
-  // }
 
   logout() async {
     Navigator.push(

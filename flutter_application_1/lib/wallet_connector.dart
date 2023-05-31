@@ -52,7 +52,7 @@ abstract class WalletConnector {
       required String content});
 
   Future<dynamic> getMessage(
-      {required BigInt orderID, required String userType});
+      {required BigInt orderID, required String address});
 
   Future<void> openWalletApp();
 

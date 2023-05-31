@@ -12,7 +12,7 @@ int? senderRecipientIndex;
 
 Future<List<dynamic>> getMessages(orderID) async {
   final allMessages = await connector.getMessage(
-      orderID: BigInt.from(orderID.toInt()), userType: "Deliverymen");
+      orderID: BigInt.from(orderID.toInt()), address: connector.address);
   var messages = List.from(await allMessages);
   var messageCount = messages.length;
   var id = [];
@@ -29,12 +29,13 @@ Future<List<dynamic>> getMessages(orderID) async {
     messageTime.add(
         DateTime.fromMillisecondsSinceEpoch(messages[i][4].toInt() * 1000));
   }
+  print(messageCount);
   return [id, sender, receiver, content, messageTime];
 }
 
 getMessageCount(orderID) async {
   final allMessages = await connector.getMessage(
-      orderID: BigInt.from(orderID.toInt()), userType: "Deliverymen");
+      orderID: BigInt.from(orderID.toInt()), address: connector.address);
   var messages = List.from(await allMessages);
   Future.delayed(Duration(seconds: 3));
   return messages.length;
@@ -103,9 +104,9 @@ class _NewMessagePageState extends State<NewMessagePage> {
   @override
   Widget build(BuildContext context) {
     print(widget.orderID);
-    print((senderRecipientIndex == 0)
-        ? widget.orderSender[0].toString()
-        : widget.orderReceiver[0].toString());
+    // print((senderRecipientIndex == 0)
+    //     ? widget.orderSender[0].toString()
+    //     : widget.orderReceiver[0].toString());
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text(widget.title)),
@@ -170,8 +171,8 @@ class _NewMessagePageState extends State<NewMessagePage> {
                           sendMessages(
                               widget.orderID,
                               (senderRecipientIndex == 0)
-                                  ? widget.orderSender[0].toString()
-                                  : widget.orderReceiver[0].toString(),
+                                  ? widget.orderSender.toString()
+                                  : widget.orderReceiver.toString(),
                               message.text,
                               widget.orderSender,
                               widget.orderReceiver),

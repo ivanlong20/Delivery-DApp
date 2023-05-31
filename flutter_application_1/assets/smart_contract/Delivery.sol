@@ -67,11 +67,11 @@ struct Payment {
     error OnlyDeliveryman();
     error InvalidState();
 
-    modifier condition(bool condition_) {
-        if (!condition_)
-            revert InvalidState();
-        _;
-    }
+    // modifier condition(bool condition_) {
+    //     if (!condition_)
+    //         revert InvalidState();
+    //     _;
+    // }
 
     modifier onlySender(uint _orderId) {
        require(msg.sender == orders[_orderId].walletAddress.sender,"Only sender can call this function");
@@ -241,12 +241,12 @@ struct Payment {
     }
 
     //Getting Message
-    function getMessage(uint _orderId, string calldata userType) external view returns(Message[] memory){
+    function getMessage(uint _orderId, address caller) external view returns(Message[] memory){
         Order memory order = orders[_orderId];
         Message[] memory messagesTemp = new Message[](order.messageID.length);
         uint count = 0;
         //If user type is deliverymen, only fetch messages from/to deliverymen
-        if(keccak256(bytes(userType)) == keccak256(bytes("Deliverymen"))){
+        if(caller == order.walletAddress.deliveryman){
             for(uint i=0;i<order.messageID.length;i++){
             if(messages[order.messageID[i]].sender == order.walletAddress.deliveryman || messages[order.messageID[i]].receiver == order.walletAddress.deliveryman){
                 messagesTemp[count] = messages[order.messageID[i]];
@@ -263,14 +263,14 @@ struct Payment {
         return filteredMessages;
         }
         else{
-            revert("Not found");
+            revert("Not Found");
         }
         }
 
         //If user type is any except deliverymen, only fetch messages from/to Businesses/Customers
         else{
             for(uint i=0;i<order.messageID.length;i++){
-            if(messages[order.messageID[i]].sender == order.walletAddress.deliveryman || messages[order.messageID[i]].receiver == order.walletAddress.deliveryman){
+            if((messages[order.messageID[i]].sender == order.walletAddress.deliveryman || messages[order.messageID[i]].sender == caller) && (messages[order.messageID[i]].receiver == caller || messages[order.messageID[i]].receiver == order.walletAddress.deliveryman)){
                 messagesTemp[count] = messages[order.messageID[i]];
                 count++;
             }
@@ -285,7 +285,7 @@ struct Payment {
         return filteredMessages;
         }
         else{
-            revert("Not found");
+           revert("Not Found");
         }
         }
      

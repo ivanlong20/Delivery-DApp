@@ -12,7 +12,7 @@ int? senderRecipientIndex;
 
 Future<List<dynamic>> getMessages(orderID) async {
   final allMessages = await connector.getMessage(
-      orderID: BigInt.from(orderID.toInt()), userType: "Others");
+      orderID: BigInt.from(orderID.toInt()), address: connector.address);
   var messages = List.from(await allMessages);
   var messageCount = messages.length;
   var id = [];
@@ -34,8 +34,9 @@ Future<List<dynamic>> getMessages(orderID) async {
 
 getMessageCount(orderID) async {
   final allMessages = await connector.getMessage(
-      orderID: BigInt.from(orderID.toInt()), userType: "Others");
+      orderID: BigInt.from(orderID.toInt()), address: connector.address);
   var messages = List.from(await allMessages);
+  print('message count ' + messages.length.toString());
   Future.delayed(Duration(seconds: 3));
   return messages.length;
 }
@@ -81,134 +82,6 @@ class _MessagePageState extends State<MessagePage> {
       body: MessageListView(widget.connector, widget.orderID,
           widget.orderSender, widget.orderReceiver, widget.orderDeliveryman),
     );
-  }
-}
-
-class NewMessagePage extends StatefulWidget {
-  final String title;
-  final connector;
-  var orderID, orderSender, orderReceiver, orderDeliveryman;
-  NewMessagePage(
-      {Key? key,
-      required this.title,
-      required this.connector,
-      required this.orderID,
-      required this.orderSender,
-      required this.orderReceiver,
-      required this.orderDeliveryman})
-      : super(key: key);
-  @override
-  State<NewMessagePage> createState() => _NewMessagePageState();
-}
-
-class _NewMessagePageState extends State<NewMessagePage> {
-  final List<String> recipient = ['Deliveryman'];
-  @override
-  Widget build(BuildContext context) {
-    print(widget.orderID);
-    // print((senderRecipientIndex == 0)
-    //     ? widget.orderSender[0].toString()
-    //     : widget.orderReceiver[0].toString());
-    return Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: AppBar(title: Text(widget.title)),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text('To',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600)),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Container(
-                    alignment: Alignment.topLeft,
-                    child: Wrap(
-                        spacing: 5,
-                        children: List<Widget>.generate(1, (int index) {
-                          return ChoiceChip(
-                            label: Text(recipient[index]),
-                            selected: senderRecipientIndex == index,
-                            selectedColor: Color.fromARGB(255, 221, 221, 221),
-                            onSelected: (bool selected) {
-                              setState(() {
-                                senderRecipientIndex = selected ? index : null;
-                              });
-                            },
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50)),
-                          );
-                        }))),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Text('Message',
-                        style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w600))
-                  ],
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      message.text = text;
-                    });
-                  },
-                  maxLines: 5,
-                  controller: message,
-                  decoration: InputDecoration(
-                      labelText: 'Enter your message',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20))),
-                ),
-                const SizedBox(height: 40),
-                FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
-                    onPressed: () => {
-                          sendMessages(
-                              widget.orderID,
-                              (senderRecipientIndex == 0)
-                                  ? widget.orderSender.toString()
-                                  : widget.orderReceiver.toString(),
-                              message.text,
-                              widget.orderSender,
-                              widget.orderReceiver,
-                              widget.orderDeliveryman),
-                        },
-                    child: Text('Send', style: TextStyle(fontSize: 18)))
-              ],
-            ),
-          ),
-        ));
-  }
-
-  sendMessages(orderID, receiver, content, orderSender, orderReceiver,
-      orderDeliveryman) async {
-    Future.delayed(Duration.zero, () => connector.openWalletApp());
-
-    await connector.sendMessage(
-        orderID: BigInt.from(orderID.toInt()),
-        receiverAddress: receiver,
-        content: content);
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('Message Sent Successfully')));
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MessagePage(
-              title: 'Messages',
-              connector: connector,
-              orderID: orderID,
-              orderSender: orderSender,
-              orderReceiver: orderReceiver,
-              orderDeliveryman: orderDeliveryman),
-        ));
   }
 }
 
@@ -634,5 +507,131 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                     ),
                   ],
                 ))));
+  }
+}
+
+class NewMessagePage extends StatefulWidget {
+  final String title;
+  final connector;
+  var orderID, orderSender, orderReceiver, orderDeliveryman;
+  NewMessagePage(
+      {Key? key,
+      required this.title,
+      required this.connector,
+      required this.orderID,
+      required this.orderSender,
+      required this.orderReceiver,
+      required this.orderDeliveryman})
+      : super(key: key);
+  @override
+  State<NewMessagePage> createState() => _NewMessagePageState();
+}
+
+class _NewMessagePageState extends State<NewMessagePage> {
+  final List<String> recipient = ['Deliveryman'];
+  @override
+  Widget build(BuildContext context) {
+    print(widget.orderID);
+    // print((senderRecipientIndex == 0)
+    //     ? widget.orderSender[0].toString()
+    //     : widget.orderReceiver[0].toString());
+    return Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(title: Text(widget.title)),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text('To',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                    alignment: Alignment.topLeft,
+                    child: Wrap(
+                        spacing: 5,
+                        children: List<Widget>.generate(1, (int index) {
+                          return ChoiceChip(
+                            label: Text(recipient[index]),
+                            selected: senderRecipientIndex == index,
+                            selectedColor: Color.fromARGB(255, 221, 221, 221),
+                            onSelected: (bool selected) {
+                              setState(() {
+                                senderRecipientIndex = selected ? index : null;
+                              });
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50)),
+                          );
+                        }))),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Text('Message',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      message.text = text;
+                    });
+                  },
+                  maxLines: 5,
+                  controller: message,
+                  decoration: InputDecoration(
+                      labelText: 'Enter your message',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                ),
+                const SizedBox(height: 40),
+                FilledButton(
+                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                    onPressed: () => {
+                          sendMessages(
+                              widget.orderID,
+                              widget.orderDeliveryman.toString(),
+                              message.text,
+                              widget.orderSender,
+                              widget.orderReceiver,
+                              widget.orderDeliveryman),
+                        },
+                    child: Text('Send', style: TextStyle(fontSize: 18)))
+              ],
+            ),
+          ),
+        ));
+  }
+
+  sendMessages(orderID, receiver, content, orderSender, orderReceiver,
+      orderDeliveryman) async {
+    Future.delayed(Duration.zero, () => connector.openWalletApp());
+
+    await connector.sendMessage(
+        orderID: BigInt.from(orderID.toInt()),
+        receiverAddress: receiver,
+        content: content);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Message Sent Successfully')));
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MessagePage(
+              title: 'Messages',
+              connector: connector,
+              orderID: orderID,
+              orderSender: orderSender,
+              orderReceiver: orderReceiver,
+              orderDeliveryman: orderDeliveryman),
+        ));
   }
 }
