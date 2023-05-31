@@ -221,8 +221,8 @@ struct Payment {
 
      // Generate Message ID
     function generateMessageId() internal returns (uint256) {
-        currentOrderId += 1;
-        return currentOrderId;
+        currentMessageId += 1;
+        return currentMessageId;
     }
 
     //Sending Message

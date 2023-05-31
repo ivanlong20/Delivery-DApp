@@ -61,29 +61,30 @@ class EthereumConnector implements WalletConnector {
   late final EthereumWalletConnectProvider _provider;
   final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
-      EthereumAddress.fromHex('0x707fA02Fb160999c102946c38D8Ce453130aaDe3');
+      EthereumAddress.fromHex('0x187FE0a7a618d2d0806180E6129aE26564201CC2');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(
-        connector: WalletConnect(
-          bridge: 'https://bridge.walletconnect.org',
-          clientMeta: const PeerMeta(
-            name: 'Delivery Dapp',
-            description: 'Delivery Dapp',
-            url: 'https://walletconnect.org',
-            icons: [
-              'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
-            ],
-          ),
+      connector: WalletConnect(
+        bridge: 'https://bridge.walletconnect.org',
+        clientMeta: const PeerMeta(
+          name: 'Delivery Dapp',
+          description: 'Delivery Dapp',
+          url: 'https://walletconnect.org',
+          icons: [
+            'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
+          ],
         ),
-        modalBuilder: (context, uri, callback, defaultModalWidget) {
-          return defaultModalWidget.copyWith(
-            cardColor: const Color.fromARGB(255, 236, 236, 236),
-            platformOverrides: const ModalWalletPlatformOverrides(
-              android: ModalWalletType.listMobile,
-            ),
-          );
-        });
+      ),
+      // modalBuilder: (context, uri, callback, defaultModalWidget) {
+      //   return defaultModalWidget.copyWith(
+      //     cardColor: const Color.fromARGB(255, 236, 236, 236),
+      //     platformOverrides: const ModalWalletPlatformOverrides(
+      //       android: ModalWalletType.listMobile,
+      //     ),
+      //   );
+      // }
+    );
 
     _provider = EthereumWalletConnectProvider(_connector.connector);
   }

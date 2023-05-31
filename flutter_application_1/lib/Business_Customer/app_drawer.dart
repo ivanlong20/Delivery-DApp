@@ -83,7 +83,8 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
           ListTile(
               leading: const Icon(Icons.message),
               title: const Text('Message'),
-              onTap: openMessagePage),
+              // onTap: openMessagePage
+              ),
           ListTile(
               leading: const Icon(Icons.wallet),
               title: const Text('Wallet'),
@@ -124,14 +125,14 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
     );
   }
 
-  openMessagePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) =>
-              MessagePage(title: 'Message', connector: widget.connector)),
-    );
-  }
+  // openMessagePage() {
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //         builder: (context) =>
+  //             MessagePage(title: 'Message', connector: widget.connector)),
+  //   );
+  // }
 
   logout() async {
     Navigator.push(

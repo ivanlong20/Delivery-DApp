@@ -100,7 +100,6 @@ class NewMessagePage extends StatefulWidget {
 
 class _NewMessagePageState extends State<NewMessagePage> {
   final List<String> recipient = ['Parcel Sender', 'Parcel Receiver'];
-
   @override
   Widget build(BuildContext context) {
     print(widget.orderID);
@@ -108,106 +107,89 @@ class _NewMessagePageState extends State<NewMessagePage> {
         ? widget.orderSender[0].toString()
         : widget.orderReceiver[0].toString());
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Padding(
-        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Row(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(title: Text(widget.title)),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text('To',
-                    style:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-                alignment: Alignment.topLeft,
-                child: Wrap(
-                    spacing: 5,
-                    children: List<Widget>.generate(2, (int index) {
-                      return ChoiceChip(
-                        label: Text(recipient[index]),
-                        selected: senderRecipientIndex == index,
-                        selectedColor: Color.fromARGB(255, 221, 221, 221),
-                        onSelected: (bool selected) {
-                          setState(() {
-                            senderRecipientIndex = selected ? index : null;
-                          });
+                Row(
+                  children: [
+                    Text('To',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                    alignment: Alignment.topLeft,
+                    child: Wrap(
+                        spacing: 5,
+                        children: List<Widget>.generate(2, (int index) {
+                          return ChoiceChip(
+                            label: Text(recipient[index]),
+                            selected: senderRecipientIndex == index,
+                            selectedColor: Color.fromARGB(255, 221, 221, 221),
+                            onSelected: (bool selected) {
+                              setState(() {
+                                senderRecipientIndex = selected ? index : null;
+                              });
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50)),
+                          );
+                        }))),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Text('Message',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.w600))
+                  ],
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  onChanged: (text) {
+                    setState(() {
+                      message.text = text;
+                    });
+                  },
+                  maxLines: 5,
+                  controller: message,
+                  decoration: InputDecoration(
+                      labelText: 'Enter your message',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                ),
+                const SizedBox(height: 40),
+                FilledButton(
+                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                    onPressed: () => {
+                          sendMessages(
+                              widget.orderID,
+                              (senderRecipientIndex == 0)
+                                  ? widget.orderSender[0].toString()
+                                  : widget.orderReceiver[0].toString(),
+                              message.text,
+                              widget.orderSender,
+                              widget.orderReceiver),
                         },
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50)),
-                      );
-                    }))),
-            // TextField(
-            //   onChanged: (text) {
-            //     setState(() {
-            //       wallet_address.text = text;
-            //     });
-            //   },
-            //   maxLines: 1,
-            //   controller: wallet_address,
-            //   decoration: InputDecoration(
-            //       labelText: '  Enter Receiver\'s address',
-            //       border: OutlineInputBorder(
-            //           borderRadius: BorderRadius.circular(20))),
-            // ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Text('Message',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600))
+                    child: Text('Send', style: TextStyle(fontSize: 18)))
               ],
             ),
-            const SizedBox(height: 20),
-            TextField(
-              onChanged: (text) {
-                setState(() {
-                  message.text = text;
-                });
-              },
-              maxLines: 5,
-              controller: message,
-              decoration: InputDecoration(
-                  labelText: 'Enter your message',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20))),
-            ),
-            const SizedBox(height: 40),
-            FilledButton(
-                style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
-                onPressed: () => {
-                      sendMessages(
-                          widget.orderID,
-                          (senderRecipientIndex == 0)
-                              ? widget.orderSender[0].toString()
-                              : widget.orderReceiver[0].toString(),
-                          message.text,
-                          widget.orderSender,
-                          widget.orderReceiver),
-                      print('send')
-                    },
-                child: Text('Send', style: TextStyle(fontSize: 18)))
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   sendMessages(orderID, receiver, content, orderSender, orderReceiver) async {
     Future.delayed(Duration.zero, () => connector.openWalletApp());
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoadingPage()),
-    );
-
     await connector.sendMessage(
         orderID: BigInt.from(orderID.toInt()),
         receiverAddress: receiver,
         content: content);
-
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Message Sent Successfully')));
 
@@ -249,20 +231,32 @@ class MessageListView extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                           itemCount: messageCount,
                           itemBuilder: (BuildContext context, int index) {
+                            print('sender ' +
+                                index.toString() +
+                                ' ' +
+                                sender[index].toString());
+                            print('receiver ' +
+                                index.toString() +
+                                ' ' +
+                                receiver[index].toString());
                             return InkWell(
                                 onTap: () {
                                   enterMessageDetailsPage(
                                       index,
                                       context,
                                       id[index],
-                                      (sender[index] == orderSender)
+                                      (sender[index].toString() ==
+                                              orderSender.toString())
                                           ? "Parcel Sender"
-                                          : (sender[index] == orderReceiver)
+                                          : (sender[index].toString() ==
+                                                  orderReceiver.toString())
                                               ? "Parcel Recipient"
                                               : "You",
-                                      (receiver[index] == orderSender)
+                                      (receiver[index].toString() ==
+                                              orderSender.toString())
                                           ? "Parcel Sender"
-                                          : (sender[index] == orderReceiver)
+                                          : (receiver[index].toString() ==
+                                                  orderReceiver.toString())
                                               ? "Parcel Recipient"
                                               : "You",
                                       content[index],
@@ -296,10 +290,14 @@ class MessageListView extends StatelessWidget {
                                                           FontWeight.w700),
                                                 ),
                                                 Text(
-                                                  (sender[index] == orderSender)
+                                                  (sender[index].toString() ==
+                                                          orderSender
+                                                              .toString())
                                                       ? "Parcel Sender"
-                                                      : (sender[index] ==
-                                                              orderReceiver)
+                                                      : (sender[index]
+                                                                  .toString() ==
+                                                              orderReceiver
+                                                                  .toString())
                                                           ? "Parcel Recipient"
                                                           : "You",
                                                   style: TextStyle(
@@ -320,11 +318,14 @@ class MessageListView extends StatelessWidget {
                                                           FontWeight.w700),
                                                 ),
                                                 Text(
-                                                  (receiver[index] ==
-                                                          orderSender)
+                                                  (receiver[index].toString() ==
+                                                          orderSender
+                                                              .toString())
                                                       ? "Parcel Sender"
-                                                      : (sender[index] ==
-                                                              orderReceiver)
+                                                      : (receiver[index]
+                                                                  .toString() ==
+                                                              orderReceiver
+                                                                  .toString())
                                                           ? "Parcel Recipient"
                                                           : "You",
                                                   style: TextStyle(
@@ -351,16 +352,26 @@ class MessageListView extends StatelessWidget {
                                             SizedBox(
                                               height: 5,
                                             ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  content[index].toString(),
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                )
-                                              ],
-                                            ),
+                                            Flexible(
+                                                child: Container(
+                                                    height: 60,
+                                                    width: 340,
+                                                    child: Text(
+                                                      content[index]
+                                                                  .toString()
+                                                                  .length >
+                                                              30
+                                                          ? content[index]
+                                                                  .toString()
+                                                                  .substring(
+                                                                      0, 30) +
+                                                              '...'
+                                                          : content[index]
+                                                              .toString(),
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                    ))),
                                             SizedBox(
                                               height: 15,
                                             ),
@@ -599,31 +610,6 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                                     fontSize: 14, fontWeight: FontWeight.w400)))
                       ],
                     ),
-                  ],
-                ))));
-  }
-}
-
-class LoadingPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-        body: Center(
-            child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const CircularProgressIndicator(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      strokeWidth: 4,
-                    ),
-                    const SizedBox(height: 50),
-                    Text('Waiting for Completion',
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500))
                   ],
                 ))));
   }

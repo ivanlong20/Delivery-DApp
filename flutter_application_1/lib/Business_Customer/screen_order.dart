@@ -45,7 +45,9 @@ Future<List<dynamic>> getOrderInfo() async {
   var totalAmount = [];
   var orderStatus = [];
   var orderDate = [];
-
+  var senderwalletAddress = [];
+  var recipientwalletAddress = [];
+  var deliverymanWalletAddress = [];
   var orders = List.from(await allOrders);
   var orderCount = orders.length;
 
@@ -67,6 +69,9 @@ Future<List<dynamic>> getOrderInfo() async {
     orderStatus.add(orders[i][5]);
     orderDate
         .add(DateTime.fromMillisecondsSinceEpoch(orders[i][6].toInt() * 1000));
+    senderwalletAddress.add(orders[i][1][0]);
+    recipientwalletAddress.add(orders[i][1][1]);
+    deliverymanWalletAddress.add(orders[i][1][2]);
   }
   print(totalAmount);
   return [
@@ -85,7 +90,9 @@ Future<List<dynamic>> getOrderInfo() async {
     productAmount,
     totalAmount,
     orderStatus,
-    orderDate
+    orderDate,
+    senderwalletAddress,
+    recipientwalletAddress,deliverymanWalletAddress
   ];
 }
 
@@ -146,13 +153,23 @@ class TransactionListView extends StatelessWidget {
                   var receiverAddress = snapshot.data?[3];
                   var receiverDistrict = snapshot.data?[4];
                   var orderStatus = snapshot.data?[14];
+                  var senderWalletAddress = snapshot.data?[16];
+                  var recipientWalletAddress = snapshot.data?[17];
+                  var deliverymanWalletAddress = snapshot.data?[18];
                   return ListView.separated(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                     itemCount: orderCount,
                     itemBuilder: (BuildContext context, int index) {
                       return InkWell(
                           onTap: () {
-                            enterTransactionDetailsPage(index, context);
+                            enterTransactionDetailsPage(
+                                index,
+                                context,
+                                connector,
+                                id[index],
+                                senderWalletAddress[index],
+                                recipientWalletAddress[index],
+                                orderStatus[index],deliverymanWalletAddress[index]);
                             // fetch();
                           },
                           child: Container(
@@ -290,12 +307,20 @@ class TransactionListView extends StatelessWidget {
     ));
   }
 
-  enterTransactionDetailsPage(index, context) {
+  enterTransactionDetailsPage(index, context, connector, id,
+      senderWalletAddress, recipientWalletAddress, orderStatus, deliverymanWalletAddress) {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              TransactionDetailsPage(title: 'Details', index: index)),
+          builder: (context) => TransactionDetailsPage(
+                title: 'Details',
+                index: index,
+                connector: connector,
+                orderID: id,
+                sender: senderWalletAddress,
+                receiver: recipientWalletAddress,
+                orderStatus: orderStatus, deliveryman: deliverymanWalletAddress,
+              )),
     );
   }
 }
@@ -303,7 +328,16 @@ class TransactionListView extends StatelessWidget {
 class TransactionDetailsPage extends StatefulWidget {
   final String title;
   final index;
-  TransactionDetailsPage({Key? key, required this.title, required this.index})
+  var connector, orderID, sender, receiver, orderStatus, deliveryman;
+  TransactionDetailsPage(
+      {Key? key,
+      required this.title,
+      required this.index,
+      required this.connector,
+      required this.orderID,
+      required this.sender,
+      required this.receiver,
+      required this.orderStatus, required this.deliveryman})
       : super(key: key);
   @override
   State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
@@ -314,6 +348,34 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
   Widget build(BuildContext context) {
     var index = widget.index;
     return Scaffold(
+        floatingActionButton: Padding(
+            padding: EdgeInsets.all(15),
+            child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+              FloatingActionButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MessagePage(
+                          title: 'Messages',
+                          connector: widget.connector,
+                          orderID: widget.orderID,
+                          orderSender: widget.sender,
+                          orderReceiver: widget.receiver,orderDeliveryman: widget.deliveryman,
+                        ),
+                      ));
+                },
+                child: Icon(Icons.message),
+              ),
+              SizedBox(height: 30),
+              (widget.orderStatus.toInt() == 3 &&
+                      connector.address == widget.receiver.toString())
+                  ? FloatingActionButton(
+                      onPressed: () {},
+                      child: FaIcon(FontAwesomeIcons.checkCircle),
+                    )
+                  : SizedBox(height: 30)
+            ])),
         appBar: AppBar(
           title: Text(widget.title),
           backgroundColor: Color.fromARGB(255, 255, 255, 255),
@@ -367,8 +429,9 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                         (payBySender[index] == true
                                             ? 'Sender'
                                             : 'Receiver'),
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16),
                                   )
                                 ]),
                                 SizedBox(
@@ -428,23 +491,16 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                             fontWeight: FontWeight.w600))
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 10,
-                                ),
                                 Row(
                                   children: [
-                                    Text('Delivery Fee',
+                                    Text('Delivery Fee: ',
                                         style: TextStyle(
                                             fontSize: 18,
-                                            fontWeight: FontWeight.w700))
-                                  ],
-                                ),
-                                Row(
-                                  children: [
+                                            fontWeight: FontWeight.w700)),
                                     Flexible(
                                         child: Text(
                                             deliveryFee[index]
-                                                    .toStringAsFixed(10) +
+                                                    .toStringAsFixed(8) +
                                                 ' ETH',
                                             style: TextStyle(
                                                 fontSize: 18,
@@ -456,23 +512,22 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                 ),
                                 Row(
                                   children: [
-                                    Text('Product Amount',
+                                    Text('Product Amount: ',
                                         style: TextStyle(
                                             fontSize: 18,
-                                            fontWeight: FontWeight.w700))
-                                  ],
-                                ),
-                                Row(
-                                  children: [
+                                            fontWeight: FontWeight.w700)),
                                     Flexible(
                                         child: Text(
                                             productAmount[index]
-                                                    .toStringAsFixed(10) +
+                                                    .toStringAsFixed(8) +
                                                 ' ETH',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)))
                                   ],
+                                ),
+                                SizedBox(
+                                  height: 10,
                                 ),
                                 Row(
                                   children: [

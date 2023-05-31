@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'screen_connect_metamask.dart';
 import 'package:intl/intl.dart';
 import 'app_drawer.dart';
@@ -150,12 +151,14 @@ class TransactionListView extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => TransactionDetailsPage(
-                                      title: 'Details',
-                                      index: index,
-                                      connector: connector,
-                                      orderID: id[index],
-                                      sender: senderWalletAddress,
-                                      receiver: recipientWalletAddress)),
+                                        title: 'Details',
+                                        index: index,
+                                        connector: connector,
+                                        orderID: id[index],
+                                        sender: senderWalletAddress[index],
+                                        receiver: recipientWalletAddress[index],
+                                        orderStatus: orderStatus[index],
+                                      )),
                             );
                             // fetch();
                           },
@@ -249,26 +252,7 @@ class TransactionListView extends StatelessWidget {
                                                     orderStatus[index].toInt()],
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w800),
-                                          ),
-                                          SizedBox(
-                                            width: 35,
-                                          ),
-                                          Expanded(
-                                              flex: 15,
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    'Amount: ' +
-                                                        deliveryFee[index]
-                                                            .toStringAsFixed(
-                                                                6) +
-                                                        ' ETH',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w800),
-                                                  ),
-                                                ],
-                                              ))
+                                          )
                                         ]),
                                       ),
                                     ],
@@ -340,7 +324,7 @@ class TransactionListView extends StatelessWidget {
 class TransactionDetailsPage extends StatefulWidget {
   final String title;
   final index;
-  var connector, orderID, sender, receiver;
+  var connector, orderID, sender, receiver, orderStatus;
   TransactionDetailsPage(
       {Key? key,
       required this.title,
@@ -348,7 +332,8 @@ class TransactionDetailsPage extends StatefulWidget {
       required this.connector,
       required this.orderID,
       required this.sender,
-      required this.receiver})
+      required this.receiver,
+      required this.orderStatus})
       : super(key: key);
   @override
   State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
@@ -391,7 +376,13 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                   height: 30,
                 ),
                 FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    (widget.orderStatus.toInt() == 2)
+                        ? showOrderPickedUpDialog(context, widget.orderID)
+                        : (widget.orderStatus.toInt() == 3)
+                            ? showQRcodeToRecipient(context)
+                            : null;
+                  },
                   child: FaIcon(FontAwesomeIcons.checkCircle),
                 )
               ],
@@ -448,8 +439,9 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                         (payBySender[index] == true
                                             ? 'Sender'
                                             : 'Receiver'),
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16),
                                   )
                                 ]),
                                 SizedBox(
@@ -614,5 +606,134 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                         );
                       }
                     }))));
+  }
+
+  Future<bool?> showOrderPickedUpDialog(context, orderID) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Picked Up Order"),
+          content: Text("Confirm to pick up the order",
+              style: TextStyle(fontWeight: FontWeight.w600)),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue)),
+              child: Text("Confirm", style: TextStyle(color: Colors.white)),
+              onPressed: () => transaction(context, orderID),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  transaction(context, orderID) async {
+    Future.delayed(Duration.zero, () => connector.openWalletApp());
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadingPage()),
+    );
+    await connector.deliveryPickupOrder(orderID: BigInt.from(orderID.toInt()));
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Order #' + orderID.toString() + ' Picked Up')));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              OrderPage(title: 'Accepted Orders', connector: connector)),
+    );
+  }
+
+  showQRcodeToRecipient(context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return QRImageDialog();
+      },
+    );
+  }
+}
+
+class LoadingPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+        body: Center(
+            child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      strokeWidth: 4,
+                    ),
+                    const SizedBox(height: 50),
+                    Text('Waiting for Completion',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500))
+                  ],
+                ))));
+  }
+}
+
+class QRImageDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+        child: Container(
+            width: 350,
+            height: 440,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text('Order Comfirmation',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text('Show QR code to Recipient',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  QrImageView(
+                    data: connector.address.toString(),
+                    size: 250,
+                    version: QrVersions.auto,
+                    gapless: false,
+                    embeddedImageStyle: QrEmbeddedImageStyle(
+                      size: Size(80, 80),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Close',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600)))
+                ],
+              ),
+            )));
   }
 }

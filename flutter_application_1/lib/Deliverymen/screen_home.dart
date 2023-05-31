@@ -5,7 +5,6 @@ import 'screen_accepted_order.dart';
 import 'package:intl/intl.dart';
 import 'app_drawer.dart';
 
-
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
 
@@ -153,7 +152,7 @@ class AvailableOrderListView extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       Expanded(
-                                          flex: 15,
+                                          flex: 20,
                                           child: Row(
                                             children: [
                                               Text(
@@ -177,10 +176,9 @@ class AvailableOrderListView extends StatelessWidget {
                                         height: 10,
                                       ),
                                       Expanded(
-                                          flex: 35,
-                                          child: Flexible(
-                                              child: Center(
-                                                  child: Text(
+                                          flex: 30,
+                                          child: Center(
+                                              child: Text(
                                             senderAddress[index] +
                                                 ", " +
                                                 senderDistrict[index],
@@ -188,7 +186,7 @@ class AvailableOrderListView extends StatelessWidget {
                                                 fontWeight: FontWeight.w700,
                                                 fontSize: 14),
                                             textAlign: TextAlign.center,
-                                          )))),
+                                          ))),
                                       SizedBox(
                                         height: 10,
                                       ),
@@ -201,43 +199,35 @@ class AvailableOrderListView extends StatelessWidget {
                                       ),
                                       SizedBox(height: 10),
                                       Expanded(
-                                        flex: 35,
-                                        child: Flexible(
-                                            child: Center(
-                                                child: Text(
-                                          receiverAddress[index] +
-                                              ", " +
-                                              receiverDistrict[index],
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 14),
-                                          textAlign: TextAlign.center,
-                                        ))),
-                                      ),
+                                          flex: 30,
+                                          child: Center(
+                                              child: Text(
+                                            receiverAddress[index] +
+                                                ", " +
+                                                receiverDistrict[index],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 14),
+                                            textAlign: TextAlign.center,
+                                          ))),
                                       SizedBox(
                                         height: 10,
                                       ),
                                       Expanded(
-                                        flex: 15,
-                                        child: Row(children: [
-                                          Expanded(
-                                              flex: 15,
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    'Amount: ' +
-                                                        deliveryFee[index]
-                                                            .toStringAsFixed(
-                                                                6) +
-                                                        ' ETH',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w800),
-                                                  ),
-                                                ],
-                                              ))
-                                        ]),
-                                      ),
+                                        flex: 20,
+                                        child: Container(
+                                          width: 330,
+                                          child: Text(
+                                            'Amount: ' +
+                                                deliveryFee[index]
+                                                    .toStringAsFixed(6) +
+                                                ' ETH',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w800),
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ),
+                                      )
                                     ],
                                   ))));
                     },
