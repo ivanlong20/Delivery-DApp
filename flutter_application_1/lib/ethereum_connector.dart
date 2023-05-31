@@ -61,7 +61,7 @@ class EthereumConnector implements WalletConnector {
   late final EthereumWalletConnectProvider _provider;
   final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
-      EthereumAddress.fromHex('0x187FE0a7a618d2d0806180E6129aE26564201CC2');
+      EthereumAddress.fromHex('0x814DA640652Cc55C3174aD69A8E185c3eC7fDB28');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(
