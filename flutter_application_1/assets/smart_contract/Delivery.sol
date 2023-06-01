@@ -167,7 +167,7 @@ struct Payment {
 
     //2. Payment
     function payBySender(uint _orderId) public payable{
-        require(msg.value == orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
+        require(msg.value >= orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
         balances[msg.sender] += msg.value;
         orders[_orderId].orderStatus = State.Pending;
         emit OrderPaidBySender("Payment Success by Sender");
@@ -175,7 +175,7 @@ struct Payment {
 
     //2. Payment
     function payByReceipient (uint _orderId) public payable {
-        require(msg.value == orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
+        require(msg.value >= orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
         balances[msg.sender] += msg.value;
         orders[_orderId].orderStatus = State.Pending;
         emit OrderPaidByReceiver("Payment Success by Receiver");

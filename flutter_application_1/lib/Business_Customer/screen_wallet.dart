@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/Deliverymen/app_drawer.dart';
+import 'app_drawer.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'screen_home.dart';
-import 'screen_order.dart';
-import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
-import '../screen_user_selection.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;

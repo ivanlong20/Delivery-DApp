@@ -61,7 +61,7 @@ class EthereumConnector implements WalletConnector {
   late final EthereumWalletConnectProvider _provider;
   final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
-      EthereumAddress.fromHex('0x89b6584ad17C3c8E3Ecbb59C1d0FF5239092261d');
+      EthereumAddress.fromHex('0xc8a3C43105D92a765a807E0F1C6F798Cd24f1139');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(
@@ -229,7 +229,8 @@ class EthereumConnector implements WalletConnector {
 
     Transaction transaction = Transaction(
         from: senderWalletAddress,
-        value: EtherAmount.fromBigInt(EtherUnit.wei, deliveryFee));
+        value: EtherAmount.fromBigInt(EtherUnit.wei, deliveryFee),
+        maxGas: 500000);
 
     await delivery.payBySender(orderID,
         credentials: credentials, transaction: transaction);
@@ -261,7 +262,8 @@ class EthereumConnector implements WalletConnector {
 
     Transaction transaction = Transaction(
         from: senderWalletAddress,
-        value: EtherAmount.fromBigInt(EtherUnit.wei, totalAmount));
+        value: EtherAmount.fromBigInt(EtherUnit.wei, totalAmount),
+        maxGas: 500000);
 
     await delivery.payByReceipient(orderID,
         credentials: credentials, transaction: transaction);

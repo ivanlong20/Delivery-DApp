@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'screen_home.dart';
 import 'screen_order.dart';
 import 'screen_wallet.dart';
-import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import '../screen_user_selection.dart';
 

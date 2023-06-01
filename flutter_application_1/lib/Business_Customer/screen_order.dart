@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
-import 'screen_wallet.dart';
 import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
-import '../screen_user_selection.dart';
 import 'package:intl/intl.dart';
 import 'app_drawer.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
@@ -389,7 +387,9 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
               (widget.orderStatus.toInt() == 3 &&
                       connector.address == widget.receiver.toString())
                   ? FloatingActionButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        confirmReceived(widget.deliveryman, widget.orderID);
+                      },
                       child: FaIcon(FontAwesomeIcons.checkCircle),
                     )
                   : SizedBox(height: 30)
@@ -419,7 +419,25 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                         var parcelWeight = snapshot.data?[9];
                         var orderStatus = snapshot.data?[14];
                         var payBySender = snapshot.data?[10];
-                        print(snapshot.data?[14]);
+                        var recipientWalletAddress = snapshot.data?[17];
+                        print(orderStatus[index].toString() +
+                            " " +
+                            recipientWalletAddress[index].toString() +
+                            " " +
+                            payBySender[index].toString() +
+                            " " +
+                            connector.address.toString());
+                        // print(orderStatus[index].toString() == '0' &&
+                        //     connector.address.toString() ==
+                        //         recipientWalletAddress[index].toString() &&
+                        //     payBySender == 'false');
+                        print(orderStatus[index] == BigInt.from(0));
+                        print(connector.address.toString() ==
+                            recipientWalletAddress[index].toString());
+
+                        print(payBySender[index].toString() == "false");
+
+                        // print(snapshot.data?[14]);
                         return Padding(
                             padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
                             child: Column(
@@ -626,15 +644,38 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text('Parcel Location',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)))
-                                  ],
-                                )
+                                (orderStatus[index] == 3)
+                                    ? Row(
+                                        children: [
+                                          Flexible(
+                                              child: Text('Parcel Location',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600))),
+                                          const SizedBox(height: 30)
+                                        ],
+                                      )
+                                    : const SizedBox(height: 30),
+                                (orderStatus[index] == BigInt.from(0) &&
+                                        connector.address.toString() ==
+                                            recipientWalletAddress[index]
+                                                .toString() &&
+                                        payBySender[index].toString() ==
+                                            "false")
+                                    ? FilledButton(
+                                        style: FilledButton.styleFrom(
+                                            minimumSize: Size(350, 50)),
+                                        onPressed: () => {
+                                              payByRecipient(
+                                                  deliveryFee[index] * 1e18 +
+                                                      productAmount[index] *
+                                                          1e18 +
+                                                      100)
+                                            },
+                                        child: Text('Pay Now',
+                                            style: TextStyle(fontSize: 18)))
+                                    : const SizedBox(height: 0)
                               ],
                             ));
                       } else {
@@ -651,14 +692,38 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                     }))));
   }
 
+  payByRecipient(totalAmount) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadingPage()),
+    );
+    print(totalAmount.toInt().toString() + 'totalAmount');
+    Future.delayed(Duration.zero, () => connector.openWalletApp());
+
+    await connector.payByRecipient(
+        orderID: widget.orderID, totalAmount: BigInt.from(totalAmount.toInt()));
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text('Payment Successful')));
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OrderPage(
+              title: 'Order Tracking & History', connector: connector),
+        ));
+  }
+
   confirmReceived(deliverymanWalletAddress, orderID) async {
     var scannedDeliverymanWalletAddress = "0";
-    BarcodeScanner.scan().then((value) {
+    await BarcodeScanner.scan().then((value) {
       setState(() {
-        deliverymanWalletAddress = value.rawContent.substring(9);
+        scannedDeliverymanWalletAddress = value.rawContent.toString();
       });
     });
-    if (scannedDeliverymanWalletAddress == deliverymanWalletAddress) {
+
+    if (scannedDeliverymanWalletAddress.toString() ==
+        deliverymanWalletAddress.toString()) {
       Future.delayed(Duration.zero, () => connector.openWalletApp());
 
       Navigator.push(
@@ -666,11 +731,12 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
         MaterialPageRoute(builder: (context) => LoadingPage()),
       );
 
-      await connector.deliveryConfirmCompleted(orderID: BigInt.from(orderID));
+      await connector.deliveryConfirmCompleted(
+          orderID: BigInt.from(orderID.toInt()));
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Order #' + orderID.toString() + ' Received')));
-          
+
       Navigator.push(
         context,
         MaterialPageRoute(
