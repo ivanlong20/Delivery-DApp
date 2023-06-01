@@ -38,14 +38,19 @@ class TransactionListView extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => TransactionDetailsPage(
-                                        title: 'Details',
-                                        index: index,
-                                        connector: connector,
-                                        orderID: id[index],
-                                        sender: senderWalletAddress[index],
-                                        receiver: recipientWalletAddress[index],
-                                        orderStatus: orderStatus[index],
-                                      )),
+                                      title: 'Details',
+                                      index: index,
+                                      connector: connector,
+                                      orderID: id[index],
+                                      sender: senderWalletAddress[index],
+                                      receiver: recipientWalletAddress[index],
+                                      orderStatus: orderStatus[index],
+                                      senderAddress: senderAddress[index] +
+                                          ", " +
+                                          senderDistrict[index],
+                                      recipientAddress: receiverAddress[index] +
+                                          ", " +
+                                          receiverDistrict[index])),
                             );
                             // fetch();
                           },

@@ -5,11 +5,18 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_accepted_order.dart';
 import 'screen_message.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'screen_route_navigation.dart';
 
 class TransactionDetailsPage extends StatefulWidget {
   final String title;
   final index;
-  var connector, orderID, sender, receiver, orderStatus;
+  var connector,
+      orderID,
+      sender,
+      receiver,
+      orderStatus,
+      senderAddress,
+      recipientAddress;
   TransactionDetailsPage(
       {Key? key,
       required this.title,
@@ -18,7 +25,9 @@ class TransactionDetailsPage extends StatefulWidget {
       required this.orderID,
       required this.sender,
       required this.receiver,
-      required this.orderStatus})
+      required this.orderStatus,
+      required this.senderAddress,
+      required this.recipientAddress})
       : super(key: key);
   @override
   State<TransactionDetailsPage> createState() => _TransactionDetailsPageState();
@@ -35,7 +44,17 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OrderTrackingPage(
+                            title: 'Route Navigation',
+                            senderAddress: widget.senderAddress,
+                            recipientAddress: widget.recipientAddress,
+                          ),
+                        ));
+                  },
                   child: FaIcon(FontAwesomeIcons.route),
                 ),
                 SizedBox(
