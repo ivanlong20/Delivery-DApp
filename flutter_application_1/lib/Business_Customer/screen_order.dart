@@ -362,6 +362,15 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
         floatingActionButton: Padding(
             padding: EdgeInsets.all(0),
             child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+              (widget.orderStatus.toInt() == 0 ||
+                      widget.orderStatus.toInt() == 1)
+                  ? FloatingActionButton(
+                      onPressed: () {
+                        cancelOrder();
+                      },
+                      child: const Icon(Icons.cancel),
+                    )
+                  : const SizedBox(height: 0),
               (widget.orderStatus.toInt() == 2 ||
                       widget.orderStatus.toInt() == 3 ||
                       widget.orderStatus.toInt() == 4)
@@ -380,7 +389,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                               ),
                             ));
                       },
-                      child: Icon(Icons.message),
+                      child: const Icon(Icons.message),
                     )
                   : const SizedBox(height: 0),
               const SizedBox(height: 30),
@@ -392,7 +401,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                       },
                       child: FaIcon(FontAwesomeIcons.checkCircle),
                     )
-                  : SizedBox(height: 30)
+                  : const SizedBox(height: 30)
             ])),
         appBar: AppBar(
           title: Text(widget.title),
@@ -745,5 +754,26 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                 connector: widget.connector)),
       );
     }
+  }
+
+  cancelOrder() async {
+    Future.delayed(Duration.zero, () => connector.openWalletApp());
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadingPage()),
+    );
+
+    await connector.cancelOrder(orderID: BigInt.from(widget.orderID.toInt()));
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Order #' + widget.orderID.toString() + ' Cancelled' + ", Amount refunded to payer's wallet")));
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => OrderPage(
+              title: 'Order Tracking & History', connector: widget.connector)),
+    );
   }
 }

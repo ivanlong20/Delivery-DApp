@@ -86,10 +86,6 @@ class RouteNavigationBeforePickedUpPageState
         infoWindow:
             InfoWindow(title: "Parcel Destination", snippet: recipientAddress));
 
-    _markers.add(marker);
-    _markers.add(senderMarker);
-    _markers.add(recipientMarker);
-
     GoogleMapController googleMapController = await mapController.future;
 
     final LocationSettings locationSettings = LocationSettings(
@@ -129,10 +125,6 @@ class RouteNavigationBeforePickedUpPageState
             orElse: () => marker)
       };
 
-      newMarkers.add(newMarker);
-      newMarkers.add(senderMarker);
-      newMarkers.add(recipientMarker);
-
       googleMapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
@@ -143,8 +135,17 @@ class RouteNavigationBeforePickedUpPageState
       setPolyPoints();
 
       setState(() {
+        _markers.clear();
+        newMarkers.add(newMarker);
+        newMarkers.add(senderMarker);
+        newMarkers.add(recipientMarker);
         _markers = newMarkers;
       });
+    });
+    setState(() {
+      _markers.add(marker);
+      _markers.add(senderMarker);
+      _markers.add(recipientMarker);
     });
   }
 

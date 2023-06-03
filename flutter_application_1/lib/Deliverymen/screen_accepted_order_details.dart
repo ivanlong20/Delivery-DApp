@@ -63,6 +63,14 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 (widget.orderStatus.toInt() == 2)
+                    ? FloatingActionButton(
+                        onPressed: () {
+                          cancelOrder();
+                        },
+                        child: const Icon(Icons.cancel),
+                      )
+                    : const SizedBox(height: 0),
+                (widget.orderStatus.toInt() == 2)
                     ? FutureBuilder(
                         future: getLatLng(
                             widget.senderAddress, widget.recipientAddress),
@@ -440,6 +448,30 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
       builder: (context) {
         return QRImageDialog();
       },
+    );
+  }
+
+  cancelOrder() async {
+    Future.delayed(Duration.zero, () => connector.openWalletApp());
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadingPage()),
+    );
+
+    await connector.cancelOrder(orderID: BigInt.from(widget.orderID.toInt()));
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Order #' +
+            widget.orderID.toString() +
+            ' Cancelled' +
+            ", Amount refunded to payer's wallet")));
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              OrderPage(title: 'Accepted Orders', connector: connector)),
     );
   }
 }

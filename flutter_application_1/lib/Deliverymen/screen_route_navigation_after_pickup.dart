@@ -57,6 +57,26 @@ class RouteNavigationAfterPickedUpPageState
   }
 
   void getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
     getBytesFromAsset('assets/icon/cargo-truck.png', 96)
         .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
     getBytesFromAsset('assets/icon/delivery.png', 96)
@@ -78,9 +98,6 @@ class RouteNavigationAfterPickedUpPageState
         icon: recipientIcon,
         infoWindow:
             InfoWindow(title: "Parcel Destination", snippet: recipientAddress));
-
-    _markers.add(marker);
-    _markers.add(recipientMarker);
 
     GoogleMapController googleMapController = await mapController.future;
 
@@ -114,9 +131,6 @@ class RouteNavigationAfterPickedUpPageState
             orElse: () => marker)
       };
 
-      newMarkers.add(newMarker);
-      newMarkers.add(recipientMarker);
-
       googleMapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
@@ -127,8 +141,15 @@ class RouteNavigationAfterPickedUpPageState
       setPolyPoints();
 
       setState(() {
+        _markers.clear();
+        newMarkers.add(newMarker);
+        newMarkers.add(recipientMarker);
         _markers = newMarkers;
       });
+    });
+    setState(() {
+      _markers.add(marker);
+      _markers.add(recipientMarker);
     });
   }
 
@@ -168,12 +189,6 @@ class RouteNavigationAfterPickedUpPageState
   }
 
   @override
-  void dispose() {
-    mapController = Completer();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     print("position: $position");
 
@@ -203,6 +218,12 @@ class RouteNavigationAfterPickedUpPageState
               },
             ),
     );
+  }
+
+  @override
+  void dispose() {
+    mapController = Completer();
+    super.dispose();
   }
 }
 
