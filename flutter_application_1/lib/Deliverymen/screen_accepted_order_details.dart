@@ -5,7 +5,25 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_accepted_order.dart';
 import 'screen_message.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'screen_route_navigation.dart';
+import 'screen_route_navigation_before_pickup.dart';
+import 'screen_route_navigation_after_pickup.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+var senderPosition, recipientPosition;
+var senderAddress, recipientAddress;
+
+Future<dynamic> getLatLng(String senderAddress, String recipientAddress) async {
+  print(senderAddress + "111");
+  print(recipientAddress + "2222");
+  List<Location> location1 = await locationFromAddress(senderAddress);
+  List<Location> location2 = await locationFromAddress(recipientAddress);
+  final senderLnglat = LatLng(location1[0].latitude, location1[0].longitude);
+  final recipientLnglat = LatLng(location2[0].latitude, location2[0].longitude);
+  print(senderLnglat.toString() + "3");
+  print(recipientLnglat.toString() + "4");
+  return [senderLnglat, recipientLnglat];
+}
 
 class TransactionDetailsPage extends StatefulWidget {
   final String title;
@@ -37,26 +55,82 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
   @override
   Widget build(BuildContext context) {
     var index = widget.index;
+
     return Scaffold(
         floatingActionButton: Padding(
             padding: EdgeInsets.all(0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => OrderTrackingPage(
-                            title: 'Route Navigation',
-                            senderAddress: widget.senderAddress,
-                            recipientAddress: widget.recipientAddress,
+                (widget.orderStatus.toInt() == 2)
+                    ? FutureBuilder(
+                        future: getLatLng(
+                            widget.senderAddress, widget.recipientAddress),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            final senderLatLng = snapshot.data?[0];
+                            final recipientLatLng = snapshot.data?[1];
+                            senderPosition = senderLatLng;
+                            recipientPosition = recipientLatLng;
+                            senderAddress = widget.senderAddress;
+                            recipientAddress = widget.recipientAddress;
+                            return FloatingActionButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          RouteNavigationBeforePickedUpPage(
+                                        title: 'Route To Sender',
+                                        senderAddress: senderLatLng,
+                                        recipientAddress: recipientLatLng,
+                                      ),
+                                    ));
+                              },
+                              child: FaIcon(FontAwesomeIcons.route),
+                            );
+                          } else {
+                            return const SizedBox(
+                              height: 0,
+                            );
+                          }
+                        })
+                    : (widget.orderStatus.toInt() == 3)
+                        ? FutureBuilder(
+                            future: getLatLng(
+                                widget.senderAddress, widget.recipientAddress),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final senderLatLng = snapshot.data?[0];
+                                final recipientLatLng = snapshot.data?[1];
+                                senderPosition = senderLatLng;
+                                recipientPosition = recipientLatLng;
+                                senderAddress = widget.senderAddress;
+                                recipientAddress = widget.recipientAddress;
+                                return FloatingActionButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              RouteNavigationAfterPickedUpPage(
+                                            title: 'Route To Recipient',
+                                            senderAddress: senderLatLng,
+                                            recipientAddress: recipientLatLng,
+                                          ),
+                                        ));
+                                  },
+                                  child: FaIcon(FontAwesomeIcons.route),
+                                );
+                              } else {
+                                return const SizedBox(
+                                  height: 0,
+                                );
+                              }
+                            })
+                        : const SizedBox(
+                            height: 0,
                           ),
-                        ));
-                  },
-                  child: FaIcon(FontAwesomeIcons.route),
-                ),
                 SizedBox(
                   height: 30,
                 ),
@@ -79,7 +153,8 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                 SizedBox(
                   height: 30,
                 ),
-                (widget.orderStatus == 4)
+                (widget.orderStatus.toInt() == 2 ||
+                        widget.orderStatus.toInt() == 3)
                     ? FloatingActionButton(
                         onPressed: () {
                           (widget.orderStatus.toInt() == 2)
