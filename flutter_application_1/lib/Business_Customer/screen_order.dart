@@ -6,6 +6,24 @@ import 'screen_connect_metamask.dart';
 import 'package:intl/intl.dart';
 import 'app_drawer.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
+import 'screen_order_tracking.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+var senderPosition, recipientPosition;
+var senderAddress, recipientAddress;
+
+Future<dynamic> getLatLng(String senderAddress, String recipientAddress) async {
+  print(senderAddress + "111");
+  print(recipientAddress + "2222");
+  List<Location> location1 = await locationFromAddress(senderAddress);
+  List<Location> location2 = await locationFromAddress(recipientAddress);
+  final senderLnglat = LatLng(location1[0].latitude, location1[0].longitude);
+  final recipientLnglat = LatLng(location2[0].latitude, location2[0].longitude);
+  print(senderLnglat.toString() + "3");
+  print(recipientLnglat.toString() + "4");
+  return [senderLnglat, recipientLnglat];
+}
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
@@ -172,7 +190,6 @@ class TransactionListView extends StatelessWidget {
                                 recipientWalletAddress[index],
                                 orderStatus[index],
                                 deliverymanWalletAddress[index]);
-                            // fetch();
                           },
                           child: Container(
                               decoration: BoxDecoration(
@@ -276,6 +293,9 @@ class TransactionListView extends StatelessWidget {
                                               ),
                                             ],
                                           )),
+                                      SizedBox(
+                                        height: 10,
+                                      ),
                                     ],
                                   ))));
                     },
@@ -436,10 +456,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                             payBySender[index].toString() +
                             " " +
                             connector.address.toString());
-                        // print(orderStatus[index].toString() == '0' &&
-                        //     connector.address.toString() ==
-                        //         recipientWalletAddress[index].toString() &&
-                        //     payBySender == 'false');
+
                         print(orderStatus[index] == BigInt.from(0));
                         print(connector.address.toString() ==
                             recipientWalletAddress[index].toString());
@@ -653,20 +670,76 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                (orderStatus[index] == 3)
-                                    ? Row(
-                                        children: [
-                                          Flexible(
-                                              child: Text('Parcel Location',
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600))),
-                                          const SizedBox(height: 30)
-                                        ],
-                                      )
+                                (orderStatus[index].toInt() == 2 ||
+                                        orderStatus[index].toInt() == 3)
+                                    ? Column(children: [
+                                        Row(
+                                          children: [
+                                            Flexible(
+                                                child: Text('Parcel Location',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w600))),
+                                            const SizedBox(height: 30)
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        FutureBuilder(
+                                            future: getLatLng(
+                                                senderAddress[index] +
+                                                    ", " +
+                                                    senderDistrict[index],
+                                                receiverAddress[index] +
+                                                    ", " +
+                                                    receiverDistrict[index]),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                final senderLatLng =
+                                                    snapshot.data?[0];
+                                                final recipientLatLng =
+                                                    snapshot.data?[1];
+
+                                                senderPosition = senderLatLng;
+                                                recipientPosition =
+                                                    recipientLatLng;
+                                                return FilledButton(
+                                                    style:
+                                                        FilledButton.styleFrom(
+                                                            minimumSize:
+                                                                Size(400, 50)),
+                                                    onPressed: () => {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        FireMap(
+                                                                          title:
+                                                                              'Order Tracking',
+                                                                          orderID:
+                                                                              id[index].toString(),
+                                                                          senderAddress:
+                                                                              senderLatLng,
+                                                                          recipientAddress:
+                                                                              recipientLatLng,
+                                                                        )),
+                                                          )
+                                                        },
+                                                    child: Text(
+                                                        'Order Tracking',
+                                                        style: TextStyle(
+                                                            fontSize: 18)));
+                                              } else {
+                                                return const SizedBox(
+                                                    height: 0);
+                                              }
+                                            })
+                                      ])
                                     : const SizedBox(height: 30),
-                                (orderStatus[index] == BigInt.from(0) &&
+                                (orderStatus[index].toInt() == 0 &&
                                         connector.address.toString() ==
                                             recipientWalletAddress[index]
                                                 .toString() &&
@@ -767,7 +840,10 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
     await connector.cancelOrder(orderID: BigInt.from(widget.orderID.toInt()));
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Order #' + widget.orderID.toString() + ' Cancelled' + ", Amount refunded to payer's wallet")));
+        content: Text('Order #' +
+            widget.orderID.toString() +
+            ' Cancelled' +
+            ", Amount refunded to payer's wallet")));
 
     Navigator.push(
       context,

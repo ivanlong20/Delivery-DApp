@@ -2,9 +2,23 @@ import 'package:flutter/material.dart';
 import 'screen_connect_metamask.dart';
 import 'app_drawer.dart';
 import 'accepted_order_listview.dart';
+import 'dart:async';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
+
+getOrderID() async {
+  final allOrders = await connector.getDeliverymanOrder();
+  final allOrder = List.from(await allOrders);
+  var orderCount = allOrder.length;
+  var id = [];
+  for (int i = 0; i < orderCount; i++) {
+    if (allOrder[i][5].toInt() == 2 || allOrder[i][5].toInt() == 3) {
+      id.add(allOrder[i][0].toInt());
+    }
+  }
+  return id;
+}
 
 var OrderState = [
   'Submitted',
@@ -100,6 +114,11 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

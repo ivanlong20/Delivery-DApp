@@ -8,9 +8,25 @@ import 'screen_accepted_order_details.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
+import 'screen_connect_metamask.dart';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 final senderLatLng = senderPosition;
 final recipientLatLng = recipientPosition;
+
+getOrderID() async {
+  final allOrders = await connector.getDeliverymanOrder();
+  final allOrder = List.from(await allOrders);
+  var orderCount = allOrder.length;
+  var id = [];
+  for (int i = 0; i < orderCount; i++) {
+    if (allOrder[i][5].toInt() == 2 || allOrder[i][5].toInt() == 3) {
+      id.add(allOrder[i][0].toInt());
+    }
+  }
+  return id;
+}
 
 Future<Uint8List> getBytesFromAsset(String path, int width) async {
   ByteData data = await rootBundle.load(path);
@@ -43,44 +59,11 @@ class RouteNavigationAfterPickedUpPageState
   Set<Marker> _markers = {};
   List<LatLng> polylineCoordinates = [];
   Position? position;
-  late BitmapDescriptor deliverymanIcon, senderIcon, recipientIcon;
+  late BitmapDescriptor deliverymanIcon, recipientIcon;
 
   final google_api_key = "AIzaSyCYR6ZZ3jgCSbfvUHCqO2JYEmIOVVx8wTs";
 
-  RouteNavigationBeforePickedUpPageState() {
-    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
-        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/pickup.png', 96)
-        .then((value) => {senderIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/delivery.png', 96)
-        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
-  }
-
   void getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
-        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/delivery.png', 96)
-        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
 
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -139,11 +122,12 @@ class RouteNavigationAfterPickedUpPageState
       );
 
       setPolyPoints();
-
-      setState(() {
+      
         _markers.clear();
         newMarkers.add(newMarker);
         newMarkers.add(recipientMarker);
+
+      setState(() {
         _markers = newMarkers;
       });
     });
@@ -177,6 +161,10 @@ class RouteNavigationAfterPickedUpPageState
 
   @override
   void initState() {
+    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
+        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
+    getBytesFromAsset('assets/icon/delivery.png', 96)
+        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
     getCurrentLocation();
     setPolyPoints();
     super.initState();

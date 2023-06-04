@@ -2,11 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:walletconnect_dart/walletconnect_dart.dart';
-import 'package:web3dart/crypto.dart';
 import 'screen_home.dart';
-import '../etherscan_api.dart';
 import '../screen_user_selection.dart';
 import '../wallet_connector.dart';
 import '../ethereum_connector.dart';
@@ -20,6 +16,10 @@ enum ConnectionState {
   connected,
   connectionFailed,
   connectionCancelled,
+}
+
+getConnectionState() {
+  return _state;
 }
 
 class ConnectMetamaskPage extends StatefulWidget {

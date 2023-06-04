@@ -5,9 +5,24 @@ import 'available_order_listview.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
+import 'current_location_tracker.dart';
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
+final orderID = getOrderID();
+
+getOrderID() async {
+  final allOrders = await connector.getDeliverymanOrder();
+  final allOrder = List.from(await allOrders);
+  var orderCount = allOrder.length;
+  var id = [];
+  for (int i = 0; i < orderCount; i++) {
+    if (allOrder[i][5].toInt() == 2 || allOrder[i][5].toInt() == 3) {
+      id.add(allOrder[i][0].toInt());
+    }
+  }
+  return id;
+}
 
 var OrderState = [
   'Submitted',
@@ -29,6 +44,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final geo = GeoFlutterFire();
   final firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    getCurrentLocation(orderID);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

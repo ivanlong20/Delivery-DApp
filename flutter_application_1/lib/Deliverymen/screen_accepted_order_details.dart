@@ -13,6 +13,19 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 var senderPosition, recipientPosition;
 var senderAddress, recipientAddress;
 
+getOrderID() async {
+  final allOrders = await connector.getDeliverymanOrder();
+  final allOrder = List.from(await allOrders);
+  var orderCount = allOrder.length;
+  var id = [];
+  for (int i = 0; i < orderCount; i++) {
+    if (allOrder[i][5].toInt() == 2 || allOrder[i][5].toInt() == 3) {
+      id.add(allOrder[i][0].toInt());
+    }
+  }
+  return id;
+}
+
 Future<dynamic> getLatLng(String senderAddress, String recipientAddress) async {
   print(senderAddress + "111");
   print(recipientAddress + "2222");
@@ -53,6 +66,11 @@ class TransactionDetailsPage extends StatefulWidget {
 
 class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var index = widget.index;
 
@@ -70,6 +88,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                         child: const Icon(Icons.cancel),
                       )
                     : const SizedBox(height: 0),
+                const SizedBox(height: 30),
                 (widget.orderStatus.toInt() == 2)
                     ? FutureBuilder(
                         future: getLatLng(

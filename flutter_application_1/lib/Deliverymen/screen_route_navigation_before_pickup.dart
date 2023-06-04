@@ -8,6 +8,23 @@ import 'screen_accepted_order_details.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
+import 'dart:async';
+import 'package:geoflutterfire2/geoflutterfire2.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'screen_connect_metamask.dart';
+
+getOrderID() async {
+  final allOrders = await connector.getDeliverymanOrder();
+  final allOrder = List.from(await allOrders);
+  var orderCount = allOrder.length;
+  var id = [];
+  for (int i = 0; i < orderCount; i++) {
+    if (allOrder[i][5].toInt() == 2 || allOrder[i][5].toInt() == 3) {
+      id.add(allOrder[i][0].toInt());
+    }
+  }
+  return id;
+}
 
 final senderLatLng = senderPosition;
 final recipientLatLng = recipientPosition;
@@ -45,24 +62,9 @@ class RouteNavigationBeforePickedUpPageState
   Position? position;
   late BitmapDescriptor deliverymanIcon, senderIcon, recipientIcon;
 
-  RouteNavigationBeforePickedUpPageState() {
-    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
-        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/pickup.png', 96)
-        .then((value) => {senderIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/delivery.png', 96)
-        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
-  }
-
   final google_api_key = "AIzaSyCYR6ZZ3jgCSbfvUHCqO2JYEmIOVVx8wTs";
 
   void getCurrentLocation() async {
-    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
-        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/pickup.png', 96)
-        .then((value) => {senderIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/delivery.png', 96)
-        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
@@ -179,6 +181,12 @@ class RouteNavigationBeforePickedUpPageState
 
   @override
   void initState() {
+    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
+        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
+    getBytesFromAsset('assets/icon/pickup.png', 96)
+        .then((value) => {senderIcon = BitmapDescriptor.fromBytes(value)});
+    getBytesFromAsset('assets/icon/delivery.png', 96)
+        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
     getCurrentLocation();
     setPolyPoints();
     super.initState();

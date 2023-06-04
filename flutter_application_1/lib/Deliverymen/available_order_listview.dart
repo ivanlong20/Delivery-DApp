@@ -1,8 +1,11 @@
+import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'screen_connect_metamask.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_accepted_order.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 getOrderCount() async {
   var allOrders;
@@ -132,7 +135,7 @@ class AvailableOrderListView extends StatelessWidget {
                                   child: Column(
                                     children: [
                                       Expanded(
-                                          flex: 20,
+                                          flex: 15,
                                           child: Row(
                                             children: [
                                               Text(
@@ -140,7 +143,7 @@ class AvailableOrderListView extends StatelessWidget {
                                                     id[index].toString(),
                                                 style: TextStyle(
                                                     fontWeight:
-                                                        FontWeight.w600),
+                                                        FontWeight.w700),
                                               ),
                                               const SizedBox(width: 100),
                                               Text(
@@ -158,43 +161,52 @@ class AvailableOrderListView extends StatelessWidget {
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Text(
-                                            senderAddress[index] +
-                                                ", " +
-                                                senderDistrict[index],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 14),
-                                            textAlign: TextAlign.center,
-                                          ))),
+                                              child: Flexible(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    senderAddress[index] +
+                                                        ", " +
+                                                        senderDistrict[index],
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize: 14),
+                                                    textAlign: TextAlign.center,
+                                                  )))),
                                       SizedBox(
-                                        height: 10,
+                                        height: 2,
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          FaIcon(FontAwesomeIcons.arrowDownLong)
-                                        ],
-                                      ),
-                                      SizedBox(height: 10),
+                                      Expanded(
+                                          flex: 15,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              FaIcon(FontAwesomeIcons
+                                                  .arrowDownLong)
+                                            ],
+                                          )),
+                                      SizedBox(height: 5),
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Text(
-                                            receiverAddress[index] +
-                                                ", " +
-                                                receiverDistrict[index],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: 14),
-                                            textAlign: TextAlign.center,
-                                          ))),
+                                              child: Flexible(
+                                                  flex: 2,
+                                                  child: Text(
+                                                    receiverAddress[index] +
+                                                        ", " +
+                                                        receiverDistrict[index],
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize: 14),
+                                                    textAlign: TextAlign.center,
+                                                  )))),
                                       SizedBox(
                                         height: 10,
                                       ),
                                       Expanded(
-                                        flex: 20,
+                                        flex: 15,
                                         child: Container(
                                           width: 330,
                                           child: Text(
@@ -329,6 +341,7 @@ class AvailableOrderListView extends StatelessWidget {
       MaterialPageRoute(builder: (context) => LoadingPage()),
     );
     await connector.deliveryAcceptOrder(orderID: BigInt.from(orderID.toInt()));
+    uploadOrdertoFirebase(orderID);
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Order #' + orderID.toString() + ' Accepted')));
     Navigator.push(
@@ -337,6 +350,21 @@ class AvailableOrderListView extends StatelessWidget {
           builder: (context) =>
               OrderPage(title: 'Accepted Orders', connector: connector)),
     );
+  }
+
+  uploadOrdertoFirebase(orderID) {
+    final user = FirebaseAuth.instance.currentUser;
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    GeoFlutterFire geo = GeoFlutterFire();
+    GeoFirePoint location = geo.point(latitude: 0, longitude: 0);
+
+    final order_info = {
+      "deliverymanWalletAddress": connector.address,
+      "uid": user!.uid,
+      "location": location.data
+    };
+
+    db.collection("orders").doc(orderID.toString()).set(order_info);
   }
 }
 

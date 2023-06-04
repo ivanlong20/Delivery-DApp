@@ -3,10 +3,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_connect_metamask.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'screen_connect_metamask.dart';
 
 TextEditingController Name = TextEditingController();
 TextEditingController HKID = TextEditingController();
 TextEditingController licenseplateNo = TextEditingController();
+TextEditingController contactNo = TextEditingController();
 TextEditingController email = TextEditingController();
 TextEditingController password = TextEditingController();
 TextEditingController confirmPassword = TextEditingController();
@@ -101,6 +103,30 @@ class _RegisterPageState extends State<RegisterPage> {
                         Align(
                             alignment: Alignment.topLeft,
                             child: Text(
+                              'Your Contact Number',
+                              style: TextStyle(fontSize: 18),
+                            )),
+                        SizedBox(height: 10),
+                        TextField(
+                          onChanged: (text) {
+                            setState(() {
+                              contactNo.text = text;
+                            });
+                          },
+                          maxLines: 1,
+                          maxLength: 8,
+                          keyboardType: TextInputType.phone,
+                          controller: contactNo,
+                          decoration: InputDecoration(
+                              icon: const FaIcon(FontAwesomeIcons.phone),
+                              labelText: '  8 digits Telephone number',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(30))),
+                        ),
+                        SizedBox(height: 10),
+                        Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
                               'Your email address',
                               style: TextStyle(fontSize: 18),
                             )),
@@ -154,11 +180,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           obscureText: true,
                           onChanged: (text) {
                             setState(() {
-                              password.text = text;
+                              confirmPassword.text = text;
                             });
                           },
                           maxLines: 1,
-                          controller: password,
+                          controller: confirmPassword,
                           decoration: InputDecoration(
                               icon: const Icon(Icons.password),
                               labelText: '  Re-enter Your New Password',
@@ -170,8 +196,13 @@ class _RegisterPageState extends State<RegisterPage> {
                             style: FilledButton.styleFrom(
                                 minimumSize: Size(400, 50)),
                             onPressed: () => {
-                                  register(email.text, password.text, Name.text,
-                                      HKID.text, licenseplateNo.text)
+                                  register(
+                                      email.text,
+                                      password.text,
+                                      Name.text,
+                                      HKID.text,
+                                      licenseplateNo.text,
+                                      contactNo.text)
                                 },
                             child: Text('Continue',
                                 style: TextStyle(fontSize: 18)))
@@ -198,7 +229,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  register(email, password, name, HKID, LicensePlateNo) async {
+  register(email, password, name, HKID, LicensePlateNo, contactNo) async {
     bool register = false;
     //register user
     try {
@@ -217,6 +248,7 @@ class _RegisterPageState extends State<RegisterPage> {
       print(e);
       register = false;
     }
+
     //if register success, add user info to firestore
     if (register) {
       UserCredential userCredential = await FirebaseAuth.instance
@@ -225,17 +257,6 @@ class _RegisterPageState extends State<RegisterPage> {
       if (user != null) {
         await user.updateDisplayName(name);
       }
-
-      FirebaseFirestore db = FirebaseFirestore.instance;
-
-      final user_info = {
-        "HKID": HKID,
-        "LicensePlateNo": LicensePlateNo,
-        "uid": user!.uid,
-      };
-
-      db.collection("user_info").add(user_info).then((documentSnapshot) =>
-          print("Added Data with ID: ${documentSnapshot.id}"));
       //direct to connect metamask page
       Navigator.push(
         context,
@@ -243,8 +264,38 @@ class _RegisterPageState extends State<RegisterPage> {
             builder: (context) =>
                 ConnectMetamaskPage(title: 'Connect Your Wallet')),
       );
+
+      connector.registerListeners(
+          (session) {
+            print('Connected: $session');
+            uploadUserInfo(user!.uid, email, password, name, HKID,
+                LicensePlateNo, contactNo);
+            setState(() => {});
+          },
+          (response) => print('Session updated: $response'),
+          () {
+            setState(
+              () => {},
+            );
+          });
     } else {
       showInvalidRegisterDialog();
     }
+  }
+
+  uploadUserInfo(uid, email, password, name, HKID, LicensePlateNo, contactNo) {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+
+    final user_info = {
+      "HKID": HKID,
+      "LicensePlateNo": LicensePlateNo,
+      "uid": uid,
+      "contactNo": contactNo,
+      "email": email,
+      "walletaddress": connector.address
+    };
+
+    db.collection("user_info").add(user_info).then((documentSnapshot) =>
+        print("Added Data with ID: ${documentSnapshot.id}"));
   }
 }
