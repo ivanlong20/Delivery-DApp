@@ -9,6 +9,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
 import 'screen_connect_metamask.dart';
+import 'current_location_tracker.dart';
+import 'screen_home.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -54,17 +56,24 @@ class RouteNavigationAfterPickedUpPage extends StatefulWidget {
 
 class RouteNavigationAfterPickedUpPageState
     extends State<RouteNavigationAfterPickedUpPage> {
+  late StreamSubscription<Position> positionStream;
   Completer<GoogleMapController> mapController =
       Completer<GoogleMapController>();
   Set<Marker> _markers = {};
   List<LatLng> polylineCoordinates = [];
   Position? position;
-  late BitmapDescriptor deliverymanIcon, recipientIcon;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  GeoFlutterFire geo = GeoFlutterFire();
 
   final google_api_key = "AIzaSyCYR6ZZ3jgCSbfvUHCqO2JYEmIOVVx8wTs";
 
   void getCurrentLocation() async {
+    late BitmapDescriptor deliverymanIcon, recipientIcon;
 
+    await getBytesFromAsset('assets/icon/cargo-truck.png', 96)
+        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
+    await getBytesFromAsset('assets/icon/delivery.png', 96)
+        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
@@ -89,11 +98,21 @@ class RouteNavigationAfterPickedUpPageState
       distanceFilter: 50,
     );
 
-    StreamSubscription<Position> positionStream =
+    positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
             .listen((Position? position) async {
       var lat = position!.latitude;
       var lng = position.longitude;
+
+      GeoFlutterFire geo = GeoFlutterFire();
+      GeoFirePoint location = geo.point(latitude: lat, longitude: lng);
+      final id = await orderID;
+
+      final order_info = {"location": location.data};
+
+      for (int i = 0; i < id.length; i++) {
+        await db.collection('orders').doc(id[i].toString()).update(order_info);
+      }
 
       Marker newMarker = Marker(
           markerId: MarkerId("Deliveryman"),
@@ -122,10 +141,10 @@ class RouteNavigationAfterPickedUpPageState
       );
 
       setPolyPoints();
-      
-        _markers.clear();
-        newMarkers.add(newMarker);
-        newMarkers.add(recipientMarker);
+
+      _markers.clear();
+      newMarkers.add(newMarker);
+      newMarkers.add(recipientMarker);
 
       setState(() {
         _markers = newMarkers;
@@ -144,7 +163,7 @@ class RouteNavigationAfterPickedUpPageState
         desiredAccuracy: LocationAccuracy.high);
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        google_api_key, // Your Google Map Key
+        google_api_key,
         PointLatLng(orginalPosition.latitude, orginalPosition.longitude),
         PointLatLng(recipientLatLng.latitude, recipientLatLng.longitude));
 
@@ -161,10 +180,7 @@ class RouteNavigationAfterPickedUpPageState
 
   @override
   void initState() {
-    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
-        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/delivery.png', 96)
-        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
+    stopTracking();
     getCurrentLocation();
     setPolyPoints();
     super.initState();
@@ -211,6 +227,10 @@ class RouteNavigationAfterPickedUpPageState
   @override
   void dispose() {
     mapController = Completer();
+    polylineCoordinates.clear();
+    _markers.clear();
+    positionStream.cancel();
+    getInstantLocation(orderID);
     super.dispose();
   }
 }

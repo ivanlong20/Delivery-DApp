@@ -8,10 +8,11 @@ import 'screen_accepted_order_details.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
-import 'dart:async';
+import 'screen_connect_metamask.dart';
+import 'current_location_tracker.dart';
+import 'screen_home.dart';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'screen_connect_metamask.dart';
 
 getOrderID() async {
   final allOrders = await connector.getDeliverymanOrder();
@@ -55,16 +56,27 @@ class RouteNavigationBeforePickedUpPage extends StatefulWidget {
 
 class RouteNavigationBeforePickedUpPageState
     extends State<RouteNavigationBeforePickedUpPage> {
+  late StreamSubscription<Position> positionStream;
   Completer<GoogleMapController> mapController =
       Completer<GoogleMapController>();
   Set<Marker> _markers = {};
   List<LatLng> polylineCoordinates = [];
   Position? position;
-  late BitmapDescriptor deliverymanIcon, senderIcon, recipientIcon;
+
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  GeoFlutterFire geo = GeoFlutterFire();
 
   final google_api_key = "AIzaSyCYR6ZZ3jgCSbfvUHCqO2JYEmIOVVx8wTs";
 
   void getCurrentLocation() async {
+    late BitmapDescriptor deliverymanIcon, senderIcon, recipientIcon;
+
+    await getBytesFromAsset('assets/icon/cargo-truck.png', 96)
+        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
+    await getBytesFromAsset('assets/icon/pickup.png', 96)
+        .then((value) => {senderIcon = BitmapDescriptor.fromBytes(value)});
+    await getBytesFromAsset('assets/icon/delivery.png', 96)
+        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
@@ -95,11 +107,21 @@ class RouteNavigationBeforePickedUpPageState
       distanceFilter: 50,
     );
 
-    StreamSubscription<Position> positionStream =
+    positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
             .listen((Position? position) async {
       var lat = position!.latitude;
       var lng = position.longitude;
+
+      GeoFlutterFire geo = GeoFlutterFire();
+      GeoFirePoint location = geo.point(latitude: lat, longitude: lng);
+      final id = await orderID;
+
+      final order_info = {"location": location.data};
+
+      for (int i = 0; i < id.length; i++) {
+        await db.collection('orders').doc(id[i].toString()).update(order_info);
+      }
 
       Marker newMarker = Marker(
           markerId: MarkerId("Deliveryman"),
@@ -160,12 +182,12 @@ class RouteNavigationBeforePickedUpPageState
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
         google_api_key, // Your Google Map Key
         PointLatLng(orginalPosition.latitude, orginalPosition.longitude),
-        PointLatLng(recipientLatLng.latitude, recipientLatLng.longitude),
+        PointLatLng(recipientPosition.latitude, recipientPosition.longitude),
         wayPoints: [
           PolylineWayPoint(
-              location: senderLatLng.latitude.toString() +
+              location: senderPosition.latitude.toString() +
                   "," +
-                  senderLatLng.longitude.toString())
+                  senderPosition.longitude.toString())
         ]);
 
     if (result.points.isNotEmpty) {
@@ -181,12 +203,7 @@ class RouteNavigationBeforePickedUpPageState
 
   @override
   void initState() {
-    getBytesFromAsset('assets/icon/cargo-truck.png', 96)
-        .then((value) => {deliverymanIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/pickup.png', 96)
-        .then((value) => {senderIcon = BitmapDescriptor.fromBytes(value)});
-    getBytesFromAsset('assets/icon/delivery.png', 96)
-        .then((value) => {recipientIcon = BitmapDescriptor.fromBytes(value)});
+    stopTracking();
     getCurrentLocation();
     setPolyPoints();
     super.initState();
@@ -201,6 +218,10 @@ class RouteNavigationBeforePickedUpPageState
   @override
   void dispose() {
     mapController = Completer();
+    polylineCoordinates.clear();
+    _markers.clear();
+    positionStream.cancel();
+    getInstantLocation(orderID);
     super.dispose();
   }
 

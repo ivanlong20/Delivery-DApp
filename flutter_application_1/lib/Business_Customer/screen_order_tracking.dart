@@ -24,29 +24,28 @@ Future<Uint8List> getBytesFromAsset(String path, int width) async {
       .asUint8List();
 }
 
-class FireMap extends StatefulWidget {
+class OrderTracking extends StatefulWidget {
   final String title, orderID;
   var senderAddress, recipientAddress;
-  FireMap(
+  OrderTracking(
       {required this.title,
       required this.orderID,
       required this.senderAddress,
       this.recipientAddress});
   @override
-  State createState() => FireMapState();
+  State createState() => OrderTrackingState();
 }
 
-class FireMapState extends State<FireMap> {
+class OrderTrackingState extends State<OrderTracking> {
   Completer<GoogleMapController> mapController =
       Completer<GoogleMapController>();
   Set<Marker> _markers = {};
   final google_api_key = "AIzaSyCYR6ZZ3jgCSbfvUHCqO2JYEmIOVVx8wTs";
-
+  List<LatLng> polylineCoordinates = [];
   final firestore = FirebaseFirestore.instance;
   final geo = GeoFlutterFire();
   BehaviorSubject<double> radius = BehaviorSubject.seeded(100.0);
 
-  // late Stream<dynamic> query;
   late StreamSubscription subscription;
 
   @override
@@ -91,7 +90,7 @@ class FireMapState extends State<FireMap> {
 
     googleMapController.animateCamera(
       CameraUpdate.newCameraPosition(
-        CameraPosition(zoom: 18, target: LatLng(pos.latitude, pos.longitude)),
+        CameraPosition(zoom: 15, target: LatLng(pos.latitude, pos.longitude)),
       ),
     );
 
@@ -117,6 +116,7 @@ class FireMapState extends State<FireMap> {
             InfoWindow(title: "Parcel Destination", snippet: recipientAddress));
 
     Set<Marker> newMarkers = {};
+    setPolyPoints(LatLng(pos.latitude, pos.longitude));
 
     newMarkers.add(marker);
     newMarkers.add(senderMarker);
@@ -124,6 +124,31 @@ class FireMapState extends State<FireMap> {
     setState(() {
       _markers = newMarkers;
     });
+  }
+
+  void setPolyPoints(orginalPosition) async {
+    PolylinePoints polylinePoints = PolylinePoints();
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        google_api_key,
+        PointLatLng(orginalPosition.latitude, orginalPosition.longitude),
+        PointLatLng(recipientPosition.latitude, recipientPosition.longitude),
+        wayPoints: [
+          PolylineWayPoint(
+              location: senderPosition.latitude.toString() +
+                  "," +
+                  senderPosition.longitude.toString())
+        ]);
+
+    if (result.points.isNotEmpty) {
+      polylineCoordinates.clear();
+      result.points.forEach(
+        (PointLatLng point) => polylineCoordinates.add(
+          LatLng(point.latitude, point.longitude),
+        ),
+      );
+      setState(() {});
+    }
   }
 
   updateQuery(value) {

@@ -4,12 +4,14 @@ import 'dart:async';
 import 'package:geoflutterfire2/geoflutterfire2.dart';
 
 Position? position;
+late StreamSubscription<Position> positionStream;
 
-void getCurrentLocation(orderID) async {
+void getInstantLocation(orderID) async {
   final LocationSettings locationSettings = LocationSettings(
     accuracy: LocationAccuracy.high,
     distanceFilter: 50,
   );
+  final id = await orderID;
   position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high);
 
@@ -24,11 +26,11 @@ void getCurrentLocation(orderID) async {
     "location": location.data,
   };
 
-  for (int i = 0; i < orderID.length; i++) {
-    await db.collection('orders').doc(orderID[i].toString()).update(order_info);
+  for (int i = 0; i < id.length; i++) {
+    await db.collection('orders').doc(id[i].toString()).update(order_info);
   }
 
-  StreamSubscription<Position> positionStream =
+  positionStream =
       Geolocator.getPositionStream(locationSettings: locationSettings)
           .listen((Position? position) async {
     var lat = position!.latitude;
@@ -38,11 +40,12 @@ void getCurrentLocation(orderID) async {
 
     final order_info = {"location": location.data};
 
-    for (int i = 0; i < orderID.length; i++) {
-      await db
-          .collection('orders')
-          .doc(orderID[i].toString())
-          .update(order_info);
+    for (int i = 0; i < id.length; i++) {
+      await db.collection('orders').doc(id[i].toString()).update(order_info);
     }
   });
+}
+
+void stopTracking() {
+  positionStream.cancel();
 }

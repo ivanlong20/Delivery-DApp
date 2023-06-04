@@ -716,7 +716,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                                             MaterialPageRoute(
                                                                 builder:
                                                                     (context) =>
-                                                                        FireMap(
+                                                                        OrderTracking(
                                                                           title:
                                                                               'Order Tracking',
                                                                           orderID:
