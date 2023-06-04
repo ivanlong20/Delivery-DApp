@@ -61,6 +61,14 @@ class OrderTrackingState extends State<OrderTracking> {
         onMapCreated: onMapCreated,
         myLocationEnabled: true,
         markers: _markers,
+        polylines: {
+          Polyline(
+            polylineId: const PolylineId("route"),
+            points: polylineCoordinates,
+            color: Color.fromARGB(255, 104, 104, 104),
+            width: 6,
+          ),
+        },
       ),
     );
   }
