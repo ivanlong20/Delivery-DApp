@@ -24,6 +24,7 @@ contract Delivery{
     uint256 timestamp;
     // Message ID belongs to this order
     uint[] messageID;
+    uint256 expectedDeliveryTime;
 }
 
 struct Message{
@@ -67,11 +68,11 @@ struct Payment {
     error OnlyDeliveryman();
     error InvalidState();
 
-    // modifier condition(bool condition_) {
-    //     if (!condition_)
-    //         revert InvalidState();
-    //     _;
-    // }
+    modifier condition(bool condition_) {
+        if (!condition_)
+            revert InvalidState();
+        _;
+    }
 
     modifier onlySender(uint _orderId) {
        require(msg.sender == orders[_orderId].walletAddress.sender,"Only sender can call this function");
@@ -120,7 +121,7 @@ struct Payment {
 
     //1. Create Order and Receive Payment
     function createDeliveryOrder(address payable sender, address payable receiver, DeliveryAddressInfo calldata _addressInfo,
-    Package calldata _packageInfo, Payment calldata _paymentInfo)
+    Package calldata _packageInfo, Payment calldata _paymentInfo, uint expectedDeliveryTime)
         external
         payable
     {
@@ -145,6 +146,7 @@ struct Payment {
         newOrder.paymentInfo.totalAmount = totalAmount;
         newOrder.timestamp = block.timestamp;
         newOrder.orderStatus = State.Submitted;
+        newOrder.expectedDeliveryTime = expectedDeliveryTime;
     
         orders[orderID] = newOrder;
         orderId.push(orderID);
@@ -167,7 +169,7 @@ struct Payment {
 
     //2. Payment
     function payBySender(uint _orderId) public payable{
-        require(msg.value >= orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
+        require(msg.value == orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
         balances[msg.sender] += msg.value;
         orders[_orderId].orderStatus = State.Pending;
         emit OrderPaidBySender("Payment Success by Sender");
@@ -175,7 +177,7 @@ struct Payment {
 
     //2. Payment
     function payByReceipient (uint _orderId) public payable {
-        require(msg.value >= orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
+        require(msg.value == orders[_orderId].paymentInfo.totalAmount, "Amount not equal to total amount");
         balances[msg.sender] += msg.value;
         orders[_orderId].orderStatus = State.Pending;
         emit OrderPaidByReceiver("Payment Success by Receiver");
@@ -221,18 +223,18 @@ struct Payment {
 
      // Generate Message ID
     function generateMessageId() internal returns (uint256) {
-        currentMessageId += 1;
-        return currentMessageId;
+        currentOrderId += 1;
+        return currentOrderId;
     }
 
     //Sending Message
-    function sendMessage(uint _orderId, address receiver, string calldata content) external {
+    function sendMessage(uint _orderId, address sender, string calldata content) external {
         uint messageId = generateMessageId();
 
         Message memory newMessage;
         newMessage.id = messageId;
-        newMessage.sender = msg.sender;
-        newMessage.receiver = receiver;
+        newMessage.sender = sender;
+        newMessage.receiver = msg.sender;
         newMessage.content = content;
         newMessage.timestamp = block.timestamp;
         messages[messageId] = newMessage;
@@ -241,12 +243,12 @@ struct Payment {
     }
 
     //Getting Message
-    function getMessage(uint _orderId, address caller) external view returns(Message[] memory){
+    function getMessage(uint _orderId, string calldata userType) external view returns(Message[] memory){
         Order memory order = orders[_orderId];
         Message[] memory messagesTemp = new Message[](order.messageID.length);
         uint count = 0;
         //If user type is deliverymen, only fetch messages from/to deliverymen
-        if(caller == order.walletAddress.deliveryman){
+        if(keccak256(bytes(userType)) == keccak256(bytes("Deliverymen"))){
             for(uint i=0;i<order.messageID.length;i++){
             if(messages[order.messageID[i]].sender == order.walletAddress.deliveryman || messages[order.messageID[i]].receiver == order.walletAddress.deliveryman){
                 messagesTemp[count] = messages[order.messageID[i]];
@@ -263,14 +265,14 @@ struct Payment {
         return filteredMessages;
         }
         else{
-            revert("Not Found");
+            revert("Not found");
         }
         }
 
         //If user type is any except deliverymen, only fetch messages from/to Businesses/Customers
         else{
             for(uint i=0;i<order.messageID.length;i++){
-            if((messages[order.messageID[i]].sender == order.walletAddress.deliveryman || messages[order.messageID[i]].sender == caller) && (messages[order.messageID[i]].receiver == caller || messages[order.messageID[i]].receiver == order.walletAddress.deliveryman)){
+            if(messages[order.messageID[i]].sender == order.walletAddress.deliveryman || messages[order.messageID[i]].receiver == order.walletAddress.deliveryman){
                 messagesTemp[count] = messages[order.messageID[i]];
                 count++;
             }
@@ -285,7 +287,7 @@ struct Payment {
         return filteredMessages;
         }
         else{
-           revert("Not Found");
+            revert("Not found");
         }
         }
      
