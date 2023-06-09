@@ -115,18 +115,6 @@ Future<List<dynamic>> getOrderInfo() async {
   ];
 }
 
-fetch() async {
-  var order = await connector.getOrderFromBusinessAndCustomer();
-  // print(order[0][0][0]);
-  // print(order[0][1]);
-  // print(order[0][2]);
-  // print(order[0][3]);
-  // print(order[0][4]);
-  // print(order[0][5]);
-  print(order.length);
-  // return order;
-}
-
 class OrderPage extends StatefulWidget {
   final String title;
   var connector;
@@ -140,10 +128,10 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 240, 240, 240),
+      backgroundColor: Color(0xffdde3ea),
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Color(0xffdde3ea),
       ),
       drawer: AppDrawer(connector: widget.connector),
       body: TransactionListView(),
@@ -176,7 +164,7 @@ class TransactionListView extends StatelessWidget {
                   var recipientWalletAddress = snapshot.data?[17];
                   var deliverymanWalletAddress = snapshot.data?[18];
                   return ListView.separated(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
                     itemCount: orderCount,
                     itemBuilder: (BuildContext context, int index) {
                       return InkWell(
@@ -258,7 +246,7 @@ class TransactionListView extends StatelessWidget {
                                             ],
                                           )),
                                       SizedBox(
-                                        height: 5,
+                                        height: 2,
                                       ),
                                       Expanded(
                                           flex: 30,
@@ -293,14 +281,11 @@ class TransactionListView extends StatelessWidget {
                                               ),
                                             ],
                                           )),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
                                     ],
                                   ))));
                     },
                     separatorBuilder: (BuildContext context, int index) =>
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
                   );
                 } else {
                   return Column(
@@ -375,6 +360,8 @@ class TransactionDetailsPage extends StatefulWidget {
 }
 
 class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
+  final ethPrice = eth;
+
   @override
   Widget build(BuildContext context) {
     var index = widget.index;
@@ -424,8 +411,9 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                   : const SizedBox(height: 30)
             ])),
         appBar: AppBar(
-          title: Text(widget.title),
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          title: Text(widget.title, style: TextStyle(color: Colors.white)),
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Color(0xFF006494),
         ),
         body: SingleChildScrollView(
             child: Center(
@@ -441,6 +429,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                         var receiverDistrict = snapshot.data?[4];
                         var deliveryFee = snapshot.data?[11];
                         var productAmount = snapshot.data?[12];
+                        var totalAmount = snapshot.data?[13];
                         var parcelDescription = snapshot.data?[5];
                         var parcelWidth = snapshot.data?[6];
                         var parcelHeight = snapshot.data?[7];
@@ -464,302 +453,452 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                         print(payBySender[index].toString() == "false");
 
                         // print(snapshot.data?[14]);
-                        return Padding(
-                            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(25),
+                                      bottomRight: Radius.circular(25),
+                                    ),
+                                    color: Color(0xFF006494)),
+                                height: 100,
+                                child: Padding(
+                                    padding: EdgeInsets.fromLTRB(15, 7, 15, 0),
+                                    child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const SizedBox(width: 20),
+                                          Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const FaIcon(
+                                                  FontAwesomeIcons.box,
+                                                  color: Colors.white,
+                                                  size: 40,
+                                                ),
+                                                const SizedBox(height: 20),
+                                              ]),
+                                          const SizedBox(width: 40),
+                                          Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Flexible(
+                                                    child: Text(
+                                                        'Order #' +
+                                                            id[index]
+                                                                .toString(),
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style: TextStyle(
+                                                            fontSize: 24,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color:
+                                                                Colors.white))),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                    OrderState[
+                                                        orderStatus[index]
+                                                            .toInt()],
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: Colors.white,
+                                                    ))
+                                              ])
+                                        ]))),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(20, 5, 20, 0),
+                                child: Column(
                                   children: [
-                                    Text('Order #' + id[index].toString(),
+                                    Row(
+                                      children: [
+                                        Text('From',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400))
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                            child: Text(
+                                                senderAddress[index] +
+                                                    ", " +
+                                                    senderDistrict[index],
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w500)))
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text('To',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400))
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                            child: Text(
+                                                receiverAddress[index] +
+                                                    ", " +
+                                                    receiverDistrict[index],
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.w500)))
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                            Divider(
+                              height: 20,
+                              thickness: 1,
+                              indent: 20,
+                              endIndent: 20,
+                              color: Colors.grey,
+                            ),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(20, 5, 20, 0),
+                                child: Column(children: [
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Payment ',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16),
+                                        ),
+                                        Text(
+                                            (payBySender[index] == true
+                                                ? 'Sender'
+                                                : 'Receiver'),
+                                            textAlign: TextAlign.end,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: 16))
+                                      ]),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Delivery Fee ',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400)),
+                                      Flexible(
+                                          child: Text(
+                                              deliveryFee[index]
+                                                      .toStringAsFixed(8) +
+                                                  ' ETH',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w700)))
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Product Amount ',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400)),
+                                      Flexible(
+                                          child: payBySender[index] == false
+                                              ? Text(
+                                                  productAmount[index]
+                                                          .toStringAsFixed(8) +
+                                                      ' ETH',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w700))
+                                              : Text('N/A',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w700))),
+                                    ],
+                                  ),
+                                ])),
+                            Divider(
+                              height: 20,
+                              thickness: 1,
+                              indent: 20,
+                              endIndent: 20,
+                              color: Colors.grey,
+                            ),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(20, 5, 20, 0),
+                                child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Total',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w700)),
+                                      Flexible(
+                                          child: Text(
+                                              totalAmount[index]
+                                                      .toStringAsFixed(8) +
+                                                  ' ETH',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight:
+                                                      FontWeight.w700))),
+                                    ])),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                FutureBuilder<dynamic>(
+                                    future: ethPrice,
+                                    builder: (context, snapshot) {
+                                      {
+                                        if (snapshot.hasData) {
+                                          var eth = snapshot.data;
+                                          return Flexible(
+                                              child: Text(
+                                                  " ~" +
+                                                      (totalAmount[index]
+                                                                  .toDouble() *
+                                                              eth.toDouble())
+                                                          .toStringAsFixed(1) +
+                                                      ' HKD',
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400)));
+                                        } else {
+                                          return Flexible(
+                                              child: Text('~ N/A',
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400)));
+                                        }
+                                      }
+                                    }),
+                                const SizedBox(
+                                  width: 20,
+                                )
+                              ],
+                            ),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                child: Column(children: [
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                          child: Text('Parcel Description',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w400)))
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                          child: Text(parcelDescription[index],
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w700)))
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 2,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                          child: Text('Size ',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w400)))
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                          child: Text(
+                                              parcelWidth[index].toString() +
+                                                  ' x ' +
+                                                  parcelHeight[index]
+                                                      .toString() +
+                                                  ' x ' +
+                                                  parcelDepth[index]
+                                                      .toString() +
+                                                  ' cm',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w700)))
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 2,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                          child: Text('Weight ',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w400)))
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                          child: Text(
+                                              parcelWeight[index].toString() +
+                                                  ' Kg',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w700)))
+                                    ],
+                                  )
+                                ])),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(20, 5, 20, 0),
+                                child: Column(children: [
+                                  Row(children: [
+                                    Text('Date',
                                         style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700)),
-                                    const SizedBox(width: 70),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ))
+                                  ]),
+                                  Row(children: [
                                     Text(
                                         DateFormat('dd/MM/yyyy HH:mm')
                                             .format(orderDate[index]),
                                         style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500))
-                                  ],
-                                ),
-                                SizedBox(height: 5),
-                                Row(children: [
-                                  Text(
-                                    'Payment: ' +
-                                        (payBySender[index] == true
-                                            ? 'Sender'
-                                            : 'Receiver'),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16),
-                                  )
-                                ]),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('From',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600))
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text(
-                                            senderAddress[index] +
-                                                ", " +
-                                                senderDistrict[index],
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('To',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600))
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text(
-                                            receiverAddress[index] +
-                                                ", " +
-                                                receiverDistrict[index],
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Amount',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600))
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Delivery Fee: ',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700)),
-                                    Flexible(
-                                        child: Text(
-                                            deliveryFee[index]
-                                                    .toStringAsFixed(8) +
-                                                ' ETH',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Product Amount: ',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w700)),
-                                    Flexible(
-                                        child: Text(
-                                            productAmount[index]
-                                                    .toStringAsFixed(8) +
-                                                ' ETH',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Parcel Information',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600))
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text(
-                                            'Description : ' +
-                                                parcelDescription[index],
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text(
-                                            'Size: ' +
-                                                parcelWidth[index].toString() +
-                                                ' x ' +
-                                                parcelHeight[index].toString() +
-                                                ' x ' +
-                                                parcelDepth[index].toString() +
-                                                ' cm',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text(
-                                            'Weight: ' +
-                                                parcelWeight[index].toString() +
-                                                ' Kg',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text('Status',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)))
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Flexible(
-                                        child: Text(
-                                            OrderState[
-                                                orderStatus[index].toInt()],
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w700)))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                (orderStatus[index].toInt() == 2 ||
-                                        orderStatus[index].toInt() == 3)
-                                    ? Column(children: [
-                                        Row(
-                                          children: [
-                                            Flexible(
-                                                child: Text('Parcel Location',
-                                                    style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w600))),
-                                            const SizedBox(height: 30)
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        FutureBuilder(
-                                            future: getLatLng(
-                                                senderAddress[index] +
-                                                    ", " +
-                                                    senderDistrict[index],
-                                                receiverAddress[index] +
-                                                    ", " +
-                                                    receiverDistrict[index]),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                final senderLatLng =
-                                                    snapshot.data?[0];
-                                                final recipientLatLng =
-                                                    snapshot.data?[1];
-
-                                                senderPosition = senderLatLng;
-                                                recipientPosition =
-                                                    recipientLatLng;
-                                                return FilledButton(
-                                                    style:
-                                                        FilledButton.styleFrom(
-                                                            minimumSize:
-                                                                Size(400, 50)),
-                                                    onPressed: () => {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        OrderTracking(
-                                                                          title:
-                                                                              'Order Tracking',
-                                                                          orderID:
-                                                                              id[index].toString(),
-                                                                          senderAddress:
-                                                                              senderLatLng,
-                                                                          recipientAddress:
-                                                                              recipientLatLng,
-                                                                        )),
-                                                          )
-                                                        },
-                                                    child: Text(
-                                                        'Order Tracking',
-                                                        style: TextStyle(
-                                                            fontSize: 18)));
-                                              } else {
-                                                return const SizedBox(
-                                                    height: 0);
-                                              }
-                                            })
-                                      ])
-                                    : const SizedBox(height: 30),
-                                (orderStatus[index].toInt() == 0 &&
-                                        connector.address.toString() ==
-                                            recipientWalletAddress[index]
-                                                .toString() &&
-                                        payBySender[index].toString() ==
-                                            "false")
-                                    ? FilledButton(
-                                        style: FilledButton.styleFrom(
-                                            minimumSize: Size(350, 50)),
-                                        onPressed: () => {
-                                              payByRecipient(
-                                                  deliveryFee[index] * 1e18 +
-                                                      productAmount[index] *
-                                                          1e18 +
-                                                      100)
-                                            },
-                                        child: Text('Pay Now',
-                                            style: TextStyle(fontSize: 18)))
-                                    : const SizedBox(height: 0)
-                              ],
-                            ));
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ))
+                                  ]),
+                                ])),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            (orderStatus[index].toInt() == 2 ||
+                                    orderStatus[index].toInt() == 3)
+                                ? Padding(
+                                    padding: EdgeInsets.fromLTRB(20, 5, 20, 15),
+                                    child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          FutureBuilder(
+                                              future: getLatLng(
+                                                  senderAddress[index] +
+                                                      ", " +
+                                                      senderDistrict[index],
+                                                  receiverAddress[index] +
+                                                      ", " +
+                                                      receiverDistrict[index]),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  final senderLatLng =
+                                                      snapshot.data?[0];
+                                                  final recipientLatLng =
+                                                      snapshot.data?[1];
+                                                  senderPosition = senderLatLng;
+                                                  recipientPosition =
+                                                      recipientLatLng;
+                                                  return ElevatedButton.icon(
+                                                      icon: Icon(
+                                                          Icons.gps_fixed,
+                                                          color: Color(
+                                                              0xFF001E30)),
+                                                      label: Text(
+                                                          'Order Tracking',
+                                                          style: TextStyle(
+                                                              color: Color(
+                                                                  0xFF001E30))),
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        primary:
+                                                            Color(0xFFCAE6FF),
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10.0),
+                                                        ),
+                                                        minimumSize:
+                                                            Size(150, 50),
+                                                      ),
+                                                      onPressed: () => {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          OrderTracking(
+                                                                            title:
+                                                                                'Order Tracking',
+                                                                            orderID:
+                                                                                id[index].toString(),
+                                                                            senderAddress:
+                                                                                senderLatLng,
+                                                                            recipientAddress:
+                                                                                recipientLatLng,
+                                                                          )),
+                                                            )
+                                                          });
+                                                } else {
+                                                  return const SizedBox(
+                                                      height: 0);
+                                                }
+                                              }),
+                                        ]))
+                                : const SizedBox(height: 30),
+                            (orderStatus[index].toInt() == 0 &&
+                                    connector.address.toString() ==
+                                        recipientWalletAddress[index]
+                                            .toString() &&
+                                    payBySender[index].toString() == "false")
+                                ? FilledButton(
+                                    style: FilledButton.styleFrom(
+                                        minimumSize: Size(350, 50)),
+                                    onPressed: () => {
+                                          payByRecipient(
+                                              deliveryFee[index] * 1e18 +
+                                                  productAmount[index] * 1e18 +
+                                                  100)
+                                        },
+                                    child: Text('Pay Now',
+                                        style: TextStyle(fontSize: 18)))
+                                : const SizedBox(height: 0)
+                          ],
+                        );
                       } else {
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,

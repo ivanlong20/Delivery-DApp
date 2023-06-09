@@ -87,29 +87,30 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _validate = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: AppBar(),
         drawer: AppDrawer(connector: widget.connector),
         body: SingleChildScrollView(
             child: Container(
                 child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
                     child: Column(
                       children: [
                         const Row(children: [
-                          Text('Shipping Details',
+                          Text('Send Package',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w500),
+                                  fontSize: 32, fontWeight: FontWeight.w600),
                               textAlign: TextAlign.left)
                         ]),
                         const SizedBox(height: 10),
                         const Row(children: [
                           Text('From',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w600))
+                                  fontSize: 24, fontWeight: FontWeight.w400))
                         ]),
                         const SizedBox(height: 5),
                         TextField(
@@ -122,7 +123,9 @@ class _HomePageState extends State<HomePage> {
                           controller: senderDeliveryAddress,
                           decoration: InputDecoration(
                               icon: const Icon(Icons.pin_drop_outlined),
-                              labelText: '  Enter Sender\'s address',
+                              labelText: '  Sender\'s address',
+                              errorText:
+                                  _validate ? 'Value Can\'t Be Empty' : null,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
@@ -152,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                         const Row(children: [
                           Text('To',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w600))
+                                  fontSize: 24, fontWeight: FontWeight.w400))
                         ]),
                         const SizedBox(height: 5),
                         TextField(
@@ -164,8 +167,10 @@ class _HomePageState extends State<HomePage> {
                           maxLines: 1,
                           controller: recipientDeliveryAddress,
                           decoration: InputDecoration(
-                              icon: const Icon(Icons.flag),
-                              labelText: '  Enter Receiver\'s address',
+                              icon: const Icon(Icons.pin_drop_outlined),
+                              labelText: '  Receiver\'s address',
+                              errorText:
+                                  _validate ? 'Value Can\'t Be Empty' : null,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
@@ -192,12 +197,12 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 }))),
                         SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
                         const Row(children: [
                           Text('Package Information',
                               style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.w600))
+                                  fontSize: 24, fontWeight: FontWeight.w400))
                         ]),
                         SizedBox(
                           height: 20,
@@ -213,6 +218,8 @@ class _HomePageState extends State<HomePage> {
                           decoration: InputDecoration(
                               icon: const FaIcon(FontAwesomeIcons.box),
                               labelText: 'What\'s in your package?',
+                              errorText:
+                                  _validate ? 'Value Can\'t Be Empty' : null,
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
@@ -221,13 +228,26 @@ class _HomePageState extends State<HomePage> {
                             style: FilledButton.styleFrom(
                                 minimumSize: Size(400, 50)),
                             onPressed: () => {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ItemInfoPage(
-                                            title: 'Item Details',
-                                            connector: widget.connector)),
-                                  )
+                                  setState(() {
+                                    (senderDeliveryAddress.text.isEmpty ||
+                                            recipientDeliveryAddress
+                                                .text.isEmpty ||
+                                            packageDescription.text.isEmpty ||
+                                            senderDistrictIndex1 == null ||
+                                            recipientDistrictIndex2 == null)
+                                        ? _validate = true
+                                        : _validate = false;
+                                  }),
+                                  (_validate == false)
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ItemInfoPage(
+                                                      title: 'Item Details',
+                                                      connector:
+                                                          widget.connector)))
+                                      : null
                                 },
                             child: Text('Continue',
                                 style: TextStyle(fontSize: 18)))
@@ -249,6 +269,8 @@ class ItemInfoPage extends StatefulWidget {
 }
 
 class _ItemInfoPageState extends State<ItemInfoPage> {
+  bool _validate = false;
+
   @override
   Widget build(BuildContext context) {
     final ethPrice = eth;
@@ -453,13 +475,21 @@ class _ItemInfoPageState extends State<ItemInfoPage> {
                 FilledButton(
                     style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
                     onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PaymentPage(
-                                    title: 'Payment Details',
-                                    connector: widget.connector)),
-                          )
+                          setState(() => (_sizePickerIndexH == 0 ||
+                                  _sizePickerIndexW == 0 ||
+                                  _sizePickerIndexD == 0 ||
+                                  _weightPickerIndex == 0.0)
+                              ? _validate = true
+                              : _validate = false),
+                          (_validate == false)
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PaymentPage(
+                                          title: 'Payment Details',
+                                          connector: widget.connector)),
+                                )
+                              : null
                         },
                     child: Text('Next', style: TextStyle(fontSize: 18)))
               ],
@@ -483,6 +513,7 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   final ethPrice = eth;
   List<String> payerList = ['Sender', 'Receiver'];
+  bool _validate = false;
 
   @override
   Widget build(BuildContext context) {
@@ -519,6 +550,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       icon: const Icon(Icons.wallet),
                       labelText:
                           'i.e. 0x999999cf1046e68e36E1aA2E0E07105eDDD1f08E',
+                      errorText: _validate ? 'Value Can\'t Be Empty' : null,
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30))),
                 ),
@@ -644,7 +676,14 @@ class _PaymentPageState extends State<PaymentPage> {
                           FilledButton(
                               style: FilledButton.styleFrom(
                                   minimumSize: Size(400, 50)),
-                              onPressed: () => {transaction()},
+                              onPressed: () => {
+                                    setState(() {
+                                      (receiverWalletAddress.text.isEmpty)
+                                          ? _validate = true
+                                          : _validate = false;
+                                    }),
+                                    (!_validate) ? transaction() : null
+                                  },
                               child: Text('Confirm',
                                   style: TextStyle(fontSize: 18)))
                         ],
@@ -702,7 +741,14 @@ class _PaymentPageState extends State<PaymentPage> {
                           FilledButton(
                               style: FilledButton.styleFrom(
                                   minimumSize: Size(400, 50)),
-                              onPressed: () => {transaction()},
+                              onPressed: () => {
+                                    setState(() {
+                                      (receiverWalletAddress.text.isEmpty)
+                                          ? _validate = true
+                                          : _validate = false;
+                                    }),
+                                    (!_validate) ? transaction() : null
+                                  },
                               child: Text('Confirm',
                                   style: TextStyle(fontSize: 18)))
                         ],

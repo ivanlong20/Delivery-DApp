@@ -77,7 +77,7 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
           ),
           ListTile(
               leading: const Icon(Icons.history),
-              title: const Text('Order Tracking & History'),
+              title: const Text('Orders'),
               onTap: openOrderPage),
           ListTile(
               leading: const Icon(Icons.wallet),
@@ -114,8 +114,8 @@ class _AppDrawerDrawerState extends State<AppDrawer> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => OrderPage(
-              title: 'Order Tracking & History', connector: widget.connector)),
+          builder: (context) =>
+              OrderPage(title: 'Orders', connector: widget.connector)),
     );
   }
 

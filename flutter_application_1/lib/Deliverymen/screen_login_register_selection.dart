@@ -13,12 +13,12 @@ class LoginRegisterSelectionPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 150),
-            SizedBox(height: 150),
+            const SizedBox(height: 150),
+            const SizedBox(height: 150),
             FilledButton(
               style: FilledButton.styleFrom(
-                  minimumSize: Size(350, 75),
-                  backgroundColor: Color.fromRGBO(170, 170, 170, 1)),
+                minimumSize: Size(350, 75),
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -27,11 +27,11 @@ class LoginRegisterSelectionPage extends StatelessWidget {
                   }),
                 );
               },
-              child: Text(
+              child: const Text(
                   style: TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
                   'Login'),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             FilledButton(
@@ -46,7 +46,7 @@ class LoginRegisterSelectionPage extends StatelessWidget {
                   }),
                 );
               },
-              child: Text(
+              child: const Text(
                   style: TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
                   'Register'),
             )

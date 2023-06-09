@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_connect_metamask.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'screen_connect_metamask.dart';
 
 TextEditingController Name = TextEditingController();
 TextEditingController HKID = TextEditingController();
@@ -33,7 +32,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        SizedBox(height: 10),
                         Align(
                             alignment: Alignment.topLeft,
                             child: Text(
@@ -70,10 +68,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             });
                           },
                           maxLines: 1,
+                          maxLength: 8,
                           controller: HKID,
                           decoration: InputDecoration(
                               icon: const FaIcon(FontAwesomeIcons.idCard),
-                              labelText: '  HKID',
+                              labelText: '  i.e. A1234567',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
@@ -81,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         Align(
                             alignment: Alignment.topLeft,
                             child: Text(
-                              'Your License Plate',
+                              'License plate number',
                               style: TextStyle(fontSize: 18),
                             )),
                         SizedBox(height: 10),
@@ -95,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: licenseplateNo,
                           decoration: InputDecoration(
                               icon: const FaIcon(FontAwesomeIcons.car),
-                              labelText: '  License plate number',
+                              labelText: '  i.e. AB1234',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
@@ -119,7 +118,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: contactNo,
                           decoration: InputDecoration(
                               icon: const FaIcon(FontAwesomeIcons.phone),
-                              labelText: '  8 digits Telephone number',
+                              labelText: '  i.e. 91234567',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
@@ -141,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: email,
                           decoration: InputDecoration(
                               icon: const Icon(Icons.email),
-                              labelText: '  Email address',
+                              labelText: '  i.e. abc@gmail.com',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
@@ -187,7 +186,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: confirmPassword,
                           decoration: InputDecoration(
                               icon: const Icon(Icons.password),
-                              labelText: '  Re-enter Your New Password',
+                              labelText: '  Re-enter Password',
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),

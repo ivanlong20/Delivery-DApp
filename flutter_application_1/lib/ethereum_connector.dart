@@ -200,7 +200,13 @@ class EthereumConnector implements WalletConnector {
       print('$status');
     });
 
-    await delivery.cancelOrder(orderID, credentials: credentials);
+    Transaction transaction = Transaction(
+      from: senderWalletAddress,
+      maxGas: 500000,
+    );
+
+    await delivery.cancelOrder(orderID,
+        credentials: credentials, transaction: transaction);
 
     await subscription.asFuture();
     await subscription.cancel();
@@ -230,7 +236,7 @@ class EthereumConnector implements WalletConnector {
     Transaction transaction = Transaction(
         from: senderWalletAddress,
         value: EtherAmount.fromBigInt(EtherUnit.wei, deliveryFee),
-        maxGas: 500000);
+        maxGas: 100000);
 
     await delivery.payBySender(orderID,
         credentials: credentials, transaction: transaction);

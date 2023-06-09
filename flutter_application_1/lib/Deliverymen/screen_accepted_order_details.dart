@@ -83,7 +83,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                 (widget.orderStatus.toInt() == 2)
                     ? FloatingActionButton(
                         onPressed: () {
-                          cancelOrder();
+                          showCancelDialog();
                         },
                         child: const Icon(Icons.cancel),
                       )
@@ -437,6 +437,32 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                       MaterialStateProperty.all<Color>(Colors.blue)),
               child: Text("Confirm", style: TextStyle(color: Colors.white)),
               onPressed: () => transaction(context, orderID),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool?> showCancelDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Cancel Order"),
+          content: Text("Confirm to cancel the order",
+              style: TextStyle(fontWeight: FontWeight.w600)),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Exit"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue)),
+              child: Text("Confirm", style: TextStyle(color: Colors.white)),
+              onPressed: () => cancelOrder(),
             )
           ],
         );

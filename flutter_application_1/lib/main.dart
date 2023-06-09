@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'screen_user_selection.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'color_schemes.g.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -28,10 +29,9 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
-            fontFamily: 'Montserrat',
-            useMaterial3: true,
-            colorSchemeSeed: Color.fromARGB(255, 44, 166, 248),
-          ),
+              useMaterial3: true,
+              colorScheme: lightColorScheme,
+              fontFamily: 'Montserrat'),
           home: const UserSelectionPage(title: 'Landing Page'),
         ));
   }

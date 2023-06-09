@@ -17,64 +17,65 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(title: Text(widget.title)),
-        body: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Email Address',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                SizedBox(height: 10),
-                TextField(
-                  onChanged: (text) {
-                    setState(() {
-                      email.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: email,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.email),
-                      labelText: '  Email address',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                SizedBox(height: 10),
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Password',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                SizedBox(height: 10),
-                TextField(
-                  obscureText: true,
-                  onChanged: (text) {
-                    setState(() {
-                      password.text = text;
-                    });
-                  },
-                  maxLines: 1,
-                  controller: password,
-                  decoration: InputDecoration(
-                      icon: const Icon(Icons.password),
-                      labelText: '  Password',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30))),
-                ),
-                SizedBox(height: 40),
-                FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
-                    onPressed: () async =>
-                        {await firebaseLogin(email.text, password.text)},
-                    child: Text('Login', style: TextStyle(fontSize: 18)))
-              ],
-            )));
+        appBar: AppBar(),
+        body: SingleChildScrollView(
+            child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Login',
+                      style:
+                          TextStyle(fontSize: 40, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Welcome back!',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                    ),
+                    const SizedBox(height: 100),
+                    TextField(
+                      onChanged: (text) {
+                        setState(() {
+                          email.text = text;
+                        });
+                      },
+                      maxLines: 1,
+                      controller: email,
+                      decoration: InputDecoration(
+                          icon: const Icon(Icons.email),
+                          labelText: '  Email address',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30))),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      obscureText: true,
+                      onChanged: (text) {
+                        setState(() {
+                          password.text = text;
+                        });
+                      },
+                      maxLines: 1,
+                      controller: password,
+                      decoration: InputDecoration(
+                          icon: const Icon(Icons.password),
+                          labelText: '  Password',
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30))),
+                    ),
+                    const SizedBox(height: 60),
+                    FilledButton(
+                        style:
+                            FilledButton.styleFrom(minimumSize: Size(400, 50)),
+                        onPressed: () async =>
+                            {await firebaseLogin(email.text, password.text)},
+                        child:
+                            const Text('Login', style: TextStyle(fontSize: 18)))
+                  ],
+                ))));
   }
 
   Future<bool?> showInvalidLoginDialog() {

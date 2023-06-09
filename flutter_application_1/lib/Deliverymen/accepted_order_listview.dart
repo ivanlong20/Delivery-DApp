@@ -33,122 +33,130 @@ class TransactionListView extends StatelessWidget {
                     itemCount: orderCount,
                     itemBuilder: (BuildContext context, int index) {
                       return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => TransactionDetailsPage(
-                                      title: 'Details',
-                                      index: index,
-                                      connector: connector,
-                                      orderID: id[index],
-                                      sender: senderWalletAddress[index],
-                                      receiver: recipientWalletAddress[index],
-                                      orderStatus: orderStatus[index],
-                                      senderAddress: senderAddress[index] +
-                                          ", " +
-                                          senderDistrict[index],
-                                      recipientAddress: receiverAddress[index] +
-                                          ", " +
-                                          receiverDistrict[index])),
-                            );
-                            // fetch();
-                          },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  color:
-                                      const Color.fromARGB(255, 255, 255, 255),
-                                  border: Border.all(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          TransactionDetailsPage(
+                                              title: 'Details',
+                                              index: index,
+                                              connector: connector,
+                                              orderID: id[index],
+                                              sender:
+                                                  senderWalletAddress[index],
+                                              receiver:
+                                                  recipientWalletAddress[index],
+                                              orderStatus: orderStatus[index],
+                                              senderAddress:
+                                                  senderAddress[index] +
+                                                      ", " +
+                                                      senderDistrict[index],
+                                              recipientAddress:
+                                                  receiverAddress[index] +
+                                                      ", " +
+                                                      receiverDistrict[index])),
+                                );
+                              },
+                              child: Container(
+                                  decoration: BoxDecoration(
                                       color: const Color.fromARGB(
-                                          255, 255, 255, 255)),
-                                  borderRadius: BorderRadius.circular(20)),
-                              height: 180,
-                              child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(10, 5, 5, 5),
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                          flex: 15,
-                                          child: Row(
-                                            children: [
+                                          255, 255, 255, 255),
+                                      border: Border.all(
+                                          color: const Color.fromARGB(
+                                              255, 255, 255, 255)),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  height: 180,
+                                  child: Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          10, 5, 5, 5),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                              flex: 15,
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    'Order #' +
+                                                        id[index].toString(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700),
+                                                  ),
+                                                  const SizedBox(width: 100),
+                                                  Text(
+                                                    DateFormat(
+                                                            'dd/MM/yyyy HH:mm')
+                                                        .format(
+                                                            orderDate[index]),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  )
+                                                ],
+                                              )),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Expanded(
+                                              flex: 30,
+                                              child: Center(
+                                                  child: Text(
+                                                senderAddress[index] +
+                                                    ", " +
+                                                    senderDistrict[index],
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 14),
+                                                textAlign: TextAlign.center,
+                                              ))),
+                                          SizedBox(
+                                            height: 2,
+                                          ),
+                                          Expanded(
+                                              flex: 15,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  FaIcon(FontAwesomeIcons
+                                                      .arrowDownLong)
+                                                ],
+                                              )),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Expanded(
+                                              flex: 30,
+                                              child: Center(
+                                                  child: Text(
+                                                receiverAddress[index] +
+                                                    ", " +
+                                                    receiverDistrict[index],
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 14),
+                                                textAlign: TextAlign.center,
+                                              ))),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Expanded(
+                                            flex: 15,
+                                            child: Row(children: [
                                               Text(
-                                                'Order #' +
-                                                    id[index].toString(),
+                                                'Status: ' +
+                                                    OrderState[
+                                                        orderStatus[index]
+                                                            .toInt()],
                                                 style: TextStyle(
                                                     fontWeight:
-                                                        FontWeight.w700),
-                                              ),
-                                              const SizedBox(width: 100),
-                                              Text(
-                                                DateFormat('dd/MM/yyyy HH:mm')
-                                                    .format(orderDate[index]),
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w500),
+                                                        FontWeight.w800),
                                               )
-                                            ],
-                                          )),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Expanded(
-                                          flex: 30,
-                                          child: Center(
-                                              child: Text(
-                                            senderAddress[index] +
-                                                ", " +
-                                                senderDistrict[index],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14),
-                                            textAlign: TextAlign.center,
-                                          ))),
-                                      SizedBox(
-                                        height: 2,
-                                      ),
-                                      Expanded(
-                                          flex: 15,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              FaIcon(FontAwesomeIcons
-                                                  .arrowDownLong)
-                                            ],
-                                          )),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Expanded(
-                                          flex: 30,
-                                          child: Center(
-                                              child: Text(
-                                            receiverAddress[index] +
-                                                ", " +
-                                                receiverDistrict[index],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 14),
-                                            textAlign: TextAlign.center,
-                                          ))),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Expanded(
-                                        flex: 15,
-                                        child: Row(children: [
-                                          Text(
-                                            'Status: ' +
-                                                OrderState[
-                                                    orderStatus[index].toInt()],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w800),
-                                          )
-                                        ]),
-                                      ),
-                                    ],
-                                  ))));
+                                            ]),
+                                          ),
+                                        ],
+                                      ))));
                     },
                     separatorBuilder: (BuildContext context, int index) =>
                         const SizedBox(height: 20),

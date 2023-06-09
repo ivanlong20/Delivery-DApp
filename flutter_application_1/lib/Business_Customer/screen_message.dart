@@ -529,12 +529,10 @@ class NewMessagePage extends StatefulWidget {
 
 class _NewMessagePageState extends State<NewMessagePage> {
   final List<String> recipient = ['Deliveryman'];
+  bool _validate = false;
+
   @override
   Widget build(BuildContext context) {
-    print(widget.orderID);
-    // print((senderRecipientIndex == 0)
-    //     ? widget.orderSender[0].toString()
-    //     : widget.orderReceiver[0].toString());
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text(widget.title)),
@@ -589,6 +587,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                   controller: message,
                   decoration: InputDecoration(
                       labelText: 'Enter your message',
+                      errorText: _validate ? 'Message Can\'t Be Empty' : null,
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20))),
                 ),
@@ -596,13 +595,21 @@ class _NewMessagePageState extends State<NewMessagePage> {
                 FilledButton(
                     style: FilledButton.styleFrom(minimumSize: Size(400, 50)),
                     onPressed: () => {
-                          sendMessages(
-                              widget.orderID,
-                              widget.orderDeliveryman.toString(),
-                              message.text,
-                              widget.orderSender,
-                              widget.orderReceiver,
-                              widget.orderDeliveryman),
+                          setState(() {
+                            (senderRecipientIndex == null ||
+                                    message.text.isEmpty)
+                                ? _validate = true
+                                : _validate = false;
+                          }),
+                          (!_validate)
+                              ? sendMessages(
+                                  widget.orderID,
+                                  widget.orderDeliveryman.toString(),
+                                  message.text,
+                                  widget.orderSender,
+                                  widget.orderReceiver,
+                                  widget.orderDeliveryman)
+                              : null,
                         },
                     child: Text('Send', style: TextStyle(fontSize: 18)))
               ],

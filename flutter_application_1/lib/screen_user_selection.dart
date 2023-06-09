@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Business_Customer/screen_connect_metamask.dart';
 import 'Deliverymen/screen_login_register_selection.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class UserSelectionPage extends StatelessWidget {
   const UserSelectionPage({super.key, required this.title});
@@ -12,17 +13,22 @@ class UserSelectionPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 150),
+            SizedBox(height: 200),
             Align(
                 alignment: Alignment.center,
                 child: Text(
                     style: TextStyle(fontSize: 40, fontWeight: FontWeight.w600),
                     'Welcome')),
-            SizedBox(height: 150),
-            FilledButton(
+            SizedBox(height: 75),
+            FilledButton.icon(
+              icon: FaIcon(FontAwesomeIcons.user),
+              label: Text(
+                  style: TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
+                  ' User'),
               style: FilledButton.styleFrom(
-                  minimumSize: Size(350, 75),
-                  backgroundColor: Color.fromRGBO(170, 170, 170, 1)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40)),
+                  minimumSize: Size(350, 100)),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -32,17 +38,20 @@ class UserSelectionPage extends StatelessWidget {
                   }),
                 );
               },
-              child: Text(
-                  style: TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
-                  'Customer / Business'),
             ),
             SizedBox(
-              height: 30,
+              height: 40,
             ),
-            FilledButton(
+            FilledButton.icon(
+              icon: FaIcon(FontAwesomeIcons.truckFast),
+              label: Text(
+                  style: TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
+                  ' Delivery Partner'),
               style: FilledButton.styleFrom(
-                  minimumSize: Size(350, 75),
-                  backgroundColor: Color.fromRGBO(170, 170, 170, 1)),
+                  backgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40)),
+                  minimumSize: Size(350, 100)),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -52,9 +61,6 @@ class UserSelectionPage extends StatelessWidget {
                   }),
                 );
               },
-              child: Text(
-                  style: TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
-                  'Delivery Partner'),
             )
           ],
         ),
