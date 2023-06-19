@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screen_connect_metamask.dart';
 import 'package:intl/intl.dart';
+import "../ethereum_connector.dart";
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
@@ -25,7 +27,9 @@ Future<List<dynamic>> getMessages(orderID) async {
     id.add(messages[i][0]);
     sender.add(messages[i][1]);
     receiver.add(messages[i][2]);
-    content.add(messages[i][3]);
+    content.add(encrypter.decrypt(
+        encrypt.Encrypted.fromBase64(messages[i][3].toString()),
+        iv: iv));
     messageTime.add(
         DateTime.fromMillisecondsSinceEpoch(messages[i][4].toInt() * 1000));
   }
@@ -130,14 +134,14 @@ class MessageListView extends StatelessWidget {
                                           : (sender[index].toString() ==
                                                   connector.address.toString())
                                               ? "You"
-                                              : "Unknown",
+                                              : "You",
                                       (receiver[index].toString() ==
                                               orderDeliveryman.toString())
                                           ? "Parcel Deliveryman"
                                           : (receiver[index].toString() ==
                                                   connector.address.toString())
                                               ? "You"
-                                              : "Unknown",
+                                              : "You",
                                       content[index],
                                       messageTime[index],
                                       sender[index],
@@ -179,7 +183,7 @@ class MessageListView extends StatelessWidget {
                                                               connector.address
                                                                   .toString())
                                                           ? "You"
-                                                          : "Unknown",
+                                                          : "You",
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600),
@@ -207,7 +211,7 @@ class MessageListView extends StatelessWidget {
                                                               connector.address
                                                                   .toString())
                                                           ? "You"
-                                                          : "Unknown",
+                                                          : "You",
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600),
@@ -620,6 +624,8 @@ class _NewMessagePageState extends State<NewMessagePage> {
 
   sendMessages(orderID, receiver, content, orderSender, orderReceiver,
       orderDeliveryman) async {
+    content = encrypter.encrypt(content, iv: iv).base64;
+
     Future.delayed(Duration.zero, () => connector.openWalletApp());
 
     await connector.sendMessage(

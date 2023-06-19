@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'screen_connect_metamask.dart';
 import 'package:intl/intl.dart';
 import 'screen_message_details.dart';
+import "../ethereum_connector.dart";
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 Future<List<dynamic>> getMessages(orderID) async {
   final allMessages = await connector.getMessage(
@@ -18,7 +20,9 @@ Future<List<dynamic>> getMessages(orderID) async {
     id.add(messages[i][0]);
     sender.add(messages[i][1]);
     receiver.add(messages[i][2]);
-    content.add(messages[i][3]);
+    content.add(encrypter.decrypt(
+        encrypt.Encrypted.fromBase64(messages[i][3].toString()),
+        iv: iv));
     messageTime.add(
         DateTime.fromMillisecondsSinceEpoch(messages[i][4].toInt() * 1000));
   }

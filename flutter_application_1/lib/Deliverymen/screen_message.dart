@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'screen_connect_metamask.dart';
 import 'package:intl/intl.dart';
 import 'message_listview.dart';
+import "../ethereum_connector.dart";
+
 
 final finalBalance = connector.getBalance();
 final network = connector.networkName;
@@ -155,6 +157,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
   }
 
   sendMessages(orderID, receiver, content, orderSender, orderReceiver) async {
+    content = encrypter.encrypt(content, iv: iv).base64;
     Future.delayed(Duration.zero, () => connector.openWalletApp());
 
     await connector.sendMessage(
@@ -176,4 +179,3 @@ class _NewMessagePageState extends State<NewMessagePage> {
         ));
   }
 }
-

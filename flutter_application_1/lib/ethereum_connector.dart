@@ -13,6 +13,11 @@ import 'package:web_socket_channel/io.dart';
 import 'package:path/path.dart';
 import 'dart:io';
 import 'delivery.g.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+
+final key = encrypt.Key.fromUtf8("FMCg2YYKfqT6USvl618/9d36YNBKNyVZ");
+final iv = encrypt.IV.fromLength(16);
+final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
 class WalletConnectEthereumCredentials extends CustomTransactionSender {
   WalletConnectEthereumCredentials({required this.provider});
@@ -61,7 +66,7 @@ class EthereumConnector implements WalletConnector {
   late final EthereumWalletConnectProvider _provider;
   final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
-      EthereumAddress.fromHex('0xc8a3C43105D92a765a807E0F1C6F798Cd24f1139');
+      EthereumAddress.fromHex('0x1e006C774dc1DA14c4da21F41B5ddd99aD4bFBa4');
 
   EthereumConnector() {
     _connector = WalletConnectQrCodeModal(
@@ -145,6 +150,12 @@ class EthereumConnector implements WalletConnector {
 
       print('$orderID created at $date');
     });
+
+    senderAddress = encrypter.encrypt(senderAddress, iv: iv).base64;
+    senderDistrict = encrypter.encrypt(senderDistrict, iv: iv).base64;
+    receiverAddress = encrypter.encrypt(receiverAddress, iv: iv).base64;
+    receiverDistrict = encrypter.encrypt(receiverDistrict, iv: iv).base64;
+    packageDiscription = encrypter.encrypt(packageDiscription, iv: iv).base64;
 
     final deliveryAddressInfo = [
       senderAddress,

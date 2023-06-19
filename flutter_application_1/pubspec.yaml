@@ -62,6 +62,7 @@ dependencies:
   geocoding: ^2.1.0
   geoflutterfire2: ^2.3.15
   flutter_multi_formatter: ^2.11.1
+  encrypt: ^5.0.1
 
 dev_dependencies:
   flutter_test:

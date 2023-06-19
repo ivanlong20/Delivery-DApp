@@ -1,3 +1,4 @@
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_home.dart';
@@ -9,6 +10,10 @@ import 'package:barcode_scan2/barcode_scan2.dart';
 import 'screen_order_tracking.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../ethereum_connector.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter/src/foundation/key.dart' as flutter;
+
 
 var senderPosition, recipientPosition;
 var senderAddress, recipientAddress;
@@ -46,7 +51,7 @@ getOrderCount() async {
 
 Future<List<dynamic>> getOrderInfo() async {
   final allOrders = await connector.getOrderFromBusinessAndCustomer();
-  print(allOrders);
+  // print(allOrders);
   var id = [];
   var senderAddress = [];
   var senderDistrict = [];
@@ -71,11 +76,17 @@ Future<List<dynamic>> getOrderInfo() async {
 
   for (int i = 0; i < orderCount; i++) {
     id.add(orders[i][0]);
-    senderAddress.add(orders[i][2][0]);
-    senderDistrict.add(orders[i][2][1]);
-    receiverAddress.add(orders[i][2][2]);
-    receiverDistrict.add(orders[i][2][3]);
-    packageDescription.add(orders[i][3][0]);
+    senderAddress.add(encrypter
+        .decrypt(encrypt.Encrypted.fromBase64(orders[i][2][0].toString()),iv:iv));
+    print(senderAddress);
+    senderDistrict.add(encrypter
+        .decrypt(encrypt.Encrypted.fromBase64(orders[i][2][1].toString()),iv:iv));
+    receiverAddress.add(encrypter
+        .decrypt(encrypt.Encrypted.fromBase64(orders[i][2][2].toString()), iv: iv));
+    receiverDistrict.add(encrypter
+        .decrypt(encrypt.Encrypted.fromBase64(orders[i][2][3].toString()),iv:iv));
+    packageDescription.add(encrypter
+        .decrypt(encrypt.Encrypted.fromBase64(orders[i][3][0].toString()), iv: iv));
     packageHeight.add(orders[i][3][1]);
     packageWidth.add(orders[i][3][2]);
     packageDepth.add(orders[i][3][3]);
@@ -118,7 +129,7 @@ Future<List<dynamic>> getOrderInfo() async {
 class OrderPage extends StatefulWidget {
   final String title;
   var connector;
-  OrderPage({Key? key, required this.title, required this.connector})
+  OrderPage({flutter.Key? key, required this.title, required this.connector})
       : super(key: key);
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -140,7 +151,7 @@ class _OrderPageState extends State<OrderPage> {
 }
 
 class TransactionListView extends StatelessWidget {
-  const TransactionListView({Key? key}) : super(key: key);
+  const TransactionListView({flutter.Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -345,7 +356,7 @@ class TransactionDetailsPage extends StatefulWidget {
   final index;
   var connector, orderID, sender, receiver, orderStatus, deliveryman;
   TransactionDetailsPage(
-      {Key? key,
+      {flutter.Key? key,
       required this.title,
       required this.index,
       required this.connector,
