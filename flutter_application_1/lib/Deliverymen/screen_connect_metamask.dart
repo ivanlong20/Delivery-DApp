@@ -9,6 +9,8 @@ import '../ethereum_connector.dart';
 
 WalletConnector connector = EthereumConnector();
 ConnectionState _state = ConnectionState.disconnected;
+var provider = connector.getProvider();
+
 
 enum ConnectionState {
   disconnected,
@@ -32,24 +34,31 @@ class ConnectMetamaskPage extends StatefulWidget {
 class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
   @override
   void initState() {
-    connector.registerListeners(
-        (session) {
-          print('Connected: $session');
-          setState(() => _state = ConnectionState.connected);
-        },
-        (response) => print('Session updated: $response'),
-        () {
-          setState(
-            () => _state = ConnectionState.disconnected,
-          );
-        });
+    initializeInstance();
+
     super.initState();
+  }
+
+  Future<void> initializeInstance() async {
+    connector = EthereumConnector();
+    await connector.initWalletConnect();
+    provider = connector.getProvider();
+    provider.onSessionConnect.subscribe((session) {
+      if (session == null) {
+        _state = ConnectionState.disconnected;
+      } else {
+        _state = ConnectionState.connected;
+      }
+      setState(() {});
+    });
+    print("done");
   }
 
   @override
   Widget build(BuildContext context) {
     final String assetName = 'assets/icon/metamask-fox.svg';
     final Widget svg = SvgPicture.asset(assetName);
+    print(_state);
 
     return Scaffold(
         appBar: AppBar(

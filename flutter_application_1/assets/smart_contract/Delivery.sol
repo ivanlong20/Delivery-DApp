@@ -67,12 +67,6 @@ struct Payment {
     error OnlyDeliveryman();
     error InvalidState();
 
-    // modifier condition(bool condition_) {
-    //     if (!condition_)
-    //         revert InvalidState();
-    //     _;
-    // }
-
     modifier onlySender(uint _orderId) {
        require(msg.sender == orders[_orderId].walletAddress.sender,"Only sender can call this function");
        _;
@@ -87,26 +81,6 @@ struct Payment {
         require(msg.sender == orders[_orderId].walletAddress.deliveryman,"Only deliveryman can call this function");
        _;
     }
-
-    // modifier onlySubmitted(uint _orderId) {
-    //     require(orders[_orderId].orderStatus == State.Submitted,"Only the order in submitted state can call this function");
-    //    _;
-    // }
-
-    // modifier onlyPending(uint _orderId) {
-    //     require(orders[_orderId].orderStatus == State.Pending,"Only the order in pending state can call this function");
-    //    _;
-    // }
-
-    // modifier onlyPickingUp(uint _orderId) {
-    //     require(orders[_orderId].orderStatus == State.Picking_Up,"Only the order in picking up state can call this function");
-    //    _;
-    // }
-
-    // modifier onlyDelivering(uint _orderId) {
-    //     require(orders[_orderId].orderStatus == State.Delivering,"Only the order in delivering state can call this function");
-    //    _;
-    // }
 
     event OrderCreated(uint orderID, uint256 timestamp);
     event OrderCanceled(string status);
@@ -365,27 +339,5 @@ struct Payment {
 
         return filteredOrders;
     }
-    
-
-    // function getOrderStatus(uint _orderId) external view returns (string memory) {
-    //     string memory result;
-    //     State status = orders[_orderId].orderStatus;
-    //     if (status == State.Submitted) {
-    //         result = "Submitted";
-    //     } else if (status == State.Pending) {
-    //         result = "Pending";
-    //     } else if (status == State.Picking_Up) {
-    //         result = "Picking Up";
-    //     } else if (status == State.Delivering) {
-    //         result = "Delivering";
-    //     } else if (status == State.Delivered) {
-    //         result = "Delivered";
-    //     } else if (status == State.Canceled) {
-    //         result = "Canceled";
-    //     } else {
-    //         result = "Invalid";
-    //     }
-    //     return result;
-    // }
 
 }

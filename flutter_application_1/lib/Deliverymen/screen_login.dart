@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
         appBar: AppBar(),
         body: SingleChildScrollView(
             child: Padding(
-                padding: EdgeInsets.all(20),
+                padding:  const EdgeInsets.all(20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -83,12 +83,12 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Invalid Login"),
-          content: Text("Wrong email or password",
+          title:  const Text("Invalid Login"),
+          content:  const Text("Wrong email or password",
               style: TextStyle(fontWeight: FontWeight.w600)),
           actions: <Widget>[
             TextButton(
-              child: Text("Confirm"),
+              child:  const Text("Confirm"),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],

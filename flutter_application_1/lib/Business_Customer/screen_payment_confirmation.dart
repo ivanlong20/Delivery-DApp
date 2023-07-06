@@ -33,7 +33,7 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Order ID:',
+                const Text('Order ID:',
                     style: TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0),
                         fontSize: 24,
@@ -44,7 +44,7 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
                         fontSize: 24,
                         fontWeight: FontWeight.w700)),
                 const SizedBox(height: 10),
-                Text('Time: ',
+                const Text('Time: ',
                     style: TextStyle(
                         color: Color.fromARGB(255, 0, 0, 0),
                         fontSize: 24,
@@ -57,12 +57,12 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
                 const SizedBox(height: 10),
                 (paidBy == 0)
                     ? Column(children: [
-                        Text('Status: ',
+                       const Text('Status: ',
                             style: TextStyle(
                                 color: Color.fromARGB(255, 0, 0, 0),
                                 fontSize: 24,
                                 fontWeight: FontWeight.w500)),
-                        Text('Submitted',
+                        const Text('Submitted',
                             style: TextStyle(
                                 color: Color.fromARGB(255, 0, 0, 0),
                                 fontSize: 24,
@@ -76,13 +76,13 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
                                 Text('Pay Now', style: TextStyle(fontSize: 18)))
                       ])
                     : Column(children: [
-                        Text('Status:',
+                        const Text('Status:',
                             textAlign: TextAlign.left,
                             style: TextStyle(
                                 color: Color.fromARGB(255, 0, 0, 0),
                                 fontSize: 24,
                                 fontWeight: FontWeight.w500)),
-                        Text('Submitted\n Pending to Pay by Recipent',
+                        const Text('Submitted\n Pending to Pay by Recipent',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: Color.fromARGB(255, 0, 0, 0),
@@ -102,7 +102,7 @@ class _PaymentConfirmationPageState extends State<PaymentConfirmationPage> {
                                   )
                                 },
                             child:
-                                Text('Return', style: TextStyle(fontSize: 18)))
+                                const Text('Return', style: TextStyle(fontSize: 18)))
                       ])
               ],
             )));
@@ -140,7 +140,7 @@ class LoadingPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(
+                    CircularProgressIndicator(
                       color: Color.fromARGB(255, 0, 0, 0),
                       strokeWidth: 4,
                     ),

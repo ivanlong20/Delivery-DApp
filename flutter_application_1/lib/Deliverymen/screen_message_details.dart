@@ -65,14 +65,14 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Row(
+                     const Row(
                       children: [
                         Text('From',
                             style: TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.w700)),
                       ],
                     ),
-                    SizedBox(
+                     const SizedBox(
                       height: 5,
                     ),
                     Row(children: [
@@ -80,17 +80,17 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w600))
                     ]),
-                    SizedBox(
+                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
+                     const Row(
                       children: [
                         Text('To',
                             style: TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.w700)),
                       ],
                     ),
-                    SizedBox(
+                     const SizedBox(
                       height: 5,
                     ),
                     Row(children: [
@@ -98,28 +98,28 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w600))
                     ]),
-                    SizedBox(
+                     const SizedBox(
                       height: 10,
                     ),
-                    Row(
+                     const Row(
                       children: [
                         Text('Message',
                             style: TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.w700))
                       ],
                     ),
-                    SizedBox(
+                     const SizedBox(
                       height: 5,
                     ),
                     Row(
                       children: [
                         Flexible(
                             child: Text(widget.content.toString(),
-                                style: TextStyle(
+                                style:  const TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.w600)))
                       ],
                     ),
-                    SizedBox(
+                     const SizedBox(
                       height: 10,
                     ),
                     Row(
@@ -129,7 +129,7 @@ class _MessageDetailsPageState extends State<MessageDetailsPage> {
                             child: Text(
                                 DateFormat('dd/MM/yyyy HH:mm')
                                     .format(widget.messageTime),
-                                style: TextStyle(
+                                style:  const TextStyle(
                                     fontSize: 14, fontWeight: FontWeight.w400)))
                       ],
                     ),

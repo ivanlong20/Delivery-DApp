@@ -63,6 +63,10 @@ dependencies:
   geoflutterfire2: ^2.3.15
   flutter_multi_formatter: ^2.11.1
   encrypt: ^5.0.1
+  walletconnect_flutter_v2: ^2.0.12
+  web3modal_flutter: ^1.2.1
+  convert: ^3.1.1
+
 
 dev_dependencies:
   flutter_test:

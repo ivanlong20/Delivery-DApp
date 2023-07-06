@@ -2,9 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 abstract class WalletConnector {
-  Future<SessionStatus?> connect(BuildContext context);
+  connect(BuildContext context);
+
+  getProvider();
+
+  Future<void> initWalletConnect();
 
   Future<String?> sendAmount({
     required String recipientAddress,
@@ -67,10 +72,5 @@ abstract class WalletConnector {
   String get address;
 
   String get coinName;
-
-  void registerListeners(
-    OnConnectRequest? onConnect,
-    OnSessionUpdate? onSessionUpdate,
-    OnDisconnect? onDisconnect,
-  );
+  getSessionStatus();
 }

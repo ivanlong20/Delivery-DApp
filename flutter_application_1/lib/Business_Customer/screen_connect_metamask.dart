@@ -7,8 +7,9 @@ import '../screen_user_selection.dart';
 import '../wallet_connector.dart';
 import '../ethereum_connector.dart';
 
-WalletConnector connector = EthereumConnector();
+late WalletConnector connector;
 ConnectionState _state = ConnectionState.disconnected;
+var provider;
 
 enum ConnectionState {
   disconnected,
@@ -28,18 +29,23 @@ class ConnectMetamaskPage extends StatefulWidget {
 class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
   @override
   void initState() {
-    connector.registerListeners(
-        (session) {
-          print('Connected: $session');
-          setState(() => _state = ConnectionState.connected);
-        },
-        (response) => print('Session updated: $response'),
-        () {
-          setState(
-            () => _state = ConnectionState.disconnected,
-          );
-        });
+    initializeInstance();
     super.initState();
+  }
+
+  Future<void> initializeInstance() async {
+    connector = EthereumConnector();
+    await connector.initWalletConnect();
+    provider = connector.getProvider();
+    provider.onSessionConnect.subscribe((session) {
+      if (session == null) {
+        _state = ConnectionState.disconnected;
+      } else {
+        _state = ConnectionState.connected;
+      }
+      setState(() {});
+    });
+    print("done");
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'screen_connect_metamask.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../ethereum_connector.dart';
 
 TextEditingController Name = TextEditingController();
 TextEditingController HKID = TextEditingController();
@@ -11,6 +12,7 @@ TextEditingController contactNo = TextEditingController();
 TextEditingController email = TextEditingController();
 TextEditingController password = TextEditingController();
 TextEditingController confirmPassword = TextEditingController();
+var provider;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key, required this.title});
@@ -20,6 +22,19 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  @override
+  void initState() {
+    initializeInstance();
+    super.initState();
+  }
+
+  Future<void> initializeInstance() async {
+    connector = EthereumConnector();
+    await connector.initWalletConnect();
+    provider = connector.getProvider();
+    print("done");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,13 +47,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Align(
+                        const Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Your Name',
                               style: TextStyle(fontSize: 18),
                             )),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextField(
                           onChanged: (text) {
                             setState(() {
@@ -53,14 +68,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        SizedBox(height: 10),
-                        Align(
+                        const SizedBox(height: 10),
+                        const Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Your HKID',
                               style: TextStyle(fontSize: 18),
                             )),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextField(
                           onChanged: (text) {
                             setState(() {
@@ -76,14 +91,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        SizedBox(height: 10),
-                        Align(
+                        const SizedBox(height: 10),
+                        const Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'License plate number',
                               style: TextStyle(fontSize: 18),
                             )),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextField(
                           onChanged: (text) {
                             setState(() {
@@ -98,14 +113,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        SizedBox(height: 10),
-                        Align(
+                        const SizedBox(height: 10),
+                        const Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Your Contact Number',
                               style: TextStyle(fontSize: 18),
                             )),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextField(
                           onChanged: (text) {
                             setState(() {
@@ -122,14 +137,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        SizedBox(height: 10),
-                        Align(
+                        const SizedBox(height: 10),
+                        const Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Your email address',
                               style: TextStyle(fontSize: 18),
                             )),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextField(
                           onChanged: (text) {
                             setState(() {
@@ -144,14 +159,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        SizedBox(height: 10),
-                        Align(
+                        const SizedBox(height: 10),
+                        const Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'New Password',
                               style: TextStyle(fontSize: 18),
                             )),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextField(
                           obscureText: true,
                           onChanged: (text) {
@@ -167,14 +182,14 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        SizedBox(height: 10),
-                        Align(
+                        const SizedBox(height: 10),
+                        const Align(
                             alignment: Alignment.topLeft,
                             child: Text(
                               'Confirm New Password',
                               style: TextStyle(fontSize: 18),
                             )),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         TextField(
                           obscureText: true,
                           onChanged: (text) {
@@ -190,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30))),
                         ),
-                        SizedBox(height: 40),
+                        const SizedBox(height: 40),
                         FilledButton(
                             style: FilledButton.styleFrom(
                                 minimumSize: Size(400, 50)),
@@ -203,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       licenseplateNo.text,
                                       contactNo.text)
                                 },
-                            child: Text('Continue',
+                            child: const Text('Continue',
                                 style: TextStyle(fontSize: 18)))
                       ],
                     )))));
@@ -214,12 +229,12 @@ class _RegisterPageState extends State<RegisterPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Invalid Register"),
-          content: Text("Invliad Information, Please Try Again.",
+          title: const Text("Invalid Register"),
+          content: const Text("Invliad Information, Please Try Again.",
               style: TextStyle(fontWeight: FontWeight.w600)),
           actions: <Widget>[
             TextButton(
-              child: Text("Confirm"),
+              child: const Text("Confirm"),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -264,19 +279,30 @@ class _RegisterPageState extends State<RegisterPage> {
                 ConnectMetamaskPage(title: 'Connect Your Wallet')),
       );
 
-      connector.registerListeners(
-          (session) {
-            print('Connected: $session');
-            uploadUserInfo(user!.uid, email, password, name, HKID,
-                LicensePlateNo, contactNo);
-            setState(() => {});
-          },
-          (response) => print('Session updated: $response'),
-          () {
-            setState(
-              () => {},
-            );
-          });
+      provider.onSessionConnect.subscribe((session) {
+        if (session == null) {
+          // print('Session updated: $response');
+        } else {
+          print('Connected: $session');
+          uploadUserInfo(user!.uid, email, password, name, HKID, LicensePlateNo,
+              contactNo);
+        }
+        setState(() {});
+      });
+
+      // connector.registerListeners(
+      //     (session) {
+      //       print('Connected: $session');
+      //       uploadUserInfo(user!.uid, email, password, name, HKID,
+      //           LicensePlateNo, contactNo);
+      //       setState(() => {});
+      //     },
+      //     (response) => print('Session updated: $response'),
+      //     () {
+      //       setState(
+      //         () => {},
+      //       );
+      //     });
     } else {
       showInvalidRegisterDialog();
     }

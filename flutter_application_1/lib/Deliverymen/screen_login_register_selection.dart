@@ -17,7 +17,7 @@ class LoginRegisterSelectionPage extends StatelessWidget {
             const SizedBox(height: 150),
             FilledButton(
               style: FilledButton.styleFrom(
-                minimumSize: Size(350, 75),
+                minimumSize: const  Size(350, 75),
               ),
               onPressed: () {
                 Navigator.push(
@@ -36,8 +36,8 @@ class LoginRegisterSelectionPage extends StatelessWidget {
             ),
             FilledButton(
               style: FilledButton.styleFrom(
-                  minimumSize: Size(350, 75),
-                  backgroundColor: Color.fromRGBO(170, 170, 170, 1)),
+                  minimumSize:  const Size(350, 75),
+                  backgroundColor:  const Color.fromRGBO(170, 170, 170, 1)),
               onPressed: () {
                 Navigator.push(
                   context,

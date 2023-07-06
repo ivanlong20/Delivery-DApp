@@ -115,7 +115,7 @@ class MessageListView extends StatelessWidget {
                                           children: [
                                             Row(
                                               children: [
-                                                Text(
+                                               const Text(
                                                   'From: ',
                                                   style: TextStyle(
                                                       fontWeight:
@@ -132,18 +132,18 @@ class MessageListView extends StatelessWidget {
                                                                   .toString())
                                                           ? "Parcel Recipient"
                                                           : "You",
-                                                  style: TextStyle(
+                                                  style:  const TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600),
                                                 )
                                               ],
                                             ),
-                                            SizedBox(
+                                             const SizedBox(
                                               height: 5,
                                             ),
                                             Row(
                                               children: [
-                                                Text(
+                                                 const Text(
                                                   'To: ',
                                                   style: TextStyle(
                                                       fontWeight:
@@ -160,16 +160,16 @@ class MessageListView extends StatelessWidget {
                                                                   .toString())
                                                           ? "Parcel Recipient"
                                                           : "You",
-                                                  style: TextStyle(
+                                                  style:  const TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600),
                                                 )
                                               ],
                                             ),
-                                            SizedBox(
+                                             const SizedBox(
                                               height: 5,
                                             ),
-                                            Row(
+                                             const Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.start,
                                               children: [
@@ -181,7 +181,7 @@ class MessageListView extends StatelessWidget {
                                                                     .w700)))
                                               ],
                                             ),
-                                            SizedBox(
+                                             const SizedBox(
                                               height: 5,
                                             ),
                                             Flexible(
@@ -200,11 +200,11 @@ class MessageListView extends StatelessWidget {
                                                               '...'
                                                           : content[index]
                                                               .toString(),
-                                                      style: TextStyle(
+                                                      style:  const TextStyle(
                                                           fontWeight:
                                                               FontWeight.w600),
                                                     ))),
-                                            SizedBox(
+                                             const SizedBox(
                                               height: 15,
                                             ),
                                             Row(
@@ -215,7 +215,7 @@ class MessageListView extends StatelessWidget {
                                                   DateFormat('dd/MM/yyyy HH:mm')
                                                       .format(
                                                           messageTime[index]),
-                                                  style: TextStyle(
+                                                  style:  const TextStyle(
                                                       fontWeight:
                                                           FontWeight.w100),
                                                 )
@@ -228,7 +228,7 @@ class MessageListView extends StatelessWidget {
                               const SizedBox(height: 20),
                         );
                       } else if (snapshot.hasError) {
-                        return Column(
+                        return  const Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
@@ -246,10 +246,10 @@ class MessageListView extends StatelessWidget {
                               ),
                             ]);
                       } else {
-                        return Column(
+                        return  const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const CircularProgressIndicator(
+                            CircularProgressIndicator(
                               color: Color.fromARGB(255, 0, 0, 0),
                               strokeWidth: 4,
                             ),
@@ -258,7 +258,7 @@ class MessageListView extends StatelessWidget {
                       }
                     });
               } else if (snapshot.hasError) {
-                return Column(
+                return  const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
@@ -276,10 +276,10 @@ class MessageListView extends StatelessWidget {
                       ),
                     ]);
               } else {
-                return Column(
+                return  const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(
+                    CircularProgressIndicator(
                       color: Color.fromARGB(255, 0, 0, 0),
                       strokeWidth: 4,
                     ),

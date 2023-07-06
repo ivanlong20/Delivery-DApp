@@ -27,10 +27,10 @@ class _WalletPageState extends State<WalletPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               Text(
                 'Your Balance',
                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
@@ -66,16 +66,16 @@ class _WalletPageState extends State<WalletPage> {
                     fontSize: 24,
                   ))
             ]),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+            const Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               Text(
                 'Network',
                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
               )
             ]),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Row(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -85,7 +85,7 @@ class _WalletPageState extends State<WalletPage> {
                     fontSize: 24,
                   )),
             ]),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             QrImageView(
@@ -93,7 +93,7 @@ class _WalletPageState extends State<WalletPage> {
               version: QrVersions.auto,
               size: 300.0,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -101,7 +101,7 @@ class _WalletPageState extends State<WalletPage> {
                 decoration: BoxDecoration(
                     color: Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: <BoxShadow>[
+                    boxShadow: const <BoxShadow>[
                       BoxShadow(
                         color: Colors.black45,
                         offset: Offset(0.0, 2.0),
@@ -111,7 +111,7 @@ class _WalletPageState extends State<WalletPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
@@ -123,7 +123,7 @@ class _WalletPageState extends State<WalletPage> {
                         ),
                       ],
                     ),
-                    SizedBox(
+                   const SizedBox(
                       height: 5,
                     ),
                     Row(
@@ -132,7 +132,7 @@ class _WalletPageState extends State<WalletPage> {
                         Flexible(
                             child: Text(
                           widget.connector.address,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
@@ -142,7 +142,7 @@ class _WalletPageState extends State<WalletPage> {
                     ),
                   ],
                 )),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -151,15 +151,15 @@ class _WalletPageState extends State<WalletPage> {
                     Clipboard.setData(ClipboardData(
                             text: widget.connector.address.toString()))
                         .then((_) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text("Wallet Address copied to clipboard")));
                     });
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.copy,
                     size: 24.0,
                   ),
-                  label: Text('Copy Address'), // <-- Text
+                  label: const Text('Copy Address'),
                 ),
               ],
             )

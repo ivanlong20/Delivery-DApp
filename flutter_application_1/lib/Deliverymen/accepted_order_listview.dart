@@ -27,7 +27,6 @@ class TransactionListView extends StatelessWidget {
                   var receiverAddress = snapshot.data?[3];
                   var receiverDistrict = snapshot.data?[4];
                   var orderStatus = snapshot.data?[14];
-                  var deliveryFee = snapshot.data?[11];
                   return ListView.separated(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                     itemCount: orderCount,
@@ -79,7 +78,7 @@ class TransactionListView extends StatelessWidget {
                                                   Text(
                                                     'Order #' +
                                                         id[index].toString(),
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w700),
                                                   ),
@@ -89,13 +88,13 @@ class TransactionListView extends StatelessWidget {
                                                             'dd/MM/yyyy HH:mm')
                                                         .format(
                                                             orderDate[index]),
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w500),
                                                   )
                                                 ],
                                               )),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 5,
                                           ),
                                           Expanded(
@@ -105,15 +104,15 @@ class TransactionListView extends StatelessWidget {
                                                 senderAddress[index] +
                                                     ", " +
                                                     senderDistrict[index],
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 14),
                                                 textAlign: TextAlign.center,
                                               ))),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 2,
                                           ),
-                                          Expanded(
+                                          const Expanded(
                                               flex: 15,
                                               child: Row(
                                                 mainAxisAlignment:
@@ -123,7 +122,7 @@ class TransactionListView extends StatelessWidget {
                                                       .arrowDownLong)
                                                 ],
                                               )),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 5,
                                           ),
                                           Expanded(
@@ -162,7 +161,7 @@ class TransactionListView extends StatelessWidget {
                         const SizedBox(height: 20),
                   );
                 } else if (snapshot.hasError) {
-                  return Column(
+                  return const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
@@ -180,10 +179,10 @@ class TransactionListView extends StatelessWidget {
                         ),
                       ]);
                 } else {
-                  return Column(
+                  return const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const CircularProgressIndicator(
+                      CircularProgressIndicator(
                         color: Color.fromARGB(255, 0, 0, 0),
                         strokeWidth: 4,
                       ),
@@ -192,7 +191,7 @@ class TransactionListView extends StatelessWidget {
                 }
               });
         } else if (snapshot.hasError) {
-          return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          return const Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text(
               "No Orders Available",
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
@@ -206,10 +205,10 @@ class TransactionListView extends StatelessWidget {
             ),
           ]);
         } else {
-          return Column(
+          return const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(
+              CircularProgressIndicator(
                 color: Color.fromARGB(255, 0, 0, 0),
                 strokeWidth: 4,
               ),

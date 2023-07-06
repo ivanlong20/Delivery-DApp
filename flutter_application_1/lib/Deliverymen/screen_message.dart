@@ -32,7 +32,7 @@ class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 240, 240, 240),
+      backgroundColor:  const Color.fromARGB(255, 240, 240, 240),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -76,19 +76,16 @@ class _NewMessagePageState extends State<NewMessagePage> {
   @override
   Widget build(BuildContext context) {
     print(widget.orderID);
-    // print((senderRecipientIndex == 0)
-    //     ? widget.orderSender[0].toString()
-    //     : widget.orderReceiver[0].toString());
     return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(title: Text(widget.title)),
         body: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+            padding:  const EdgeInsets.fromLTRB(20, 10, 20, 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Row(
+                 const Row(
                   children: [
                     Text('To',
                         style: TextStyle(
@@ -104,7 +101,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                           return ChoiceChip(
                             label: Text(recipient[index]),
                             selected: senderRecipientIndex == index,
-                            selectedColor: Color.fromARGB(255, 221, 221, 221),
+                            selectedColor:  const Color.fromARGB(255, 221, 221, 221),
                             onSelected: (bool selected) {
                               setState(() {
                                 senderRecipientIndex = selected ? index : null;
@@ -115,7 +112,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                           );
                         }))),
                 const SizedBox(height: 20),
-                Row(
+                 const Row(
                   children: [
                     Text('Message',
                         style: TextStyle(

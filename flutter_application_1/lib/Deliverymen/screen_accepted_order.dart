@@ -67,7 +67,6 @@ Future<List<dynamic>> getOrderInfo() async {
     id.add(orders[i][0]);
     senderAddress.add(encrypter
         .decrypt(encrypt.Encrypted.fromBase64(orders[i][2][0].toString()),iv:iv));
-    print(senderAddress);
     senderDistrict.add(encrypter
         .decrypt(encrypt.Encrypted.fromBase64(orders[i][2][1].toString()),iv:iv));
     receiverAddress.add(encrypter

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'screen_home.dart';
 import 'screen_accepted_order.dart';
 import 'screen_wallet.dart';
-import 'screen_message.dart';
 import 'screen_connect_metamask.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';

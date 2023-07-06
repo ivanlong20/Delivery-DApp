@@ -27,14 +27,10 @@ getOrderID() async {
 }
 
 Future<dynamic> getLatLng(String senderAddress, String recipientAddress) async {
-  print(senderAddress + "111");
-  print(recipientAddress + "2222");
   List<Location> location1 = await locationFromAddress(senderAddress);
   List<Location> location2 = await locationFromAddress(recipientAddress);
   final senderLnglat = LatLng(location1[0].latitude, location1[0].longitude);
   final recipientLnglat = LatLng(location2[0].latitude, location2[0].longitude);
-  print(senderLnglat.toString() + "3");
-  print(recipientLnglat.toString() + "4");
   return [senderLnglat, recipientLnglat];
 }
 
@@ -114,7 +110,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                       ),
                                     ));
                               },
-                              child: FaIcon(FontAwesomeIcons.route),
+                              child:  const FaIcon(FontAwesomeIcons.route),
                             );
                           } else {
                             return const SizedBox(
@@ -147,7 +143,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                           ),
                                         ));
                                   },
-                                  child: FaIcon(FontAwesomeIcons.route),
+                                  child:  const FaIcon(FontAwesomeIcons.route),
                                 );
                               } else {
                                 return const SizedBox(
@@ -158,7 +154,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                         : const SizedBox(
                             height: 0,
                           ),
-                SizedBox(
+                 const SizedBox(
                   height: 30,
                 ),
                 FloatingActionButton(
@@ -175,9 +171,9 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                           ),
                         ));
                   },
-                  child: Icon(Icons.message),
+                  child:  const Icon(Icons.message),
                 ),
-                SizedBox(
+                 const SizedBox(
                   height: 30,
                 ),
                 (widget.orderStatus.toInt() == 2 ||
@@ -190,7 +186,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                   ? showQRcodeToRecipient(context)
                                   : null;
                         },
-                        child: FaIcon(FontAwesomeIcons.checkCircle),
+                        child:  const FaIcon(FontAwesomeIcons.checkCircle),
                       )
                     : const SizedBox(
                         height: 0,
@@ -199,7 +195,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
             )),
         appBar: AppBar(
           title: Text(widget.title),
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          backgroundColor:  const Color.fromARGB(255, 255, 255, 255),
         ),
         body: SingleChildScrollView(
             child: Center(
@@ -230,34 +226,34 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                 Row(
                                   children: [
                                     Text('Order #' + id[index].toString(),
-                                        style: TextStyle(
+                                        style:  const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w700)),
                                     const SizedBox(width: 70),
                                     Text(
                                         DateFormat('dd/MM/yyyy HH:mm')
                                             .format(orderDate[index]),
-                                        style: TextStyle(
+                                        style: const  TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500))
                                   ],
                                 ),
-                                SizedBox(height: 5),
+                                 const SizedBox(height: 5),
                                 Row(children: [
                                   Text(
                                     'Payment: ' +
                                         (payBySender[index] == true
                                             ? 'Sender'
                                             : 'Receiver'),
-                                    style: TextStyle(
+                                    style:  const TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16),
                                   )
                                 ]),
-                                SizedBox(
+                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Row(
+                                 const Row(
                                   children: [
                                     Text('From',
                                         style: TextStyle(
@@ -277,10 +273,10 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                                 fontWeight: FontWeight.w700)))
                                   ],
                                 ),
-                                SizedBox(
+                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Row(
+                                 const Row(
                                   children: [
                                     Text('To',
                                         style: TextStyle(
@@ -295,15 +291,15 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                             receiverAddress[index] +
                                                 ", " +
                                                 receiverDistrict[index],
-                                            style: TextStyle(
+                                            style:  const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)))
                                   ],
                                 ),
-                                SizedBox(
+                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Row(
+                                 const Row(
                                   children: [
                                     Text('Delivery Fee',
                                         style: TextStyle(
@@ -318,15 +314,15 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                             deliveryFee[index]
                                                     .toStringAsFixed(10) +
                                                 ' ETH',
-                                            style: TextStyle(
+                                            style:  const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)))
                                   ],
                                 ),
-                                SizedBox(
+                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Row(
+                                 const Row(
                                   children: [
                                     Text('Parcel Information',
                                         style: TextStyle(
@@ -340,12 +336,12 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                         child: Text(
                                             'Description : ' +
                                                 parcelDescription[index],
-                                            style: TextStyle(
+                                            style:  const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)))
                                   ],
                                 ),
-                                SizedBox(
+                                 const SizedBox(
                                   height: 10,
                                 ),
                                 Row(
@@ -359,12 +355,12 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                                 ' x ' +
                                                 parcelDepth[index].toString() +
                                                 ' cm',
-                                            style: TextStyle(
+                                            style:  const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)))
                                   ],
                                 ),
-                                SizedBox(
+                                const  SizedBox(
                                   height: 10,
                                 ),
                                 Row(
@@ -374,15 +370,15 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                             'Weight: ' +
                                                 parcelWeight[index].toString() +
                                                 ' Kg',
-                                            style: TextStyle(
+                                            style:  const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)))
                                   ],
                                 ),
-                                SizedBox(
+                                 const SizedBox(
                                   height: 10,
                                 ),
-                                Row(
+                                 const Row(
                                   children: [
                                     Flexible(
                                         child: Text('Status',
@@ -397,7 +393,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                         child: Text(
                                             OrderState[
                                                 orderStatus[index].toInt()],
-                                            style: TextStyle(
+                                            style:  const TextStyle(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w700)))
                                   ],
@@ -405,10 +401,10 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                               ],
                             ));
                       } else {
-                        return Column(
+                        return  const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const CircularProgressIndicator(
+                            CircularProgressIndicator(
                               color: Color.fromARGB(255, 0, 0, 0),
                               strokeWidth: 4,
                             ),
@@ -423,19 +419,19 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Picked Up Order"),
-          content: Text("Confirm to pick up the order",
+          title:  const Text("Picked Up Order"),
+          content:  const Text("Confirm to pick up the order",
               style: TextStyle(fontWeight: FontWeight.w600)),
           actions: <Widget>[
             TextButton(
-              child: Text("Cancel"),
+              child:  const Text("Cancel"),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all<Color>(Colors.blue)),
-              child: Text("Confirm", style: TextStyle(color: Colors.white)),
+              child:  const Text("Confirm", style: TextStyle(color: Colors.white)),
               onPressed: () => transaction(context, orderID),
             )
           ],
@@ -449,19 +445,19 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Cancel Order"),
-          content: Text("Confirm to cancel the order",
+          title:  const Text("Cancel Order"),
+          content:  const Text("Confirm to cancel the order",
               style: TextStyle(fontWeight: FontWeight.w600)),
           actions: <Widget>[
             TextButton(
-              child: Text("Exit"),
+              child:  const Text("Exit"),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all<Color>(Colors.blue)),
-              child: Text("Confirm", style: TextStyle(color: Colors.white)),
+              child:  const Text("Confirm", style: TextStyle(color: Colors.white)),
               onPressed: () => cancelOrder(),
             )
           ],
@@ -531,11 +527,11 @@ class LoadingPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CircularProgressIndicator(
+                    CircularProgressIndicator(
                       color: Color.fromARGB(255, 0, 0, 0),
                       strokeWidth: 4,
                     ),
-                    const SizedBox(height: 50),
+                    SizedBox(height: 50),
                     Text('Waiting for Completion',
                         style: TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0),
@@ -561,13 +557,13 @@ class QRImageDialog extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  Text('Order Comfirmation',
+                   const Text('Order Comfirmation',
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
                   const SizedBox(
                     height: 10,
                   ),
-                  Text('Show QR code to Recipient',
+                   const Text('Show QR code to Recipient',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
                   const SizedBox(
@@ -578,7 +574,7 @@ class QRImageDialog extends StatelessWidget {
                     size: 250,
                     version: QrVersions.auto,
                     gapless: false,
-                    embeddedImageStyle: QrEmbeddedImageStyle(
+                    embeddedImageStyle:  const QrEmbeddedImageStyle(
                       size: Size(80, 80),
                     ),
                   ),
@@ -589,7 +585,7 @@ class QRImageDialog extends StatelessWidget {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text('Close',
+                      child:  const Text('Close',
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w600)))
                 ],

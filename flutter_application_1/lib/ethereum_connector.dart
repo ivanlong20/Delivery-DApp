@@ -3,26 +3,53 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+// import 'package:flutter_web3/ethers.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+// import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'wallet_connector.dart';
 import 'package:http/http.dart';
-import 'package:walletconnect_dart/walletconnect_dart.dart';
-import 'package:walletconnect_qrcode_modal_dart/walletconnect_qrcode_modal_dart.dart';
+// import 'package:walletconnect_dart/walletconnect_dart.dart';
+// import 'package:walletconnect_qrcode_modal_dart/walletconnect_qrcode_modal_dart.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:path/path.dart';
+// import 'package:web_socket_channel/io.dart';
+// import 'package:path/path.dart';
 import 'dart:io';
 import 'delivery.g.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:convert/convert.dart';
 
 final key = encrypt.Key.fromUtf8("FMCg2YYKfqT6USvl618/9d36YNBKNyVZ");
 final iv = encrypt.IV.fromLength(16);
 final encrypter = encrypt.Encrypter(encrypt.AES(key));
 
+Web3App? _provider;
+const String kShortChainId = 'eip155';
+const String kFullChainId = 'eip155:11155111';
+String? _url;
+SessionData? _sessionData;
+String get deepLinkUrl => 'metamask://wc?uri=$_url';
+
+Future<void> _initWalletConnect() async {
+  _provider = await Web3App.createInstance(
+    projectId: '010df4333c3174e7e473598ffe6fca3b',
+    metadata: const PairingMetadata(
+      name: 'Delivery Dapp',
+      description: 'A Dapp for Delivery Service',
+      url: 'https://walletconnect.com/',
+      icons: [
+        'https://walletconnect.com/walletconnect-logo.png',
+      ],
+    ),
+  );
+}
+
 class WalletConnectEthereumCredentials extends CustomTransactionSender {
   WalletConnectEthereumCredentials({required this.provider});
 
-  final EthereumWalletConnectProvider provider;
+  final Web3App? provider;
 
   @override
   Future<EthereumAddress> extractAddress() {
@@ -41,14 +68,31 @@ class WalletConnectEthereumCredentials extends CustomTransactionSender {
 
   @override
   Future<String> sendTransaction(Transaction transaction) async {
-    final hash = await provider.sendTransaction(
-      from: transaction.from!.hex,
-      to: transaction.to?.hex,
-      data: transaction.data,
-      gas: transaction.maxGas,
-      gasPrice: transaction.gasPrice?.getInWei,
-      value: transaction.value?.getInWei,
-      nonce: transaction.nonce,
+    print((transaction.value == null)
+        ? "0x0"
+        : "0x" + transaction.value!.getInWei.toRadixString(16));
+    print(transaction.from!.hex);
+    print(transaction.to!.hex);
+    print(hex.encode(List<int>.from(transaction.data!)));
+    EthereumTransaction ethereumTransaction = EthereumTransaction(
+      from: transaction.from?.hex ?? "",
+      to: transaction.to!.hex,
+      value: (transaction.value == null)
+          ? "0x0"
+          : "0x" + transaction.value!.getInWei.toRadixString(16),
+      data: hex.encode(List<int>.from(transaction.data!)),
+
+      /// ENCODE TRANSACTION USING convert LIB
+    );
+    print(ethereumTransaction.toJson());
+
+    final hash = await provider!.request(
+      topic: _sessionData?.topic ?? "",
+      chainId: kFullChainId,
+      request: SessionRequestParams(
+        method: 'eth_sendTransaction',
+        params: [ethereumTransaction.toJson()],
+      ),
     );
 
     return hash;
@@ -62,58 +106,113 @@ class WalletConnectEthereumCredentials extends CustomTransactionSender {
 }
 
 class EthereumConnector implements WalletConnector {
-  late final WalletConnectQrCodeModal _connector;
-  late final EthereumWalletConnectProvider _provider;
+  // late final WalletConnectQrCodeModal _connector;
+  late final _address;
+
   final client = Web3Client('https://rpc.sepolia.org', Client());
   final EthereumAddress contractAddress =
       EthereumAddress.fromHex('0x1e006C774dc1DA14c4da21F41B5ddd99aD4bFBa4');
 
   EthereumConnector() {
-    _connector = WalletConnectQrCodeModal(
-      connector: WalletConnect(
-        bridge: 'https://bridge.walletconnect.org',
-        clientMeta: const PeerMeta(
-          name: 'Delivery Dapp',
-          description: 'Delivery Dapp',
-          url: 'https://walletconnect.org',
-          icons: [
-            'https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
+    // Future.delayed(Duration(seconds: 5), () async {
+    //   await _initWalletConnect();
+    //   print('Instance created!');
+    // });
+  }
+
+  @override
+  Future<void> initWalletConnect() async {
+    _provider = await Web3App.createInstance(
+      projectId: '010df4333c3174e7e473598ffe6fca3b',
+      metadata: const PairingMetadata(
+        name: 'Delivery Dapp',
+        description: 'A Dapp for Delivery Service',
+        url: 'https://walletconnect.com/',
+        icons: [
+          'https://walletconnect.com/walletconnect-logo.png',
+        ],
+      ),
+    );
+  }
+
+  Future<String?> createSession() async {
+    if (_provider == null) {
+      await _initWalletConnect();
+    }
+
+    final ConnectResponse connectResponse = await _provider!.connect(
+      requiredNamespaces: {
+        kShortChainId: const RequiredNamespace(
+          chains: [kFullChainId],
+          methods: [
+            'eth_sign',
+            'eth_signTransaction',
+            'eth_sendTransaction',
+          ],
+          events: [
+            'chainChanged',
+            'accountsChanged',
           ],
         ),
-      ),
-      // modalBuilder: (context, uri, callback, defaultModalWidget) {
-      //   return defaultModalWidget.copyWith(
-      //     cardColor: const Color.fromARGB(255, 236, 236, 236),
-      //     platformOverrides: const ModalWalletPlatformOverrides(
-      //       android: ModalWalletType.listMobile,
-      //     ),
-      //   );
-      // }
+      },
     );
 
-    _provider = EthereumWalletConnectProvider(_connector.connector);
+    final Uri? uri = connectResponse.uri;
+
+    if (uri != null) {
+      final String encodedUrl = Uri.encodeComponent('$uri');
+
+      _url = encodedUrl;
+
+      await launchUrlString(
+        deepLinkUrl,
+        mode: LaunchMode.externalApplication,
+      );
+
+      _sessionData = await connectResponse.session.future;
+
+      final String account = NamespaceUtils.getAccount(
+        _sessionData!.namespaces.values.first.accounts.first,
+      );
+
+      return account;
+    }
+
+    return null;
+  }
+
+  @override
+  getProvider() {
+    return _provider!;
   }
 
   void killSession() {
-    _connector.connector.killSession();
+    // _connector.connector.killSession();
+    _provider!.disconnectSession(
+        topic: _sessionData!.topic,
+        reason: WalletConnectError(code: 6000, message: "User Disconnected"));
   }
 
   @override
-  Future<SessionStatus?> connect(BuildContext context) async {
-    return await _connector.connect(context, chainId: 11155111);
+  connect(BuildContext context) async {
+    _address = await createSession();
   }
 
   @override
-  void registerListeners(
-    OnConnectRequest? onConnect,
-    OnSessionUpdate? onSessionUpdate,
-    OnDisconnect? onDisconnect,
-  ) =>
-      _connector.registerListeners(
-        onConnect: onConnect,
-        onSessionUpdate: onSessionUpdate,
-        onDisconnect: onDisconnect,
-      );
+  getSessionStatus() {
+    print(_provider.toString() + "provider");
+    if (_provider == null) {
+      return "Disconnected";
+    } else {
+      return (_provider!.getActiveSessions().values.first == SessionConnect)
+          ? "Connected"
+          : (_provider!.getActiveSessions().values.first == SessionUpdate)
+              ? "Updated "
+              : (_provider!.getActiveSessions().values.first == SessionDelete)
+                  ? "Disconnected"
+                  : null;
+    }
+  }
 
   //1. Create Order and Receive Payment
   @override
@@ -135,9 +234,9 @@ class EthereumConnector implements WalletConnector {
         EthereumAddress.fromHex(receiverWalletAddress);
 
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
-
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     var orderID, date;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -199,8 +298,9 @@ class EthereumConnector implements WalletConnector {
   Future<dynamic> cancelOrder({required BigInt orderID}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
 
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     var status;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -231,8 +331,9 @@ class EthereumConnector implements WalletConnector {
       {required BigInt orderID, required BigInt deliveryFee}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
 
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -264,8 +365,9 @@ class EthereumConnector implements WalletConnector {
       {required BigInt orderID, required BigInt totalAmount}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
 
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -296,8 +398,9 @@ class EthereumConnector implements WalletConnector {
   Future<dynamic> deliveryAcceptOrder({required BigInt orderID}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
 
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -324,8 +427,9 @@ class EthereumConnector implements WalletConnector {
   Future<dynamic> deliveryPickupOrder({required BigInt orderID}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
 
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -352,8 +456,9 @@ class EthereumConnector implements WalletConnector {
   @override
   Future<dynamic> deliveryConfirmCompleted({required BigInt orderID}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -390,8 +495,9 @@ class EthereumConnector implements WalletConnector {
   // For Deliverymen
   @override
   Future<dynamic> getDeliverymanOrder() async {
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     final delivery = Delivery(address: contractAddress, client: client);
 
@@ -403,8 +509,9 @@ class EthereumConnector implements WalletConnector {
   //For Business and Customer
   @override
   Future<dynamic> getOrderFromBusinessAndCustomer() async {
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
 
     final delivery = Delivery(address: contractAddress, client: client);
 
@@ -419,8 +526,9 @@ class EthereumConnector implements WalletConnector {
       required String receiverAddress,
       required String content}) async {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
-    final senderWalletAddress =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
     final receiverWalletAddress = EthereumAddress.fromHex(receiverAddress);
 
     var messageID, date;
@@ -462,8 +570,9 @@ class EthereumConnector implements WalletConnector {
     required String recipientAddress,
     required double amount,
   }) async {
-    final sender =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final sender = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
     final recipient = EthereumAddress.fromHex(address);
 
     final etherAmount = EtherAmount.fromUnitAndValue(
@@ -490,13 +599,18 @@ class EthereumConnector implements WalletConnector {
   }
 
   @override
-  Future<void> openWalletApp() async => await _connector.openWalletApp();
+  Future<void> openWalletApp() async => await launchUrlString(
+        deepLinkUrl,
+        mode: LaunchMode.externalApplication,
+      );
 
   @override
   Future<double> getBalance() async {
-    final address =
-        EthereumAddress.fromHex(_connector.connector.session.accounts[0]);
+    final address = EthereumAddress.fromHex(_sessionData!
+        .namespaces[kShortChainId]!.accounts.first
+        .replaceRange(0, 16, ""));
     final amount = await client.getBalance(address);
+    client.getChainId();
     return amount.getValueInUnit(EtherUnit.ether).toDouble();
   }
 
@@ -511,16 +625,62 @@ class EthereumConnector implements WalletConnector {
   }
 
   @override
-  String get networkName => _connector.connector.session.chainId == 11155111
-      ? 'Sepolia Testnet'
-      : 'Unknown';
+  String get networkName => 'Sepolia Testnet';
 
   @override
   String get faucetUrl => 'https://faucet.dimensions.network/';
 
   @override
-  String get address => _connector.connector.session.accounts[0];
+  String get address => _sessionData!.namespaces[kShortChainId]!.accounts.first
+      .replaceRange(0, 16, "");
 
   @override
   String get coinName => 'Eth';
 }
+
+class EthereumTransaction {
+  const EthereumTransaction({
+    required this.from,
+    required this.to,
+    required this.value,
+    this.data,
+  });
+
+  final String from;
+  final String to;
+  final String value;
+  final String? data;
+
+  Map<String, dynamic> toJson() =>
+      {'from': from, 'to': to, 'value': value, 'data': data!};
+}
+
+Future<Stream<dynamic>?> sendTransaction({
+  required EthereumTransaction transaction,
+}) async {
+  await launchUrlString(
+    deepLinkUrl,
+    mode: LaunchMode.externalApplication,
+  );
+
+  final Future<dynamic> signResponse = _provider!.request(
+    topic: _sessionData!.topic,
+    chainId: kFullChainId,
+    request: SessionRequestParams(
+      method: 'eth_sendTransaction',
+      params: [transaction.toJson()],
+    ),
+  );
+
+  return signResponse.asStream();
+}
+
+// final hash = await provider.sendTransaction(
+//       from: transaction.from!.hex,
+//       to: transaction.to?.hex,
+//       data: transaction.data,
+//       gas: transaction.maxGas,
+//       gasPrice: transaction.gasPrice?.getInWei,
+//       value: transaction.value?.getInWei,
+//       nonce: transaction.nonce,
+//     );

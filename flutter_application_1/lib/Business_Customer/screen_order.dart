@@ -19,14 +19,10 @@ var senderPosition, recipientPosition;
 var senderAddress, recipientAddress;
 
 Future<dynamic> getLatLng(String senderAddress, String recipientAddress) async {
-  print(senderAddress + "111");
-  print(recipientAddress + "2222");
   List<Location> location1 = await locationFromAddress(senderAddress);
   List<Location> location2 = await locationFromAddress(recipientAddress);
   final senderLnglat = LatLng(location1[0].latitude, location1[0].longitude);
   final recipientLnglat = LatLng(location2[0].latitude, location2[0].longitude);
-  print(senderLnglat.toString() + "3");
-  print(recipientLnglat.toString() + "4");
   return [senderLnglat, recipientLnglat];
 }
 
@@ -51,7 +47,6 @@ getOrderCount() async {
 
 Future<List<dynamic>> getOrderInfo() async {
   final allOrders = await connector.getOrderFromBusinessAndCustomer();
-  // print(allOrders);
   var id = [];
   var senderAddress = [];
   var senderDistrict = [];
@@ -456,14 +451,6 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                             payBySender[index].toString() +
                             " " +
                             connector.address.toString());
-
-                        print(orderStatus[index] == BigInt.from(0));
-                        print(connector.address.toString() ==
-                            recipientWalletAddress[index].toString());
-
-                        print(payBySender[index].toString() == "false");
-
-                        // print(snapshot.data?[14]);
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
