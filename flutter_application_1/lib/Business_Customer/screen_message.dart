@@ -27,12 +27,14 @@ Future<List<dynamic>> getMessages(orderID) async {
     id.add(messages[i][0]);
     sender.add(messages[i][1]);
     receiver.add(messages[i][2]);
+    // Message decryption
     content.add(encrypter.decrypt(
         encrypt.Encrypted.fromBase64(messages[i][3].toString()),
         iv: iv));
     messageTime.add(
         DateTime.fromMillisecondsSinceEpoch(messages[i][4].toInt() * 1000));
   }
+
   return [id, sender, receiver, content, messageTime];
 }
 
@@ -624,6 +626,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
 
   sendMessages(orderID, receiver, content, orderSender, orderReceiver,
       orderDeliveryman) async {
+    // Message Encryption
     content = encrypter.encrypt(content, iv: iv).base64;
 
     Future.delayed(Duration.zero, () => connector.openWalletApp());

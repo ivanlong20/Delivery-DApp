@@ -1,22 +1,16 @@
 //Reference: https://github.com/Anonymousgaurav/flutter_blockchain_payment
+//Reference: https://github.com/WalletConnect/WalletConnectFlutterV2/issues/113
 
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_web3/ethers.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-// import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'wallet_connector.dart';
 import 'package:http/http.dart';
-// import 'package:walletconnect_dart/walletconnect_dart.dart';
-// import 'package:walletconnect_qrcode_modal_dart/walletconnect_qrcode_modal_dart.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
-// import 'package:web_socket_channel/io.dart';
-// import 'package:path/path.dart';
-import 'dart:io';
 import 'delivery.g.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:convert/convert.dart';
@@ -31,6 +25,7 @@ const String kFullChainId = 'eip155:11155111';
 String? _url;
 SessionData? _sessionData;
 String get deepLinkUrl => 'metamask://wc?uri=$_url';
+late ConnectResponse connectResponse;
 
 Future<void> _initWalletConnect() async {
   _provider = await Web3App.createInstance(
@@ -40,7 +35,7 @@ Future<void> _initWalletConnect() async {
       description: 'A Dapp for Delivery Service',
       url: 'https://walletconnect.com/',
       icons: [
-        'https://walletconnect.com/walletconnect-logo.png',
+        'https://avatars.githubusercontent.com/u/37784886',
       ],
     ),
   );
@@ -140,7 +135,7 @@ class EthereumConnector implements WalletConnector {
       await _initWalletConnect();
     }
 
-    final ConnectResponse connectResponse = await _provider!.connect(
+    connectResponse = await _provider!.connect(
       requiredNamespaces: {
         kShortChainId: const RequiredNamespace(
           chains: [kFullChainId],
@@ -186,11 +181,11 @@ class EthereumConnector implements WalletConnector {
     return _provider!;
   }
 
-  void killSession() {
+  void killSession() async {
     // _connector.connector.killSession();
-    _provider!.disconnectSession(
-        topic: _sessionData!.topic,
-        reason: WalletConnectError(code: 6000, message: "User Disconnected"));
+    await _provider!.disconnectSession(
+        topic: connectResponse.pairingTopic,
+        reason: Errors.getSdkError(Errors.USER_DISCONNECTED));
   }
 
   @override
@@ -236,7 +231,8 @@ class EthereumConnector implements WalletConnector {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     var orderID, date;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -250,6 +246,7 @@ class EthereumConnector implements WalletConnector {
       print('$orderID created at $date');
     });
 
+    // Address Encryption
     senderAddress = encrypter.encrypt(senderAddress, iv: iv).base64;
     senderDistrict = encrypter.encrypt(senderDistrict, iv: iv).base64;
     receiverAddress = encrypter.encrypt(receiverAddress, iv: iv).base64;
@@ -300,7 +297,8 @@ class EthereumConnector implements WalletConnector {
 
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     var status;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -333,7 +331,8 @@ class EthereumConnector implements WalletConnector {
 
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -367,7 +366,8 @@ class EthereumConnector implements WalletConnector {
 
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -400,7 +400,8 @@ class EthereumConnector implements WalletConnector {
 
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -429,7 +430,8 @@ class EthereumConnector implements WalletConnector {
 
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -458,7 +460,8 @@ class EthereumConnector implements WalletConnector {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     var state;
     final delivery = Delivery(address: contractAddress, client: client);
@@ -497,7 +500,8 @@ class EthereumConnector implements WalletConnector {
   Future<dynamic> getDeliverymanOrder() async {
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     final delivery = Delivery(address: contractAddress, client: client);
 
@@ -511,7 +515,8 @@ class EthereumConnector implements WalletConnector {
   Future<dynamic> getOrderFromBusinessAndCustomer() async {
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
 
     final delivery = Delivery(address: contractAddress, client: client);
 
@@ -528,7 +533,8 @@ class EthereumConnector implements WalletConnector {
     final credentials = WalletConnectEthereumCredentials(provider: _provider);
     final senderWalletAddress = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
     final receiverWalletAddress = EthereumAddress.fromHex(receiverAddress);
 
     var messageID, date;
@@ -572,7 +578,8 @@ class EthereumConnector implements WalletConnector {
   }) async {
     final sender = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
     final recipient = EthereumAddress.fromHex(address);
 
     final etherAmount = EtherAmount.fromUnitAndValue(
@@ -608,7 +615,8 @@ class EthereumConnector implements WalletConnector {
   Future<double> getBalance() async {
     final address = EthereumAddress.fromHex(_sessionData!
         .namespaces[kShortChainId]!.accounts.first
-        .replaceRange(0, 16, ""));
+        .replaceRange(0, 16, "")
+        .toLowerCase());
     final amount = await client.getBalance(address);
     client.getChainId();
     return amount.getValueInUnit(EtherUnit.ether).toDouble();
@@ -632,7 +640,8 @@ class EthereumConnector implements WalletConnector {
 
   @override
   String get address => _sessionData!.namespaces[kShortChainId]!.accounts.first
-      .replaceRange(0, 16, "");
+      .replaceRange(0, 16, "")
+      .toLowerCase();
 
   @override
   String get coinName => 'Eth';
@@ -674,13 +683,3 @@ Future<Stream<dynamic>?> sendTransaction({
 
   return signResponse.asStream();
 }
-
-// final hash = await provider.sendTransaction(
-//       from: transaction.from!.hex,
-//       to: transaction.to?.hex,
-//       data: transaction.data,
-//       gas: transaction.maxGas,
-//       gasPrice: transaction.gasPrice?.getInWei,
-//       value: transaction.value?.getInWei,
-//       nonce: transaction.nonce,
-//     );

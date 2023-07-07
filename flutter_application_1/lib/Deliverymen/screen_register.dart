@@ -267,9 +267,13 @@ class _RegisterPageState extends State<RegisterPage> {
     if (register) {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+          
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         await user.updateDisplayName(name);
+      }else{
+        uploadUserInfo(user!.uid, email, password, name, HKID, LicensePlateNo,
+              contactNo);
       }
       //direct to connect metamask page
       Navigator.push(
@@ -278,17 +282,6 @@ class _RegisterPageState extends State<RegisterPage> {
             builder: (context) =>
                 ConnectMetamaskPage(title: 'Connect Your Wallet')),
       );
-
-      provider.onSessionConnect.subscribe((session) {
-        if (session == null) {
-          // print('Session updated: $response');
-        } else {
-          print('Connected: $session');
-          uploadUserInfo(user!.uid, email, password, name, HKID, LicensePlateNo,
-              contactNo);
-        }
-        setState(() {});
-      });
 
       // connector.registerListeners(
       //     (session) {

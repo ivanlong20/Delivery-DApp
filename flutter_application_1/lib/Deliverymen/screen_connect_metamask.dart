@@ -9,8 +9,7 @@ import '../ethereum_connector.dart';
 
 WalletConnector connector = EthereumConnector();
 ConnectionState _state = ConnectionState.disconnected;
-var provider = connector.getProvider();
-
+var provider;
 
 enum ConnectionState {
   disconnected,
@@ -18,10 +17,6 @@ enum ConnectionState {
   connected,
   connectionFailed,
   connectionCancelled,
-}
-
-getConnectionState() {
-  return _state;
 }
 
 class ConnectMetamaskPage extends StatefulWidget {
@@ -35,7 +30,6 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
   @override
   void initState() {
     initializeInstance();
-
     super.initState();
   }
 
