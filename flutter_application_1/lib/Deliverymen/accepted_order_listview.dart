@@ -137,7 +137,7 @@ class TransactionListView extends StatelessWidget {
                                                     fontSize: 14),
                                                 textAlign: TextAlign.center,
                                               ))),
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 10,
                                           ),
                                           Expanded(

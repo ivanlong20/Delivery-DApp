@@ -226,15 +226,14 @@ class TransactionListView extends StatelessWidget {
                                               )
                                             ],
                                           )),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 5,
                                       ),
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Flexible(
-                                                  flex: 2,
-                                                  child: Text(
+                                              child: 
+                                                   Text(
                                                     senderAddress[index] +
                                                         ", " +
                                                         senderDistrict[index],
@@ -243,8 +242,8 @@ class TransactionListView extends StatelessWidget {
                                                             FontWeight.w600,
                                                         fontSize: 14),
                                                     textAlign: TextAlign.center,
-                                                  )))),
-                                      SizedBox(
+                                                  ))),
+                                      const SizedBox(
                                         height: 2,
                                       ),
                                       Expanded(
@@ -257,14 +256,12 @@ class TransactionListView extends StatelessWidget {
                                                   .arrowDownLong)
                                             ],
                                           )),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 2,
                                       ),
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Flexible(
-                                                  flex: 2,
                                                   child: Text(
                                                     receiverAddress[index] +
                                                         ", " +
@@ -274,8 +271,8 @@ class TransactionListView extends StatelessWidget {
                                                             FontWeight.w600,
                                                         fontSize: 14),
                                                     textAlign: TextAlign.center,
-                                                  )))),
-                                      SizedBox(
+                                                  ))),
+                                      const SizedBox(
                                         height: 10,
                                       ),
                                       Expanded(

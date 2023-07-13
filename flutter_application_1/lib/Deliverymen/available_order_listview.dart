@@ -164,28 +164,26 @@ class AvailableOrderListView extends StatelessWidget {
                                               )
                                             ],
                                           )),
-                                      SizedBox(
-                                        height: 10,
+                                      const SizedBox(
+                                        height: 5,
                                       ),
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Flexible(
-                                                  flex: 2,
                                                   child: Text(
                                                     senderAddress[index] +
                                                         ", " +
                                                         senderDistrict[index],
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         fontWeight:
                                                             FontWeight.w700,
                                                         fontSize: 14),
                                                     textAlign: TextAlign.center,
-                                                  )))),
-                                      SizedBox(
+                                                  ))),
+                                      const SizedBox(
                                         height: 2,
                                       ),
-                                      Expanded(
+                                     const Expanded(
                                           flex: 15,
                                           child: Row(
                                             mainAxisAlignment:
@@ -195,13 +193,11 @@ class AvailableOrderListView extends StatelessWidget {
                                                   .arrowDownLong)
                                             ],
                                           )),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Expanded(
                                           flex: 30,
                                           child: Center(
-                                              child: Flexible(
-                                                  flex: 2,
-                                                  child: Text(
+                                              child:  Text(
                                                     receiverAddress[index] +
                                                         ", " +
                                                         receiverDistrict[index],
@@ -210,8 +206,8 @@ class AvailableOrderListView extends StatelessWidget {
                                                             FontWeight.w700,
                                                         fontSize: 14),
                                                     textAlign: TextAlign.center,
-                                                  )))),
-                                      SizedBox(
+                                                  ))),
+                                      const SizedBox(
                                         height: 10,
                                       ),
                                       Expanded(
