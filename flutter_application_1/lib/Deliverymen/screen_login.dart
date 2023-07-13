@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'screen_connect_metamask.dart';
 
+
 TextEditingController email = TextEditingController();
 TextEditingController password = TextEditingController();
 

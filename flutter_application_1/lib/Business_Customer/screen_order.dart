@@ -876,7 +876,7 @@ class _TransactionDetailsPageState extends State<TransactionDetailsPage> {
                                                                             senderAddress:
                                                                                 senderLatLng,
                                                                             recipientAddress:
-                                                                                recipientLatLng,
+                                                                                recipientLatLng, 
                                                                           )),
                                                             )
                                                           });

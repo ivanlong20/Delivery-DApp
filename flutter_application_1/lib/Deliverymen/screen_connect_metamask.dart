@@ -7,7 +7,7 @@ import '../screen_user_selection.dart';
 import '../wallet_connector.dart';
 import '../ethereum_connector.dart';
 
-WalletConnector connector = EthereumConnector();
+late WalletConnector connector;
 ConnectionState _state = ConnectionState.disconnected;
 var provider;
 
@@ -52,7 +52,6 @@ class _ConnectMetamaskState extends State<ConnectMetamaskPage> {
   Widget build(BuildContext context) {
     final String assetName = 'assets/icon/metamask-fox.svg';
     final Widget svg = SvgPicture.asset(assetName);
-    print(_state);
 
     return Scaffold(
         appBar: AppBar(

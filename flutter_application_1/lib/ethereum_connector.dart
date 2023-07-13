@@ -75,7 +75,7 @@ class WalletConnectEthereumCredentials extends CustomTransactionSender {
       value: (transaction.value == null)
           ? "0x0"
           : "0x" + transaction.value!.getInWei.toRadixString(16),
-      data: hex.encode(List<int>.from(transaction.data!)),
+      data: (transaction.data != null) ? hex.encode(List<int>.from(transaction.data!)) : "0x0",
 
       /// ENCODE TRANSACTION USING convert LIB
     );
@@ -131,9 +131,9 @@ class EthereumConnector implements WalletConnector {
   }
 
   Future<String?> createSession() async {
-    if (_provider == null) {
-      await _initWalletConnect();
-    }
+    // if (_provider == null) {
+    //   await _initWalletConnect();
+    // }
 
     connectResponse = await _provider!.connect(
       requiredNamespaces: {

@@ -124,7 +124,7 @@ class OrderTrackingState extends State<OrderTracking> {
             InfoWindow(title: "Parcel Destination", snippet: recipientAddress));
 
     Set<Marker> newMarkers = {};
-    setPolyPoints(LatLng(pos.latitude, pos.longitude));
+    // setPolyPoints(LatLng(pos.latitude, pos.longitude));
 
     newMarkers.add(marker);
     newMarkers.add(senderMarker);
@@ -134,30 +134,30 @@ class OrderTrackingState extends State<OrderTracking> {
     });
   }
 
-  void setPolyPoints(orginalPosition) async {
-    PolylinePoints polylinePoints = PolylinePoints();
+  // void setPolyPoints(orginalPosition) async {
+  //   PolylinePoints polylinePoints = PolylinePoints();
 
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        google_api_key,
-        PointLatLng(orginalPosition.latitude, orginalPosition.longitude),
-        PointLatLng(recipientPosition.latitude, recipientPosition.longitude),
-        wayPoints: [
-          PolylineWayPoint(
-              location: senderPosition.latitude.toString() +
-                  "," +
-                  senderPosition.longitude.toString())
-        ]);
+  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+  //       google_api_key,
+  //       PointLatLng(orginalPosition.latitude, orginalPosition.longitude),
+  //       PointLatLng(recipientPosition.latitude, recipientPosition.longitude),
+  //       wayPoints: [
+  //         PolylineWayPoint(
+  //             location: senderPosition.latitude.toString() +
+  //                 "," +
+  //                 senderPosition.longitude.toString())
+  //       ]);
 
-    if (result.points.isNotEmpty) {
-      polylineCoordinates.clear();
-      result.points.forEach(
-        (PointLatLng point) => polylineCoordinates.add(
-          LatLng(point.latitude, point.longitude),
-        ),
-      );
-      setState(() {});
-    }
-  }
+  //   if (result.points.isNotEmpty) {
+  //     polylineCoordinates.clear();
+  //     result.points.forEach(
+  //       (PointLatLng point) => polylineCoordinates.add(
+  //         LatLng(point.latitude, point.longitude),
+  //       ),
+  //     );
+  //     setState(() {});
+  //   }
+  // }
 
   updateQuery(value) {
     setState(() {
