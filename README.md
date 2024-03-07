@@ -1,7 +1,8 @@
-#Demo Video
+# Demo Video
 https://www.youtube.com/watch?v=cS6kb5WpYN0
+
 # Delivery DApp
-A blockchain-based mobile application for logistics use.
+A blockchain-based mobile application for P2P last-mile delivery use with cryptocurrency payment (ETH).
 
 
 ## Installation
